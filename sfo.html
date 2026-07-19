@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SFO Airport Tips — Fly Easy</title>
+<meta name="description" content="An interactive terminal-by-terminal guide to San Francisco International Airport, plus grouped local tips.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22195 118 212 224%22><path d=%22M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z%22 fill=%22%231B6FA8%22 transform=%22translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=39">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="page-transition" id="page-transition" aria-hidden="true">
+  <div class="page-transition__veil"></div>
+  <span class="page-transition__puff page-transition__puff--l"></span>
+  <span class="page-transition__puff page-transition__puff--r"></span>
+  <span class="page-transition__plane">
+    <svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg>
+  </span>
+</div>
+
+<header class="site-nav">
+  <div class="site-nav__inner">
+    <a class="site-nav__brand" href="index.html">
+      <span class="site-nav__mark"><img src="images/flyeasy-mark.svg" alt="" width="48" height="34"></span>
+      <span class="site-nav__word">Fly Easy</span>
+    </a>
+    <nav class="site-nav__links" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="global.html">Global Tips</a>
+      <a href="sfo.html" aria-current="page">SFO Tips</a>
+      <a href="timeblocker.html">Timeblocker</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="vista-head container">
+    <div class="vista-head__text">
+      <p class="eyebrow">San Francisco International</p>
+      <h1>Know before you fly SFO</h1>
+      <p class="vista-head__sub">SFO rewards travelers who know its layout. Start with your terminal, then browse what locals know.</p>
+    </div>
+    <div class="postcards" aria-hidden="true">
+      <figure class="postcard postcard--back" style="background-image: url('images/sfo-gate-united.jpg');"></figure>
+      <figure class="postcard postcard--mid" style="background-image: url('images/sfo-united-skyline.jpg');"></figure>
+      <figure class="postcard postcard--front" style="background-image: url('images/sf-golden-gate.jpg'); background-position: center 30%;"><figcaption>SFO &middot; SAN FRANCISCO</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="page-toggle container" role="tablist" aria-label="SFO Tips view">
+    <button class="page-toggle__btn is-active" type="button" role="tab" aria-selected="true" aria-controls="view-terminals" data-view="terminals">
+      <span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-5h6v5"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2"/></svg></span>
+      SFO Explorer
+    </button>
+    <button class="page-toggle__btn" type="button" role="tab" aria-selected="false" aria-controls="view-airlines" data-view="airlines">
+      <span class="icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+      Airline Searcher
+    </button>
+  </section>
+
+  <section class="explorer container" id="view-terminals">
+    <div class="explorer__intro">
+      <h2>Every stop has its tips</h2>
+      <p>Ride the AirTrain map — tap a terminal and the local tips for that stop pull in below: the carriers, the food, and the calm corners locals actually use.</p>
+    </div>
+
+    <div class="sfo-map" id="sfo-map" role="tablist" aria-label="SFO terminals map">
+      <p class="sfo-map__legend" aria-hidden="true">SFO &middot; AirTrain loop &middot; not to scale</p>
+      <svg class="sfo-map__road" viewBox="0 -34 1000 374" preserveAspectRatio="none" aria-hidden="true">
+        <path class="sfo-map__spur" d="M 500 60 L 500 205" />
+        <path id="sfo-road-path" class="sfo-map__loop" d="M 100 245 Q 120 90 220 82 Q 350 41 500 41 Q 650 41 780 82 Q 880 90 900 245" />
+        <g id="sfo-car" class="sfo-map__car"><rect x="-23" y="-11" width="46" height="22" rx="10" /><circle cx="-9" cy="0" r="3" /><circle cx="9" cy="0" r="3" /></g>
+      </svg>
+      <button class="explorer__tab sfo-map__stop" style="left:10%;top:75%;" role="tab" aria-selected="false" aria-controls="explorer-panel" data-terminal="intlA" aria-label="International Terminal A"><span class="sfo-map__code">A</span><span class="sfo-map__name">Intl A</span></button>
+      <button class="explorer__tab sfo-map__stop is-active" style="left:22%;top:31%;" role="tab" aria-selected="true" aria-controls="explorer-panel" data-terminal="t1" aria-label="Terminal 1"><span class="sfo-map__code">1</span><span class="sfo-map__name">Terminal 1</span></button>
+      <button class="explorer__tab sfo-map__stop" style="left:50%;top:20%;" role="tab" aria-selected="false" aria-controls="explorer-panel" data-terminal="t2" aria-label="Terminal 2"><span class="sfo-map__code">2</span><span class="sfo-map__name">Terminal 2</span></button>
+      <button class="explorer__tab sfo-map__stop" style="left:78%;top:31%;" role="tab" aria-selected="false" aria-controls="explorer-panel" data-terminal="t3" aria-label="Terminal 3"><span class="sfo-map__code">3</span><span class="sfo-map__name">Terminal 3</span></button>
+      <button class="explorer__tab sfo-map__stop" style="left:90%;top:75%;" role="tab" aria-selected="false" aria-controls="explorer-panel" data-terminal="intlG" aria-label="International Terminal G"><span class="sfo-map__code">G</span><span class="sfo-map__name">Intl G</span></button>
+      <button class="explorer__tab sfo-map__stop sfo-map__stop--hub" style="left:50%;top:69%;" role="tab" aria-selected="false" aria-controls="explorer-panel" data-terminal="transport" aria-label="Transportation and AirTrain"><span class="sfo-map__code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="5" y="4" width="14" height="13" rx="3"/><path d="M5 12h14M9 17l-2 3M15 17l2 3"/><circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/></svg></span><span class="sfo-map__name">Transportation</span></button>
+    </div>
+
+    <div class="explorer__panel" id="explorer-panel" aria-live="polite">
+      <div class="explorer__head">
+        <div>
+          <p class="eyebrow" data-field="eyebrow">SFO · Boarding Area B</p>
+          <h3 class="explorer__title" data-field="title">Harvey Milk Terminal 1</h3>
+        </div>
+        <span class="badge" data-field="badge">Domestic</span>
+      </div>
+      <div class="explorer__body">
+        <div class="explorer__col">
+          <p class="explorer__label" data-field="col1-label">✈️ Main carriers</p>
+          <div class="chip-list" data-field="airlines"></div>
+        </div>
+        <div class="explorer__col">
+          <p class="explorer__label" data-field="col2-label">💆 Ease the stress here</p>
+          <ul class="tip-list" data-field="notes"></ul>
+        </div>
+      </div>
+    </div>
+    <p class="explorer__note">Amenities and gates can change — always confirm on the airport monitors or app.</p>
+  </section>
+
+  <section class="airline-search container" id="view-airlines" hidden>
+    <div class="explorer__intro">
+      <h2>Find your airline</h2>
+      <p>Search any airline flying out of SFO to see its usual gates, plus one quick tip worth knowing.</p>
+    </div>
+
+    <div class="airline-warning" role="alert">
+      <span class="icon airline-warning__icon"><svg viewBox="0 0 24 24"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+      <div>
+        <p class="airline-warning__title">Gates change — always double-check the airport monitors.</p>
+        <p class="airline-warning__text">Everything below is typical, not live. Double-check your gate on the airport monitors before you walk anywhere.</p>
+      </div>
+    </div>
+
+    <div class="airline-search__controls">
+      <div class="airline-search__box">
+        <span class="icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+        <input type="search" id="airline-search-input" placeholder="Search by airline name or code…" aria-label="Search airlines by name or code">
+      </div>
+      <div class="airline-search__filters" role="group" aria-label="Filter by region">
+        <button class="airline-filter is-active" type="button" data-filter="all">All</button>
+        <button class="airline-filter" type="button" data-filter="domestic">Domestic</button>
+        <button class="airline-filter" type="button" data-filter="international">International</button>
+      </div>
+    </div>
+
+    <p class="airline-search__count" id="airline-count" aria-live="polite"></p>
+
+    <div class="airline-grid" id="airline-grid"></div>
+    <p class="airline-search__empty" id="airline-empty" hidden></p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__brand"><img src="images/flyeasy-mark.svg" alt="" width="37" height="26">Fly Easy</p>
+    <nav class="site-footer__links" aria-label="Footer navigation">
+      <a href="index.html">Home</a>
+      <a href="global.html">Global Tips</a>
+      <a href="sfo.html">SFO Tips</a>
+      <a href="timeblocker.html">Timeblocker</a>
+    </nav>
+    <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
+    <p class="site-footer__credit">Photography via Unsplash &amp; Pexels.</p>
+  </div>
+</footer>
+
+<script src="script.js?v=39"></script>
+</body>
+</html>

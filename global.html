@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Tips — Fly Easy</title>
+<meta name="description" content="Global Tips: the most useful departure, in-flight, and arrival tips that work at any airport in the world.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22195 118 212 224%22><path d=%22M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z%22 fill=%22%231B6FA8%22 transform=%22translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=39">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="page-transition" id="page-transition" aria-hidden="true">
+  <div class="page-transition__veil"></div>
+  <span class="page-transition__puff page-transition__puff--l"></span>
+  <span class="page-transition__puff page-transition__puff--r"></span>
+  <span class="page-transition__plane">
+    <svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg>
+  </span>
+</div>
+
+<header class="site-nav">
+  <div class="site-nav__inner">
+    <a class="site-nav__brand" href="index.html">
+      <span class="site-nav__mark"><img src="images/flyeasy-mark.svg" alt="" width="48" height="34"></span>
+      <span class="site-nav__word">Fly Easy</span>
+    </a>
+    <nav class="site-nav__links" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="global.html" aria-current="page">Global Tips</a>
+      <a href="sfo.html">SFO Tips</a>
+      <a href="timeblocker.html">Timeblocker</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="photo-hero photo-hero--vista" style="background-image: url('images/twilight-gate-landscape.jpg');">
+    <div class="photo-hero__scrim" aria-hidden="true"></div>
+    <div class="photo-hero__content">
+      <p class="eyebrow eyebrow--onphoto">Global Tips</p>
+      <h1 class="photo-hero__title">Pre-Departure. Departure.<br>In-flight. Arrival.</h1>
+      <p class="photo-hero__sub">Every flight breaks down into four phases. Follow the plane to the one you need.</p>
+    </div>
+  </section>
+
+  <section class="tracker container">
+    <div class="tracker__path">
+      <div class="tracker__clouds" aria-hidden="true">
+        <svg class="tracker__cloud tracker__cloud--1" viewBox="0 0 64 30" fill="currentColor"><path d="M14 22a9 9 0 01-2-17.8A11 11 0 0134 6a8 8 0 0115 8 8 8 0 01-3 15H14z"/></svg>
+        <svg class="tracker__cloud tracker__cloud--2" viewBox="0 0 64 30" fill="currentColor"><path d="M14 22a9 9 0 01-2-17.8A11 11 0 0134 6a8 8 0 0115 8 8 8 0 01-3 15H14z"/></svg>
+        <svg class="tracker__cloud tracker__cloud--3" viewBox="0 0 64 30" fill="currentColor"><path d="M14 22a9 9 0 01-2-17.8A11 11 0 0134 6a8 8 0 0115 8 8 8 0 01-3 15H14z"/></svg>
+      </div>
+      <span class="tracker__path-line" aria-hidden="true"></span>
+      <span class="tracker__plane-wrap" id="tracker-plane" data-phase="predeparture" aria-hidden="true">
+        <span class="tracker__plane-float">
+          <span class="tracker__plane-bank" id="tracker-plane-bank">
+            <span class="icon"><svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg></span>
+          </span>
+        </span>
+      </span>
+    </div>
+    <div class="tracker__stops" role="tablist" aria-label="Flight phase">
+      <button class="tracker__stop is-active" data-phase="predeparture" role="tab" aria-selected="true" aria-controls="panel-predeparture">
+        <span class="tracker__stop-icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 11v4M15 11v4"/></svg></span></span>
+        <span class="tracker__stop-label">Pre-Departure</span>
+      </button>
+      <button class="tracker__stop" data-phase="departure" role="tab" aria-selected="false" aria-controls="panel-departure">
+        <span class="tracker__stop-icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M5 21V5a2 2 0 012-2h6l6 4v14"/><path d="M13 3v18"/><circle cx="10" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span></span>
+        <span class="tracker__stop-label">Departure</span>
+      </button>
+      <button class="tracker__stop" data-phase="inflight" role="tab" aria-selected="false" aria-controls="panel-inflight">
+        <span class="tracker__stop-icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 01-1-7.9A5 5 0 0116 8a4.5 4.5 0 011 8.9H7z"/></svg></span></span>
+        <span class="tracker__stop-label">In-Flight</span>
+      </button>
+      <button class="tracker__stop" data-phase="arrival" role="tab" aria-selected="false" aria-controls="panel-arrival">
+        <span class="tracker__stop-icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M6 21V4"/><path d="M6 4h9l-2 3 2 3H6"/></svg></span></span>
+        <span class="tracker__stop-label">Arrival</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="phase-wrap container">
+    <article class="phase-card" id="phase-card" data-phase="predeparture">
+
+      <div class="phase-panel phase-panel--predeparture" data-phase="predeparture" id="panel-predeparture">
+        <div class="phase-cover" style="background-image: url('images/suitcase-teal-terminal.jpg'); background-position: center 60%;">
+          <div class="phase-cover__scrim" aria-hidden="true"></div>
+          <div class="phase-cover__content">
+            <p class="phase-card__eyebrow">Pre-Departure</p>
+            <h2 class="phase-card__idea">Know before you go.</h2>
+            <p class="phase-card__sub">A few minutes of prep at home saves hours of stress at the airport.</p>
+          </div>
+        </div>
+        <div class="phase-card__body">
+
+        <div class="tip-group">
+          <p class="timing-label">Pack it</p>
+          <div class="phase-tips">
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="2"/><path d="M13 10.5h5M13 13.5h3"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Bring ID, passport &amp; key documents</strong> — and double-check they're actually on you before you leave the house.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0116 0v1"/><rect x="3" y="13" width="4" height="6" rx="2"/><rect x="17" y="13" width="4" height="6" rx="2"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Bring your own headphones</strong> — cabin jacks rarely fit newer plugs.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 01-1-7.9A5 5 0 0116 8a4.5 4.5 0 011 8.9"/><path d="M12 11v6M9.5 15l2.5 2.5 2.5-2.5"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Download shows &amp; music offline</strong> — don't count on the plane's wifi.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 01-10 0V7z"/><path d="M12 16v5"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Pack a charger + cable</strong> — outlets exist on many flights, but not every seat has one.</span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="tip-group">
+          <p class="timing-label">Know it</p>
+          <div class="phase-tips">
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Research entry requirements early</strong> — Japan's QR pre-registration, for example, cuts customs time dramatically.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="12" rx="2"/><path d="M9 8V6a3 3 0 016 0v2"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Check your airline's baggage rules</strong> — a 2-minute look avoids a gate-side surprise.</span>
+            </div>
+
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="phase-panel phase-panel--departure" data-phase="departure" id="panel-departure" hidden>
+        <div class="phase-cover" style="background-image: url('images/takeoff-golden-apron.jpg');">
+          <div class="phase-cover__scrim" aria-hidden="true"></div>
+          <div class="phase-cover__content">
+            <p class="phase-card__eyebrow">Departure</p>
+            <h2 class="phase-card__idea">Timing Matters.</h2>
+            <p class="phase-card__sub">The single biggest source of departure stress — and the easiest one to fix once you know the real timeline.</p>
+          </div>
+        </div>
+        <div class="phase-card__body">
+
+        <div class="timing-block">
+
+          <div class="timing-row reveal">
+            <span class="timing-row__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg></span></span>
+            <div>
+              <p class="timing-row__title">Check in 24 hours early</p>
+              <p class="timing-row__text">It opens the moment your airline allows it — skip the counter, lock in your seat, and have your pass ready before you even leave home.</p>
+            </div>
+          </div>
+
+          <div>
+            <p class="timing-label">Then, get to the airport</p>
+            <div class="timing-badges">
+              <div class="timing-badge reveal">
+                <span class="timing-badge__num">2h</span>
+                <div>
+                  <p class="timing-badge__label">Domestic</p>
+                  <p class="timing-badge__sub">Standard U.S. flights</p>
+                </div>
+              </div>
+              <div class="timing-badge reveal">
+                <span class="timing-badge__num">3h</span>
+                <div>
+                  <p class="timing-badge__label">International</p>
+                  <p class="timing-badge__sub">Extra time for document checks</p>
+                </div>
+              </div>
+            </div>
+            <p class="timing-note">Add 20–30 minutes if you're checking a bag, flying from a busy hub, or departing 6–9am on a weekday.</p>
+          </div>
+
+          <div class="timing-reframe reveal">
+            <p class="timing-reframe__quote">Early isn't wasted time — it's productive time you get back.</p>
+            <div class="activity-chips">
+              <span class="activity-chip"><span class="icon"><svg viewBox="0 0 24 24"><path d="M6 11V8a2 2 0 012-2h8a2 2 0 012 2v3"/><path d="M4 11h16v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"/><path d="M6 18v2M18 18v2"/></svg></span>Lounge</span>
+              <span class="activity-chip"><span class="icon"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg></span>Shop</span>
+              <span class="activity-chip"><span class="icon"><svg viewBox="0 0 24 24"><path d="M3 12c1.8 0 1.8-3 3.6-3s1.8 3 3.6 3 1.8-3 3.6-3 1.8 3 3.6 3"/><path d="M3 17c1.8 0 1.8-3 3.6-3s1.8 3 3.6 3 1.8-3 3.6-3 1.8 3 3.6 3"/></svg></span>Relax</span>
+              <span class="activity-chip"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="3.2"/><circle cx="16" cy="15" r="3.2"/><path d="M8 11.8V8a1.5 1.5 0 011.5-1.5h5A1.5 1.5 0 0116 8v3.8"/></svg></span>Plane-Spot</span>
+              <span class="activity-chip"><span class="icon"><svg viewBox="0 0 24 24"><path d="M7 2v6a2 2 0 002 2v12"/><path d="M7 2v4M9 2v4"/><path d="M16 2c-1.3 1.2-2 3-2 5.5S15 12 16 12v10"/></svg></span>Eat</span>
+              <span class="activity-chip"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M4 13h16"/></svg></span>Work</span>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="timing-label mini-tiles__label">Before you board</p>
+        <div class="mini-tiles">
+          <div class="mini-tile mini-tile--a reveal">
+            <span class="mini-tile__icon mini-tile__icon--emoji" aria-hidden="true">💧</span>
+            <span class="mini-tile__text"><strong>Empty it, refill after</strong> — security won't let liquids through, but water fountains wait right on the other side.</span>
+          </div>
+          <div class="mini-tile mini-tile--b reveal">
+            <span class="mini-tile__icon mini-tile__icon--emoji" aria-hidden="true">🧳</span>
+            <span class="mini-tile__text"><strong>Bag drop closes early</strong> — checked-bag counters often stop 30–60 minutes before departure, even if you're "on time."</span>
+          </div>
+          <div class="mini-tile mini-tile--c reveal">
+            <span class="mini-tile__icon mini-tile__icon--emoji" aria-hidden="true">🚻</span>
+            <span class="mini-tile__text"><strong>Go before you board</strong> — the aisle gets crowded fast once boarding starts.</span>
+          </div>
+          <div class="mini-tile mini-tile--d reveal">
+            <span class="mini-tile__icon mini-tile__icon--emoji" aria-hidden="true">🔎</span>
+            <span class="mini-tile__text"><strong>Recheck your gate</strong> — it changes after security more than you'd think, right when you've stopped looking.</span>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="phase-panel phase-panel--inflight" data-phase="inflight" id="panel-inflight" hidden>
+        <div class="phase-cover" style="background-image: url('images/united-inflight-clouds.jpg');">
+          <div class="phase-cover__scrim" aria-hidden="true"></div>
+          <div class="phase-cover__content">
+            <p class="phase-card__eyebrow">Cabin comfort</p>
+            <h2 class="phase-card__idea">Settle into the flight.</h2>
+            <p class="phase-card__sub">A few small habits make the miles in between feel shorter.</p>
+          </div>
+        </div>
+        <div class="phase-card__body phase-card__body--inflight">
+        <div class="inflight-clouds" aria-hidden="true">
+          <svg class="inflight-cloud inflight-cloud--1" viewBox="0 0 64 30" fill="currentColor"><path d="M14 22a9 9 0 01-2-17.8A11 11 0 0134 6a8 8 0 0115 8 8 8 0 01-3 15H14z"/></svg>
+          <svg class="inflight-cloud inflight-cloud--2" viewBox="0 0 64 30" fill="currentColor"><path d="M14 22a9 9 0 01-2-17.8A11 11 0 0134 6a8 8 0 0115 8 8 8 0 01-3 15H14z"/></svg>
+          <svg class="inflight-cloud inflight-cloud--3" viewBox="0 0 64 30" fill="currentColor"><path d="M14 22a9 9 0 01-2-17.8A11 11 0 0134 6a8 8 0 0115 8 8 8 0 01-3 15H14z"/></svg>
+        </div>
+
+        <div class="tip-group">
+          <p class="timing-label">Settle in</p>
+          <div class="phase-tips">
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 01-12 0c0-4.5 6-11 6-11z"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Hydrate more than feels normal</strong> — cabin air is drier than any room you know.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 100-6"/><path d="M3 15h15a3 3 0 110 6"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Sit behind the wing</strong> — the smoothest ride, closest to the plane's center of gravity.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v6M12 9l-4 2M12 9l4 2M12 13l-3 6M12 13l3 6"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Stretch every couple hours</strong> — a quick aisle walk or seated stretch keeps circulation moving on longer flights.</span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="tip-group">
+          <p class="timing-label">Stay aware</p>
+          <div class="phase-tips">
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3a5 5 0 00-5 5v2.5c0 1.3-.6 2.5-1.6 3.5H18.6c-1-1-1.6-2.2-1.6-3.5V8a5 5 0 00-5-5z"/><path d="M10 19a2 2 0 004 0"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Ask the back galley</strong> — free snacks &amp; water are available anytime on international flights, not just during service.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.3 2.5 3.5 6 3.5 9s-1.2 6.5-3.5 9c-2.3-2.5-3.5-6-3.5-9s1.2-6.5 3.5-9z"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Adjust to your arrival timezone</strong> — set your watch and sleep schedule the moment you board.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="7"/><circle cx="12" cy="11" r="3"/><path d="M7.5 16h9"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Watch takeoff and landing</strong> — the view outside is one of the simplest ways to calm pre-flight nerves.</span>
+            </div>
+
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="phase-panel phase-panel--arrival" data-phase="arrival" id="panel-arrival" hidden>
+        <div class="phase-cover" style="background-image: url('images/landing-city-sunset.jpg');">
+          <div class="phase-cover__scrim" aria-hidden="true"></div>
+          <div class="phase-cover__content">
+            <p class="phase-card__eyebrow">Plans change</p>
+            <h2 class="phase-card__idea">Your itinerary is a plan, not a promise.</h2>
+            <p class="phase-card__sub">Customs and connections rarely run on the schedule you booked.</p>
+          </div>
+        </div>
+        <div class="phase-card__body">
+
+        <div class="customs-dial reveal">
+          <div class="customs-dial__gauge">
+            <svg class="customs-dial__ring" viewBox="0 0 140 140" aria-hidden="true">
+              <circle class="customs-dial__track" cx="70" cy="70" r="58"/>
+              <circle class="customs-dial__fill" cx="70" cy="70" r="58"/>
+            </svg>
+            <div class="customs-dial__center">
+              <span class="icon customs-dial__icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg></span>
+              <span class="customs-dial__time">15 min–2h+</span>
+            </div>
+          </div>
+          <div class="customs-dial__labels">
+            <span class="customs-dial__label"><strong>15 min</strong> on a quiet day</span>
+            <span class="customs-dial__label"><strong>2+ hrs</strong> on a busy one</span>
+          </div>
+          <p class="customs-dial__caption">Customs &amp; immigration timing swings wildly — never book a tight connection right after landing.</p>
+        </div>
+
+        <div class="tip-group">
+          <p class="timing-label">Right away</p>
+          <div class="phase-tips">
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16.5" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Always have foreign currency ready</strong> — cash still rules for taxis, tips, and small vendors before you find an ATM.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M3 8.5a15 15 0 0118 0"/><path d="M6.5 12.5a10 10 0 0111 0"/><path d="M10 16.3a5 5 0 014 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor" stroke="none"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Grab an eSIM before landing</strong> — activate the moment wheels touch down.</span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="tip-group">
+          <p class="timing-label">Just in case</p>
+          <div class="phase-tips">
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Screenshot your hotel address</strong> — no signal, no problem for the driver.</span>
+            </div>
+
+            <div class="phase-tip reveal">
+              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M9 8h6M9 12h6M9 16h3"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg></span></span>
+              <span class="phase-tip__text"><strong>Have a backup plan</strong> — customs and baggage claim can turn chaotic or take far longer than scheduled.</span>
+            </div>
+
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+    </article>
+  </section>
+
+  <section class="container">
+    <div class="photo-band" style="background-image: url('images/dusk-clouds-pink.jpg');">
+      <div class="photo-band__scrim" aria-hidden="true"></div>
+      <div class="photo-band__content">
+        <p class="eyebrow eyebrow--onphoto">One more thing</p>
+        <h2 class="photo-band__title">The sky does this every night.</h2>
+        <p class="photo-band__text">Wherever you land, grab the window seat on the way home too.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__brand"><img src="images/flyeasy-mark.svg" alt="" width="37" height="26">Fly Easy</p>
+    <nav class="site-footer__links" aria-label="Footer navigation">
+      <a href="index.html">Home</a>
+      <a href="global.html">Global Tips</a>
+      <a href="sfo.html">SFO Tips</a>
+      <a href="timeblocker.html">Timeblocker</a>
+    </nav>
+    <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
+    <p class="site-footer__credit">Photography via Unsplash &amp; Pexels.</p>
+  </div>
+</footer>
+
+<script src="script.js?v=39"></script>
+</body>
+</html>

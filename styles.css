@@ -1,0 +1,2939 @@
+/* ============================================================
+   Fly Easy — Serene Skyway design system
+   Calm, editorial, light-blue. Serif headlines (Newsreader) +
+   Inter for body/UI. Mono reserved only for airport codes.
+   ============================================================ */
+
+:root {
+  /* Named palette */
+  --sky-mist: #F0F9FF;
+  --sky-pale: #E3F2FB;
+  --cloud-white: #FFFFFF;
+  --deep-navy: #0F3049;
+  --horizon-blue: #0EA5E9;
+  --amber-badge: #E3A548;
+
+  /* Derived */
+  --text-muted: #4F6B82;
+  --border-soft: #CFE7F6;
+  --icon-bg: #E1F1FB;
+
+  /* Journey phases (Global Tips) */
+  --phase-predeparture: #6B4E8C;
+  --phase-predeparture-tint: #EFEAFB;
+  --phase-departure: #0972A6;
+  --phase-departure-tint: #E3F5FE;
+  --phase-inflight: #0A6E63;
+  --phase-inflight-tint: #E1F4F1;
+  --phase-arrival: #B85C24;
+  --phase-arrival-tint: #FCEADD;
+  --tip-highlight: #B8791F;
+  --tip-highlight-tint: #FBF1DD;
+  --warning-red: #B42318;
+  --warning-red-tint: #FCEAE8;
+
+  /* Type */
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Layout */
+  --max-width: 1120px;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-pill: 999px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-padding-top: 90px; }
+
+body {
+  margin: 0;
+  background: var(--sky-mist);
+  color: var(--deep-navy);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  margin: 0;
+  font-weight: 600;
+  color: var(--deep-navy);
+}
+
+p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--deep-navy);
+  color: var(--cloud-white);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0 0 8px 0;
+  z-index: 200;
+}
+.skip-link:focus { left: 0; }
+
+:focus-visible {
+  outline: 3px solid var(--horizon-blue);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   Page transition (plane-flying enter/exit between pages)
+   Enter animation is pure CSS (no JS dependency, no flash-of-
+   content risk). Exit animation is triggered by script.js on
+   internal link clicks, before the browser navigates away.
+   ============================================================ */
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.page-transition__veil {
+  position: absolute;
+  inset: 0;
+  background: var(--sky-mist);
+  opacity: 0.45;
+  animation: pt-veil-fade 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.12s forwards;
+}
+.page-transition__plane {
+  position: relative;
+  display: block;
+  width: 56px;
+  height: 56px;
+  color: var(--horizon-blue);
+  opacity: 0;
+  filter: drop-shadow(0 6px 12px rgba(15, 48, 73, 0.25));
+  animation: pt-plane-fly 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.12s forwards;
+}
+.page-transition__plane svg { width: 100%; height: 100%; }
+
+@keyframes pt-veil-fade {
+  0% { opacity: 0.45; }
+  65% { opacity: 0.45; }
+  100% { opacity: 0; visibility: hidden; }
+}
+@keyframes pt-plane-fly {
+  0% { transform: translateX(-55vw) translateY(16px) rotate(-8deg); opacity: 0; }
+  18% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { transform: translateX(55vw) translateY(-16px) rotate(6deg); opacity: 0; }
+}
+
+.page-transition.is-exiting .page-transition__veil {
+  animation: pt-veil-fade-in 0.48s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.page-transition.is-exiting .page-transition__plane {
+  animation: pt-plane-fly 0.48s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes pt-veil-fade-in {
+  0% { opacity: 0; visibility: visible; }
+  100% { opacity: 0.45; visibility: visible; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition { display: none; }
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  color: var(--horizon-blue);
+  margin: 0 0 0.6rem;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ============================================================
+   Nav
+   ============================================================ */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(240, 249, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.site-nav__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: var(--deep-navy);
+}
+.site-nav__mark {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+.site-nav__mark img { height: 34px; width: auto; display: block; }
+.site-nav__word {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: 0.01em;
+}
+
+.site-nav__links {
+  display: flex;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+}
+.site-nav__links a {
+  text-decoration: none;
+  color: var(--text-muted);
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-pill);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.site-nav__links a:hover { background: var(--sky-pale); color: var(--deep-navy); }
+.site-nav__links a[aria-current="page"] {
+  background: var(--deep-navy);
+  color: var(--cloud-white);
+  font-weight: 500;
+}
+
+/* ============================================================
+   Buttons / links
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+}
+.btn--primary {
+  background: var(--deep-navy);
+  color: var(--cloud-white);
+  box-shadow: 0 10px 24px -12px rgba(15, 48, 73, 0.5);
+}
+.btn--primary:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -12px rgba(15, 48, 73, 0.45); }
+.btn--ghost {
+  background: var(--cloud-white);
+  color: var(--deep-navy);
+  border: 1.5px solid var(--border-soft);
+}
+.btn--ghost:hover { border-color: var(--horizon-blue); color: var(--horizon-blue); transform: translateY(-2px); }
+
+/* ============================================================
+   Hero (index)
+   ============================================================ */
+.hero__actions { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+
+/* value strip */
+.value-strip-wrap { padding: 2.5rem 0 0.5rem; }
+.value-strip {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.value-item { display: flex; align-items: center; gap: 0.65rem; color: var(--text-muted); font-size: 0.95rem; }
+.value-item .icon { width: 20px; height: 20px; color: var(--horizon-blue); flex: none; }
+
+/* ============================================================
+   Photography: full-bleed photo hero (index, sfo, global page-header)
+   ============================================================ */
+.photo-hero {
+  position: relative;
+  min-height: 560px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center 35%;
+  overflow: hidden;
+}
+.photo-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(15, 48, 73, 0.05) 0%,
+    rgba(15, 48, 73, 0.32) 48%,
+    rgba(15, 48, 73, 0.72) 78%,
+    var(--sky-mist) 100%);
+}
+.photo-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  width: 100%;
+  padding: 4rem 1.5rem 3.25rem;
+  color: #fff;
+}
+.photo-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5.5vw, 4rem);
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 1.2rem;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.3);
+}
+.photo-hero__title em { font-style: italic; color: #BFE3FA; }
+.photo-hero__sub {
+  max-width: 48ch;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.1rem;
+  line-height: 1.55;
+  margin: 0 0 1.85rem;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+}
+.photo-hero__caption {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1rem;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.eyebrow--onphoto {
+  display: inline-flex;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(6px);
+}
+
+.btn--ghost-onphoto {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+}
+.btn--ghost-onphoto:hover { background: rgba(255, 255, 255, 0.22); border-color: #fff; transform: translateY(-2px); }
+
+/* ============================================================
+   Photography: photo band (section divider with photo + text)
+   ============================================================ */
+.photo-band {
+  position: relative;
+  min-height: 300px;
+  margin: 3rem 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+}
+.photo-band__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, rgba(15, 48, 73, 0.82) 0%, rgba(15, 48, 73, 0.45) 42%, rgba(15, 48, 73, 0.08) 68%);
+}
+.photo-band__content {
+  position: relative;
+  z-index: 1;
+  padding: 2.5rem 2.75rem;
+  max-width: 480px;
+}
+.photo-band__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  color: #fff;
+  margin: 0.6rem 0 0.6rem;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+}
+.photo-band__text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  line-height: 1.55;
+  max-width: 40ch;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================================
+   Destination cards (index)
+   ============================================================ */
+.destinations { padding: 3rem 0 5rem; }
+.destinations__head { max-width: 56ch; margin-bottom: 2.25rem; }
+.destinations__head h2 { font-size: clamp(1.8rem, 3.2vw, 2.4rem); margin-bottom: 0.6rem; }
+.destinations__head p { color: var(--text-muted); font-size: 1.02rem; }
+
+.dest-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.dest-card {
+  position: relative;
+  display: block;
+  background: var(--cloud-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 0;
+  text-decoration: none;
+  color: var(--deep-navy);
+  overflow: hidden;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.dest-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px -20px rgba(15, 48, 73, 0.28);
+  border-color: var(--horizon-blue);
+}
+
+.dest-card__photo {
+  display: block;
+  position: relative;
+  height: 168px;
+  background-size: cover;
+  background-position: center;
+}
+.dest-card__photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 48, 73, 0) 55%, rgba(255, 255, 255, 1) 100%);
+}
+
+.dest-card__body { position: relative; padding: 0 2.25rem 2.25rem; }
+
+.dest-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--icon-bg);
+  color: var(--horizon-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -26px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 0 5px var(--cloud-white);
+}
+.dest-card--sfo .dest-card__icon { background: #FBEEDA; color: var(--amber-badge); }
+.dest-card__icon .icon { width: 26px; height: 26px; }
+
+.dest-card__eyebrow {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+.dest-card h3 { font-size: 1.7rem; margin-bottom: 0.6rem; }
+.dest-card p.dest-card__desc { color: var(--text-muted); font-size: 0.98rem; margin-bottom: 1.4rem; max-width: 40ch; }
+
+.dest-card__list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.6rem; }
+.dest-card__list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+  color: var(--deep-navy);
+}
+.dest-card__list li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--horizon-blue);
+  flex: none;
+  transform: translateY(-3px);
+}
+.dest-card--sfo .dest-card__list li::before { background: var(--amber-badge); }
+
+.dest-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--horizon-blue);
+}
+.dest-card--sfo .dest-card__cta { color: var(--amber-badge); }
+.dest-card__cta .icon { width: 15px; height: 15px; transition: transform 0.2s var(--ease); }
+.dest-card:hover .dest-card__cta .icon { transform: translateX(4px); }
+
+/* ============================================================
+   Timeblocker feature banner (index.html)
+   ============================================================ */
+.tb-feature { padding: 3rem 0 0.5rem; }
+
+.tb-feature__card {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: stretch;
+  background: var(--cloud-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--deep-navy);
+  overflow: hidden;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.tb-feature__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px -20px rgba(15, 48, 73, 0.28);
+  border-color: var(--horizon-blue);
+}
+
+.tb-feature__body { padding: 2.5rem 2.25rem; }
+.tb-feature__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--icon-bg);
+  color: var(--horizon-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+.tb-feature__icon .icon { width: 26px; height: 26px; }
+.tb-feature__body h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); margin-bottom: 0.7rem; }
+.tb-feature__desc { color: var(--text-muted); font-size: 0.98rem; margin-bottom: 1.4rem; max-width: 42ch; }
+.tb-feature__cta { margin-top: 0.4rem; }
+
+.tb-feature__preview {
+  background: var(--deep-navy);
+  color: #fff;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.1rem;
+}
+.tbp-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.tbp-hero__label { font-size: 0.78rem; color: rgba(255,255,255,0.7); margin: 0 0 4px; }
+.tbp-hero__time { font-family: var(--font-display); font-weight: 600; font-size: 1.9rem; line-height: 1; margin: 0; }
+.tbp-hero__board { font-size: 0.72rem; font-weight: 600; color: #fff; background: rgba(255,255,255,0.14); border-radius: 999px; padding: 5px 11px; white-space: nowrap; }
+
+.tbp-rail { position: relative; padding-left: 20px; display: flex; flex-direction: column; gap: 0.85rem; }
+.tbp-rail::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.3) 0 5px, transparent 5px 10px);
+}
+.tbp-row { position: relative; display: flex; align-items: baseline; gap: 0.6rem; font-size: 0.82rem; }
+.tbp-dot { position: absolute; left: -15px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--tip-highlight); box-shadow: 0 0 0 3px var(--deep-navy); }
+.tbp-row__title { font-weight: 600; flex: 1; min-width: 0; }
+.tbp-row__time { color: rgba(255,255,255,0.7); font-size: 0.76rem; white-space: nowrap; }
+.tbp-note { font-size: 0.78rem; color: rgba(255,255,255,0.75); margin: 0; }
+
+@media (max-width: 860px) {
+  .tb-feature__card { grid-template-columns: 1fr; }
+  .tb-feature__body { padding: 2rem 1.75rem 1.5rem; }
+  .tb-feature__preview { padding: 1.5rem 1.75rem 2rem; }
+}
+
+/* ============================================================
+   Homepage stat band
+   ============================================================ */
+.stat-band { background: var(--deep-navy); padding: 3.25rem 0; margin-top: 0.5rem; }
+.stat-band__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.stat-item { position: relative; text-align: center; padding: 0 1.25rem; }
+.stat-item + .stat-item::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 1px; background: rgba(255, 255, 255, 0.15); }
+.stat-item__num { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.4rem, 5vw, 3.1rem); line-height: 1; color: #fff; margin-bottom: 0.6rem; }
+.stat-item__label { color: rgba(255, 255, 255, 0.75); font-size: 0.92rem; line-height: 1.5; max-width: 26ch; margin: 0 auto; }
+
+@media (max-width: 760px) {
+  .stat-band__grid { grid-template-columns: 1fr; gap: 1.75rem; }
+  .stat-item + .stat-item::before { display: none; }
+  .stat-item + .stat-item { border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 1.5rem; }
+}
+
+/* ============================================================
+   Page header (global.html / sfo.html)
+   ============================================================ */
+.page-header { padding: 3.25rem 0 2.5rem; }
+.page-header h1 { font-size: clamp(2.1rem, 4vw, 3rem); margin-bottom: 0.75rem; }
+.page-header p { color: var(--text-muted); max-width: 56ch; font-size: 1.02rem; }
+.page-header--sfo .eyebrow { color: var(--amber-badge); }
+
+/* ============================================================
+   Category cards + insight rows (shared: global & sfo)
+   ============================================================ */
+.tip-groups {
+  padding-bottom: 4.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.tip-card {
+  background: var(--cloud-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+.tip-card.is-visible { opacity: 1; transform: translateY(0); }
+
+.tip-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.15rem;
+}
+.tip-card__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--icon-bg);
+  color: var(--horizon-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.tip-card__icon .icon { width: 21px; height: 21px; }
+.tip-card--sfo .tip-card__icon { background: #FBEEDA; color: var(--amber-badge); }
+
+.tip-card__head h3 { font-size: 1.18rem; }
+.tip-card__count { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; margin-top: 0.1rem; }
+
+.tip-list { display: flex; flex-direction: column; gap: 0.55rem; }
+
+.tip-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--sky-mist);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.tip-row:hover { border-color: var(--border-soft); background: var(--cloud-white); }
+.tip-card--sfo .tip-row { background: #FBF6ED; }
+.tip-card--sfo .tip-row:hover { background: var(--cloud-white); border-color: #F0DFC0; }
+
+.tip-row .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--horizon-blue);
+  flex: none;
+  margin-top: 0.15rem;
+}
+.tip-card--sfo .tip-row .icon { color: var(--amber-badge); }
+
+.tip-row strong { font-weight: 600; }
+
+.tip-row--emoji { display: block; }
+
+/* ============================================================
+   Terminal explorer (sfo.html signature element)
+   ============================================================ */
+.explorer { padding-top: 3rem; padding-bottom: 3.5rem; }
+.explorer__intro { max-width: 60ch; margin-bottom: 1.75rem; }
+.explorer__intro h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: 0.5rem; }
+.explorer__intro p { color: var(--text-muted); }
+
+.explorer__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: var(--sky-pale);
+  padding: 0.4rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 1.5rem;
+  width: fit-content;
+  max-width: 100%;
+}
+.explorer__tab {
+  border: none;
+  background: transparent;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.explorer__tab:hover { color: var(--deep-navy); }
+.explorer__tab.is-active {
+  background: var(--deep-navy);
+  color: var(--cloud-white);
+}
+
+.explorer__panel {
+  background: var(--cloud-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.explorer__panel.is-transitioning { opacity: 0; transform: translateY(6px); }
+
+#view-terminals, #view-airlines {
+  transition: opacity 0.2s var(--ease);
+}
+.view-panel--fading { opacity: 0; }
+.view-panel--entering { opacity: 0; }
+
+.explorer__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.explorer__area {
+  font-family: var(--font-mono);
+  color: var(--deep-navy);
+}
+.explorer__title { font-size: clamp(1.4rem, 2.6vw, 1.8rem); }
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--deep-navy);
+  background: #FBEEDA;
+  border: 1px solid #F0DFC0;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.explorer__body {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2rem;
+}
+
+.explorer__label {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 0.85rem;
+}
+
+.chip-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip {
+  font-size: 0.85rem;
+  padding: 0.45rem 0.85rem;
+  background: var(--sky-mist);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  color: var(--deep-navy);
+}
+
+.explorer__note {
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+
+/* ============================================================
+   SFO Tips view toggle (Terminal Explorer / Airline Searcher)
+   ============================================================ */
+.page-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: var(--sky-pale);
+  padding: 0.4rem;
+  border-radius: var(--radius-pill);
+  margin-top: 2.5rem;
+  width: fit-content;
+  max-width: 100%;
+}
+.page-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: none;
+  background: transparent;
+  padding: 0.65rem 1.35rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.page-toggle__btn .icon { width: 18px; height: 18px; }
+.page-toggle__btn:hover { color: var(--deep-navy); }
+.page-toggle__btn.is-active {
+  background: var(--deep-navy);
+  color: var(--cloud-white);
+}
+
+/* ============================================================
+   SFO Airline Searcher
+   ============================================================ */
+.airline-search { padding-top: 3rem; padding-bottom: 3.5rem; }
+
+.airline-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: var(--warning-red-tint);
+  border: 1.5px solid var(--warning-red);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.airline-warning__icon {
+  width: 26px;
+  height: 26px;
+  color: var(--warning-red);
+  flex: none;
+  margin-top: 0.1rem;
+}
+.airline-warning__title {
+  font-weight: 700;
+  color: var(--warning-red);
+  font-size: 1.02rem;
+  margin-bottom: 0.3rem;
+}
+.airline-warning__text {
+  color: var(--deep-navy);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.airline-search__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+.airline-search__box {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 1 1 320px;
+  background: var(--cloud-white);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  padding: 0.7rem 1.2rem;
+}
+.airline-search__box .icon { width: 18px; height: 18px; color: var(--text-muted); flex: none; }
+.airline-search__box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  color: var(--deep-navy);
+  width: 100%;
+}
+.airline-search__box input::placeholder { color: var(--text-muted); }
+
+.airline-search__filters { display: flex; gap: 0.5rem; flex: none; }
+.airline-filter {
+  border: 1.5px solid var(--border-soft);
+  background: var(--cloud-white);
+  padding: 0.65rem 1.1rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.airline-filter:hover { border-color: var(--horizon-blue); color: var(--deep-navy); }
+.airline-filter.is-active {
+  background: var(--deep-navy);
+  border-color: var(--deep-navy);
+  color: var(--cloud-white);
+}
+
+.airline-search__count {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 1.1rem;
+}
+
+.airline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.1rem;
+}
+.airline-card {
+  background: var(--cloud-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 1.4rem;
+  --phase-color: var(--horizon-blue);
+  --phase-tint: var(--icon-bg);
+}
+.airline-card[data-phase="predeparture"] { --phase-color: var(--phase-predeparture); --phase-tint: var(--phase-predeparture-tint); }
+.airline-card[data-phase="departure"] { --phase-color: var(--phase-departure); --phase-tint: var(--phase-departure-tint); }
+.airline-card[data-phase="inflight"] { --phase-color: var(--phase-inflight); --phase-tint: var(--phase-inflight-tint); }
+.airline-card[data-phase="arrival"] { --phase-color: var(--phase-arrival); --phase-tint: var(--phase-arrival-tint); }
+
+.airline-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.airline-badge {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--phase-tint);
+  color: var(--phase-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+}
+.airline-card__name { font-size: 1.05rem; margin-bottom: 0.15rem; }
+.airline-card__terminal { font-size: 0.82rem; color: var(--text-muted); }
+
+.airline-card__gates {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--deep-navy);
+  background: var(--amber-badge);
+  padding: 0.32rem 0.75rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 0.95rem;
+}
+
+.airline-card__tip {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--deep-navy);
+}
+
+.airline-search__empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2.5rem 1rem;
+  font-size: 0.98rem;
+}
+
+/* ============================================================
+   Flight-path tracker + phase card (global.html signature element)
+   ============================================================ */
+.tracker { padding-top: 3rem; margin-bottom: 2.25rem; }
+.phase-wrap { padding-bottom: 4.5rem; }
+
+.tracker__path {
+  position: relative;
+  height: 56px;
+  margin-bottom: 0.5rem;
+  overflow: visible;
+}
+.tracker__clouds {
+  position: absolute;
+  inset: -14px 0 auto 0;
+  height: 70px;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 24px;
+}
+.tracker__cloud {
+  position: absolute;
+  color: var(--sky-pale);
+  animation: cloud-drift linear infinite;
+}
+.tracker__cloud--1 { top: 2px; left: -12%; width: 64px; opacity: 0.55; animation-duration: 42s; }
+.tracker__cloud--2 { top: 26px; left: -20%; width: 46px; opacity: 0.4; animation-duration: 58s; animation-delay: -14s; }
+.tracker__cloud--3 { top: 12px; left: -16%; width: 54px; opacity: 0.45; animation-duration: 50s; animation-delay: -30s; }
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(115vw); }
+}
+
+.tracker__path-line {
+  position: absolute;
+  top: 50%;
+  left: 7%;
+  right: 7%;
+  height: 2px;
+  background-image: repeating-linear-gradient(90deg, var(--border-soft) 0 9px, transparent 9px 17px);
+  transform: translateY(-1px);
+  animation: dash-crawl 2.4s linear infinite;
+}
+@keyframes dash-crawl { to { background-position: 17px 0; } }
+
+.tracker__plane-wrap {
+  position: absolute;
+  top: 50%;
+  left: 7%;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  transition: left 0.75s var(--ease), color 0.4s var(--ease);
+  color: var(--phase-departure);
+  z-index: 2;
+  filter: drop-shadow(0 6px 10px rgba(15, 48, 73, 0.18));
+}
+.tracker__plane-wrap[data-phase="predeparture"] { left: 7%; color: var(--phase-predeparture); }
+.tracker__plane-wrap[data-phase="departure"] { left: 36%; color: var(--phase-departure); }
+.tracker__plane-wrap[data-phase="inflight"] { left: 64%; color: var(--phase-inflight); }
+.tracker__plane-wrap[data-phase="arrival"] { left: 93%; color: var(--phase-arrival); }
+
+.tracker__plane-float {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: plane-float 3.2s ease-in-out infinite;
+}
+@keyframes plane-float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-6px) rotate(4deg); }
+}
+
+.tracker__plane-bank {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tracker__plane-bank.is-banking { transform: rotate(22deg) scale(1.18); }
+.tracker__plane-wrap .icon { width: 100%; height: 100%; }
+
+.tracker__stops {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.tracker__stop {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.6rem 0.5rem;
+  border-radius: 18px;
+  transition: background 0.2s var(--ease);
+  font-family: var(--font-body);
+}
+.tracker__stop:hover { background: var(--sky-pale); }
+.tracker__stop-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--icon-bg);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.tracker__stop-icon .icon { width: 22px; height: 22px; }
+.tracker__stop-label {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  transition: color 0.2s var(--ease);
+}
+.tracker__stop.is-active .tracker__stop-label { color: var(--deep-navy); }
+.tracker__stop[data-phase="predeparture"].is-active .tracker__stop-icon { background: var(--phase-predeparture-tint); color: var(--phase-predeparture); transform: scale(1.06); }
+.tracker__stop[data-phase="departure"].is-active .tracker__stop-icon { background: var(--phase-departure-tint); color: var(--phase-departure); transform: scale(1.06); }
+.tracker__stop[data-phase="inflight"].is-active .tracker__stop-icon { background: var(--phase-inflight-tint); color: var(--phase-inflight); transform: scale(1.06); }
+.tracker__stop[data-phase="arrival"].is-active .tracker__stop-icon { background: var(--phase-arrival-tint); color: var(--phase-arrival); transform: scale(1.06); }
+
+.phase-card {
+  position: relative;
+  background: var(--cloud-white);
+  border: 1px solid var(--border-soft);
+  border-radius: 28px;
+  padding: 0;
+  overflow: hidden;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.phase-card.is-transitioning { opacity: 0; transform: translateY(6px); }
+.phase-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: var(--phase-color);
+  z-index: 2;
+}
+.phase-card[data-phase="predeparture"] { --phase-color: var(--phase-predeparture); --phase-tint: var(--phase-predeparture-tint); }
+.phase-card[data-phase="departure"] { --phase-color: var(--phase-departure); --phase-tint: var(--phase-departure-tint); }
+.phase-card[data-phase="inflight"] { --phase-color: var(--phase-inflight); --phase-tint: var(--phase-inflight-tint); }
+.phase-card[data-phase="arrival"] { --phase-color: var(--phase-arrival); --phase-tint: var(--phase-arrival-tint); }
+
+.phase-card__body { padding: 2rem 2.75rem 2.75rem; }
+
+/* In-Flight ambient sky decoration — a faint drift of clouds behind the tips */
+.phase-card__body--inflight { position: relative; overflow: hidden; }
+.phase-card__body--inflight .tip-group { position: relative; z-index: 1; }
+.inflight-clouds {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 210px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.inflight-cloud {
+  position: absolute;
+  color: var(--horizon-blue);
+  opacity: 0.12;
+  animation: inflight-cloud-drift linear infinite;
+}
+.inflight-cloud--1 { top: 10px; left: -20%; width: 100px; animation-duration: 46s; }
+.inflight-cloud--2 { top: 100px; left: -35%; width: 66px; opacity: 0.09; animation-duration: 62s; animation-delay: -18s; }
+.inflight-cloud--3 { top: 60px; left: -50%; width: 78px; opacity: 0.1; animation-duration: 54s; animation-delay: -34s; }
+@keyframes inflight-cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(160vw); }
+}
+
+/* Arrival customs dial — the tab's signature visual moment */
+.customs-dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 1.9rem;
+  margin-bottom: 1.9rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.customs-dial__gauge {
+  position: relative;
+  width: 148px;
+  height: 148px;
+  margin-bottom: 1.1rem;
+}
+.customs-dial__ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.customs-dial__track { fill: none; stroke: var(--phase-arrival-tint); stroke-width: 11; }
+.customs-dial__fill {
+  fill: none;
+  stroke: var(--phase-arrival);
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-dasharray: 273 364.4;
+}
+.customs-dial__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.customs-dial__icon {
+  width: 30px;
+  height: 30px;
+  color: var(--phase-arrival);
+}
+.customs-dial__time {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--deep-navy);
+}
+.customs-dial__labels {
+  display: flex;
+  gap: 1.6rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 0.9rem;
+}
+.customs-dial__label strong { color: var(--phase-arrival); font-weight: 700; }
+.customs-dial__caption {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  max-width: 46ch;
+  line-height: 1.5;
+}
+
+.phase-card__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--phase-color);
+  background: var(--phase-tint);
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 1.2rem;
+}
+.phase-card__idea {
+  font-size: clamp(1.9rem, 4vw, 2.85rem);
+  margin-bottom: 0.95rem;
+  max-width: 22ch;
+  letter-spacing: -0.01em;
+}
+.phase-card__sub {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  max-width: 58ch;
+  margin-bottom: 1.85rem;
+  line-height: 1.55;
+}
+.phase-card__divider {
+  border-top: 1px solid var(--border-soft);
+  margin-bottom: 1.85rem;
+}
+
+/* Phase cover photo (sits above phase-card__body, bleeds to card edges) */
+.phase-cover {
+  position: relative;
+  height: 280px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+}
+.phase-cover__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(15, 48, 73, 0.04) 0%,
+    rgba(15, 48, 73, 0.28) 50%,
+    rgba(15, 48, 73, 0.68) 80%,
+    var(--cloud-white) 100%);
+}
+.phase-cover__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 1.75rem 2.75rem 1.5rem;
+}
+.phase-cover .phase-card__eyebrow { background: rgba(255, 255, 255, 0.92); }
+.phase-cover .phase-card__idea {
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+  margin-bottom: 0.4rem;
+}
+.phase-cover .phase-card__sub {
+  color: rgba(255, 255, 255, 0.92);
+  margin-bottom: 0;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Shared reveal-on-switch utility (phase tips, timing rows, tiles, chips) */
+.reveal {
+  opacity: 0;
+  transform: translateY(9px);
+  transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+}
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+.tip-group { margin-bottom: 1.85rem; }
+.tip-group:last-child { margin-bottom: 0; }
+
+.phase-tips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem 1.75rem;
+}
+.phase-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+.phase-tip__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--phase-tint);
+  color: var(--phase-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.phase-tip__icon .icon { width: 20px; height: 20px; }
+.phase-tip__text {
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: var(--deep-navy);
+  padding-top: 0.35rem;
+}
+.phase-tip__text strong { color: var(--phase-color); font-weight: 700; }
+
+/* ============================================================
+   Rich Departure template: Timing Matters
+   ============================================================ */
+.timing-block { display: flex; flex-direction: column; gap: 1.6rem; margin-bottom: 1.85rem; }
+
+.timing-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--phase-color);
+  margin-bottom: 0.7rem;
+}
+
+.timing-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  background: var(--phase-tint);
+  border-radius: 20px;
+  padding: 1.2rem 1.4rem;
+}
+.timing-row__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: var(--cloud-white);
+  color: var(--phase-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-shadow: 0 6px 14px -8px rgba(15, 48, 73, 0.3);
+}
+.timing-row__icon .icon { width: 23px; height: 23px; }
+.timing-row__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--deep-navy);
+  margin-bottom: 0.25rem;
+}
+.timing-row__text { font-size: 1rem; color: var(--text-muted); line-height: 1.5; }
+
+.timing-badges { display: flex; gap: 1.1rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+.timing-badge {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--cloud-white);
+  border: 1.5px solid var(--phase-tint);
+  border-radius: 22px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 14px 28px -20px rgba(15, 48, 73, 0.4);
+  flex: 1 1 220px;
+}
+.timing-badge__num {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--phase-color);
+  line-height: 1;
+}
+.timing-badge__label { font-size: 0.98rem; font-weight: 700; color: var(--deep-navy); }
+.timing-badge__sub { font-size: 0.82rem; color: var(--text-muted); }
+
+.timing-note { font-size: 0.92rem; color: var(--text-muted); font-style: italic; max-width: 62ch; }
+
+.timing-reframe {
+  background: linear-gradient(135deg, var(--phase-tint) 0%, var(--cloud-white) 100%);
+  border-radius: 22px;
+  padding: 1.75rem 1.85rem;
+}
+.timing-reframe__quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.45rem;
+  color: var(--deep-navy);
+  margin-bottom: 1.15rem;
+  max-width: 40ch;
+  line-height: 1.3;
+}
+
+.activity-chips { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+.activity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--cloud-white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  padding: 0.55rem 1.05rem 0.55rem 0.65rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--deep-navy);
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.activity-chip .icon { width: 18px; height: 18px; color: var(--phase-color); }
+.activity-chip:hover { transform: translateY(-2px); border-color: var(--phase-color); background: var(--phase-tint); }
+
+.mini-tiles__label {
+  padding-top: 1.85rem;
+  border-top: 1px solid var(--border-soft);
+  margin-bottom: 0.9rem !important;
+}
+.mini-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+.mini-tile {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: var(--sky-mist);
+  border-radius: 16px;
+  padding: 0.95rem 1.1rem;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.mini-tile:hover { transform: translateY(-3px); box-shadow: 0 14px 26px -18px rgba(15, 48, 73, 0.35); }
+.mini-tile__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--phase-tint);
+  color: var(--phase-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.mini-tile__icon .icon { width: 18px; height: 18px; }
+.mini-tile__text { font-size: 0.92rem; line-height: 1.45; color: var(--deep-navy); padding-top: 0.25rem; }
+
+/* Emoji variant with per-tile tint (Departure "Before you board" tiles) */
+.mini-tile__icon--emoji {
+  width: 42px;
+  height: 42px;
+  font-size: 1.4rem;
+  transition: transform 0.25s var(--ease);
+}
+.mini-tile:hover .mini-tile__icon--emoji { transform: scale(1.18) rotate(-6deg); }
+.mini-tile--a .mini-tile__icon { background: var(--phase-departure-tint); }
+.mini-tile--b .mini-tile__icon { background: var(--phase-inflight-tint); }
+.mini-tile--c .mini-tile__icon { background: var(--phase-predeparture-tint); }
+.mini-tile--d .mini-tile__icon { background: var(--phase-arrival-tint); }
+.mini-tile__text strong { color: var(--phase-color); font-weight: 700; }
+
+.phase-panel[hidden] { display: none; }
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.site-footer {
+  background: var(--deep-navy);
+  color: #B9D3E3;
+  padding: 3rem 0 2.5rem;
+}
+.site-footer__inner { text-align: center; }
+.site-footer__brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--cloud-white);
+  font-size: 1.15rem;
+  margin-bottom: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.site-footer__brand img { height: 26px; width: auto; display: block; }
+.site-footer__links {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  font-size: 0.85rem;
+  margin-bottom: 1.1rem;
+}
+.site-footer__links a { text-decoration: none; color: #B9D3E3; transition: color 0.2s var(--ease); }
+.site-footer__links a:hover { color: var(--cloud-white); }
+.site-footer__note {
+  font-size: 0.82rem;
+  color: rgba(185, 211, 227, 0.65);
+  max-width: 52ch;
+  margin: 0 auto;
+}
+.site-footer__credit {
+  font-size: 0.76rem;
+  color: rgba(185, 211, 227, 0.45);
+  margin: 0.6rem auto 0;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 900px) {
+  .dest-grid { grid-template-columns: 1fr; }
+  .tip-groups { grid-template-columns: 1fr; }
+  .explorer__body { grid-template-columns: 1fr; gap: 1.5rem; }
+  .phase-tips { grid-template-columns: 1fr; }
+  .phase-card__body { padding: 1.75rem 2rem 2rem; }
+  .mini-tiles { grid-template-columns: 1fr; }
+  .timing-badges { flex-direction: column; }
+  .photo-hero { min-height: 460px; }
+}
+
+@media (max-width: 640px) {
+  .site-nav__inner { padding: 0.85rem 1.15rem; flex-wrap: wrap; row-gap: 0.5rem; }
+  .site-nav__brand { white-space: nowrap; }
+  .site-nav__word { font-size: 1.05rem; white-space: nowrap; }
+  .site-nav__links { font-size: 0.78rem; gap: 0.15rem; flex: 1 1 100%; }
+  .site-nav__links a { padding: 0.4rem 0.55rem; white-space: nowrap; }
+  .container, .destinations, .page-header { padding-left: 0; padding-right: 0; }
+  .container { padding: 0 1.15rem; }
+  .hero__actions, .value-strip { flex-direction: column; align-items: flex-start; }
+  .btn { width: 100%; justify-content: center; }
+  .explorer__panel { padding: 1.35rem; }
+  .explorer__head { flex-direction: column; }
+  .tracker__stop-icon { width: 38px; height: 38px; }
+  .tracker__stop-icon .icon { width: 18px; height: 18px; }
+  .tracker__stop-label { font-size: 0.78rem; text-align: center; }
+  .tracker__plane-wrap { width: 26px; height: 26px; }
+  .phase-card { border-radius: 22px; }
+  .phase-card__body { padding: 1.5rem; }
+  .phase-card__idea { max-width: none; }
+  .timing-row { flex-direction: column; }
+  .timing-badge { flex: 1 1 auto; }
+  .timing-reframe { padding: 1.35rem; }
+  .photo-hero { min-height: 420px; }
+  .photo-hero__content { padding: 2.5rem 1.15rem 2rem; }
+  .phase-cover { height: 190px; }
+  .phase-cover__content { padding: 1.25rem 1.5rem 1.15rem; }
+  .photo-band { min-height: 340px; margin: 2rem 0; border-radius: 20px; }
+  .photo-band__scrim { background: linear-gradient(180deg, rgba(15, 48, 73, 0.2) 0%, rgba(15, 48, 73, 0.82) 62%); }
+  .photo-band__content { max-width: none; padding: 1.75rem; }
+  .page-toggle { width: 100%; }
+  .page-toggle__btn { flex: 1 1 auto; justify-content: center; text-align: center; }
+  .airline-search__filters { width: 100%; }
+  .airline-filter { flex: 1 1 auto; text-align: center; }
+  .airline-warning { flex-direction: column; }
+}
+
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .hero-contrail { animation: none; }
+  .tip-card { opacity: 1; transform: none; transition: none; }
+  .btn, .dest-card:hover { transform: none; }
+  .phase-card { transition: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .tracker__cloud { animation: none; }
+  .tracker__path-line { animation: none; }
+  .tracker__plane-wrap { transition: none; }
+  .tracker__plane-float { animation: none; }
+  .tracker__plane-bank { transition: none; }
+  .inflight-cloud { animation: none; }
+  .explorer__panel { transition: none; }
+  #view-terminals, #view-airlines { transition: none; }
+}
+
+/* ============================================================
+   Timeblocker
+   ============================================================ */
+.tb-wrap { padding-top: 2.5rem; padding-bottom: 4rem; }
+
+.tb-notice { display: flex; gap: 10px; align-items: flex-start; background: var(--warning-red-tint); border: 0.5px solid var(--warning-red); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem; }
+.tb-notice__icon { width: 18px; height: 18px; color: var(--warning-red); flex-shrink: 0; margin-top: 1px; }
+.tb-notice__title { font-size: 0.85rem; font-weight: 700; color: var(--warning-red); margin: 0 0 2px; }
+.tb-notice__text { font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+.tb-hero { background: var(--deep-navy); color: #fff; border-radius: var(--radius-lg); padding: 1.75rem 1.75rem 1.4rem; margin-bottom: 1.5rem; }
+.tb-hero__row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.tb-hero__leave-label { font-size: 0.85rem; color: rgba(255,255,255,0.75); margin: 0 0 4px; }
+.tb-hero__leave-time { font-family: var(--font-display); font-weight: 600; font-size: 2.6rem; line-height: 1; margin: 0.4rem 0 0; }
+.tb-hero__flight { text-align: right; }
+.tb-hero__flight label { display: block; font-size: 0.8rem; color: rgba(255,255,255,0.75); margin-bottom: 6px; }
+
+.tb-time-field { position: relative; display: inline-block; }
+.tb-time-display {
+  display: flex; align-items: center; gap: 8px; justify-content: space-between;
+  background: rgba(255,255,255,0.1); border: 0.5px solid rgba(255,255,255,0.3); color: #fff;
+  border-radius: 10px; padding: 0.5rem 0.7rem; font-family: var(--font-body); font-size: 1rem; font-weight: 600;
+  cursor: pointer; min-width: 112px; transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.tb-time-display:hover, .tb-time-display[aria-expanded="true"] { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.55); }
+.tb-time-display svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.85; }
+
+.tb-time-popover {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 20;
+  display: flex; gap: 4px; background: var(--cloud-white); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md); padding: 8px; box-shadow: 0 16px 32px -12px rgba(15,48,73,0.35);
+}
+.tb-time-popover[hidden] { display: none; }
+.tb-time-col {
+  display: flex; flex-direction: column; gap: 2px; width: 54px; max-height: 190px; overflow-y: auto;
+}
+.tb-time-col--period { width: 50px; }
+.tb-time-col__item {
+  border: none; background: none; padding: 7px 6px; border-radius: 8px; font-family: var(--font-body);
+  font-size: 0.88rem; font-weight: 600; color: var(--deep-navy); cursor: pointer; text-align: center;
+}
+.tb-time-col__item:hover { background: var(--sky-mist); }
+.tb-time-col__item.is-selected { background: var(--horizon-blue); color: #fff; }
+
+.tb-hero__warning { margin: 1rem 0 0; padding: 0.6rem 0.85rem; border-radius: 10px; background: rgba(228,90,86,0.18); color: #FFD9D6; font-size: 0.85rem; display: none; }
+.tb-hero__warning.is-visible { display: block; }
+
+.tb-layout { display: flex; gap: 1.75rem; align-items: flex-start; }
+.tb-main-col { flex: 1; min-width: 0; }
+.tb-side-col { width: 400px; flex-shrink: 0; }
+@media (max-width: 900px) { .tb-layout { flex-direction: column; } .tb-side-col { width: 100%; } }
+
+.tb-timeline { position: relative; padding-left: 28px; }
+.tb-timeline__rail { position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px; background: repeating-linear-gradient(to bottom, var(--border-soft) 0 6px, transparent 6px 12px); }
+.tb-block {
+  position: relative; background: var(--cloud-white); border: 0.5px solid var(--border-soft); border-left-width: 4px;
+  border-radius: var(--radius-md); padding: 0.9rem 1rem; margin-bottom: 0.75rem; display: flex; gap: 0.75rem; align-items: flex-start;
+}
+.tb-block.is-dragging { opacity: 0.4; }
+.tb-block.drag-over { border-color: var(--horizon-blue); }
+.tb-block::before {
+  content: ""; position: absolute; left: -23px; top: 20px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--cloud-white); border: 2px solid var(--horizon-blue);
+}
+.tb-block__handle { color: var(--text-muted); font-size: 15px; line-height: 1; padding-top: 10px; letter-spacing: 2px; user-select: none; cursor: grab; }
+.tb-block__handle:active { cursor: grabbing; }
+.tb-block__icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tb-block__icon svg { width: 18px; height: 18px; }
+.tb-cat-going { background: var(--phase-predeparture-tint); color: var(--phase-predeparture); }
+.tb-cat-airport { background: var(--phase-departure-tint); color: var(--phase-departure); }
+.tb-cat-gate { background: var(--phase-inflight-tint); color: var(--phase-inflight); }
+.tb-cat-food { background: var(--tip-highlight-tint); color: var(--tip-highlight); }
+.tb-cat-explore { background: var(--phase-arrival-tint); color: var(--phase-arrival); }
+.tb-block__main { flex: 1; min-width: 0; }
+.tb-block__top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.tb-block__title { border: none; background: none; font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; color: var(--deep-navy); flex: 1; min-width: 0; padding: 2px 4px; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tb-block__title:focus { outline: 1.5px solid var(--horizon-blue); background: var(--sky-mist); }
+.tb-block__time-input { border: none; background: var(--sky-mist); border-radius: 6px; padding: 3px 6px; font-family: var(--font-body); font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+.tb-block__time-input:focus { outline: 1.5px solid var(--horizon-blue); color: var(--deep-navy); }
+.tb-block__remove { border: none; background: none; color: var(--text-muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 4px; border-radius: 6px; }
+.tb-block__remove:hover { background: var(--warning-red-tint); color: var(--warning-red); }
+.tb-block__duration { display: flex; align-items: center; gap: 10px; }
+.tb-block__duration input[type="range"] { flex: 1; accent-color: var(--horizon-blue); height: 4px; }
+.tb-block__mins { font-size: 0.8rem; color: var(--text-muted); min-width: 34px; text-align: right; }
+.tb-block__note { display: flex; align-items: flex-start; gap: 6px; margin-top: 8px; padding: 6px 8px; border-radius: 8px; background: var(--warning-red-tint); color: var(--warning-red); font-size: 0.72rem; font-weight: 600; line-height: 1.4; }
+.tb-block__note svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 1px; }
+
+.tb-timeline__end-drop { height: 14px; margin: -6px 0 12px 0; border-radius: 8px; }
+.tb-timeline__end-drop.drag-over { background: var(--sky-pale); outline: 1.5px dashed var(--horizon-blue); }
+
+.tb-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.tb-add-btn, .tb-reset-btn {
+  font-family: var(--font-body); font-size: 0.88rem; font-weight: 600; border-radius: var(--radius-pill);
+  padding: 0.55rem 1rem; cursor: pointer;
+}
+.tb-add-btn { background: var(--horizon-blue); color: #fff; border: none; }
+.tb-reset-btn { background: none; border: 0.5px solid var(--border-soft); color: var(--text-muted); }
+
+.tb-board-marker { display: flex; align-items: center; gap: 8px; margin: 4px 0 20px 0; padding-left: 2px; }
+.tb-board-marker svg { width: 16px; height: 16px; color: var(--horizon-blue); }
+.tb-board-marker__text { font-size: 0.82rem; color: var(--text-muted); }
+
+.tb-activities__heading { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; margin: 0 0 4px; }
+.tb-activities__hint { font-size: 0.78rem; color: var(--text-muted); margin: 0 0 1.1rem; }
+.tb-activity-section__title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
+.tb-activity-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.tb-activity-card {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0.4rem 0.7rem 0.4rem 0.4rem; border-radius: var(--radius-pill); border: 0.5px solid var(--border-soft); background: var(--cloud-white); cursor: pointer;
+}
+.tb-activity-card:hover { background: var(--sky-mist); border-color: var(--horizon-blue); }
+.tb-activity-card__icon { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tb-activity-card__icon svg { width: 14px; height: 14px; }
+.tb-activity-card__title { font-size: 0.78rem; font-weight: 600; color: var(--deep-navy); letter-spacing: 0.01em; white-space: nowrap; }
+.tb-activity-card__mins { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
+
+/* ============================================================
+   ============================================================
+   WINDOW SEAT — the journey scroll theme
+   The whole site is one continuous sky. Scrolling = flying:
+   dawn at the top of each page, night at the footer. Parallax
+   cloud layers, twinkling stars, a plane riding a drawn flight
+   path down the page, airplane-window photo heroes, glass
+   cabin cards, and a live altitude readout in the nav.
+   All moving layers are injected by script.js; reduced-motion
+   users get a calm static mid-day sky.
+   ============================================================ */
+
+/* ---- The sky (fixed, behind everything) ---- */
+.ws-sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ws-sky__gradient {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 520vh;
+  will-change: transform;
+  background: linear-gradient(180deg,
+    #FFE8D1 0%,
+    #FFD9B4 7%,
+    #F6E3C8 13%,
+    #C6E7FA 24%,
+    #93CCF0 38%,
+    #79B7E6 52%,
+    #E8AE85 64%,
+    #C97F70 71%,
+    #8A5E8F 78%,
+    #3A3D6E 86%,
+    #16223F 93%,
+    #0A1128 100%);
+}
+.ws-sky__stars { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; }
+.ws-sky__stars span {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #FFF;
+  box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.7);
+  animation: ws-twinkle 3.5s ease-in-out infinite;
+}
+@keyframes ws-twinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.ws-clouds { position: absolute; inset: -10% 0; will-change: transform; }
+.ws-clouds svg {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.85);
+  filter: blur(1px);
+  animation: ws-drift linear infinite;
+}
+.ws-clouds--far svg { color: rgba(255, 255, 255, 0.55); filter: blur(2.5px); }
+@keyframes ws-drift {
+  from { transform: translateX(-18vw) scale(var(--cs, 1)); }
+  to { transform: translateX(118vw) scale(var(--cs, 1)); }
+}
+
+/* ---- Content sits above the flight route ---- */
+main { position: relative; }
+main > * { position: relative; z-index: 1; }
+
+.ws-route { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.ws-route svg { width: 100%; height: 100%; overflow: visible; }
+.ws-route path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 2.5;
+  stroke-dasharray: 3 11;
+  stroke-linecap: round;
+}
+.ws-route__plane {
+  fill: #FFFFFF;
+  stroke: rgba(15, 48, 73, 0.45);
+  stroke-width: 0.6;
+  filter: drop-shadow(0 4px 10px rgba(15, 48, 73, 0.3));
+}
+@media (max-width: 760px) { .ws-route { display: none; } }
+
+/* ---- Nav becomes the cabin: glass + live altitude ---- */
+.site-nav {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  transition: background 0.6s ease, border-color 0.6s ease;
+}
+.ws-alt {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--deep-navy);
+  white-space: nowrap;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid rgba(15, 48, 73, 0.25);
+  border-radius: var(--radius-pill);
+  transition: color 0.6s ease, border-color 0.6s ease;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 860px) { .ws-alt { display: none; } }
+
+body[data-tod="dusk"] .site-nav,
+body[data-tod="night"] .site-nav {
+  background: rgba(10, 17, 40, 0.5);
+  border-bottom-color: rgba(255, 255, 255, 0.14);
+}
+body[data-tod="dusk"] .site-nav__word, body[data-tod="night"] .site-nav__word { color: #FFF; }
+body[data-tod="dusk"] .site-nav__links a, body[data-tod="night"] .site-nav__links a { color: rgba(255, 255, 255, 0.75); }
+body[data-tod="dusk"] .site-nav__links a:hover, body[data-tod="night"] .site-nav__links a:hover { background: rgba(255, 255, 255, 0.14); color: #FFF; }
+body[data-tod="dusk"] .site-nav__links a[aria-current="page"],
+body[data-tod="night"] .site-nav__links a[aria-current="page"] { background: rgba(255, 255, 255, 0.92); color: var(--deep-navy); }
+body[data-tod="dusk"] .ws-alt, body[data-tod="night"] .ws-alt { color: #FFF; border-color: rgba(255, 255, 255, 0.35); }
+
+/* ---- Airplane-window photo heroes ---- */
+.photo-hero {
+  max-width: min(1060px, calc(100% - 2.5rem));
+  margin: 2.75rem auto 2.5rem;
+  min-height: 540px;
+  border-radius: clamp(70px, 11vw, 150px);
+  border: 11px solid rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 34px 70px -30px rgba(15, 48, 73, 0.55),
+    inset 0 0 0 6px rgba(15, 48, 73, 0.18),
+    inset 0 0 60px rgba(15, 48, 73, 0.25);
+}
+.photo-hero__scrim {
+  background: linear-gradient(180deg,
+    rgba(15, 48, 73, 0.03) 0%,
+    rgba(15, 48, 73, 0.3) 52%,
+    rgba(15, 48, 73, 0.68) 100%);
+}
+.photo-hero__content { padding: 3.5rem 3.5rem 3rem; }
+.photo-hero__caption { right: 3rem; bottom: 2rem; }
+/* clouds drifting past the window, outside the glass */
+.photo-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 70%);
+  background-size: 340px 130px, 220px 90px;
+  background-position: 0% 22%, 60% 64%;
+  background-repeat: no-repeat;
+  animation: ws-window-clouds 26s linear infinite;
+  opacity: 0.8;
+}
+@keyframes ws-window-clouds {
+  0% { background-position: 120% 22%, 130% 64%; }
+  100% { background-position: -60% 22%, -50% 64%; }
+}
+@media (max-width: 720px) {
+  .photo-hero { min-height: 480px; border-radius: 64px; border-width: 8px; }
+  .photo-hero__content { padding: 2.5rem 1.75rem 2.25rem; }
+}
+
+/* ---- Glass cabin cards ---- */
+.dest-card,
+.tb-feature__card,
+.tip-card,
+.explorer__panel,
+.airline-card,
+.phase-card,
+.tb-block,
+.tb-notice,
+.airline-warning,
+.tb-time-popover {
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-color: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 18px 44px -22px rgba(15, 48, 73, 0.4);
+}
+.dest-card__photo::after {
+  background: linear-gradient(180deg, rgba(15, 48, 73, 0) 55%, rgba(253, 253, 253, 0.92) 100%);
+}
+.value-item {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-pill);
+  padding: 0.5rem 1rem;
+  color: var(--deep-navy);
+}
+.page-toggle, .explorer__tabs {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+.airline-search__box, .airline-filter, .tb-activity-card {
+  background: rgba(255, 255, 255, 0.75);
+}
+.tip-row { background: rgba(240, 249, 255, 0.75); }
+
+/* ---- Stat band + footer live in the night sky ---- */
+.stat-band {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.site-footer {
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.88);
+}
+.site-footer__brand { color: #FFF; }
+.site-footer__links a { color: rgba(255, 255, 255, 0.85); }
+.site-footer__links a:hover { color: #FFF; }
+.site-footer__note, .site-footer__credit { color: rgba(255, 255, 255, 0.55); }
+
+/* ---- On-sky text flips light as day turns to night ---- */
+body[data-tod="dusk"] .destinations__head h2, body[data-tod="night"] .destinations__head h2,
+body[data-tod="dusk"] .destinations__head p, body[data-tod="night"] .destinations__head p,
+body[data-tod="dusk"] .explorer__intro h2, body[data-tod="night"] .explorer__intro h2,
+body[data-tod="dusk"] .explorer__intro p, body[data-tod="night"] .explorer__intro p,
+body[data-tod="dusk"] .explorer__note, body[data-tod="night"] .explorer__note,
+body[data-tod="dusk"] .airline-search__count, body[data-tod="night"] .airline-search__count,
+body[data-tod="dusk"] .airline-search__empty, body[data-tod="night"] .airline-search__empty,
+body[data-tod="dusk"] .tb-activities__heading, body[data-tod="night"] .tb-activities__heading,
+body[data-tod="dusk"] .tb-activities__hint, body[data-tod="night"] .tb-activities__hint,
+body[data-tod="dusk"] .tb-board-marker__text, body[data-tod="night"] .tb-board-marker__text,
+body[data-tod="dusk"] .tracker__stop-label, body[data-tod="night"] .tracker__stop-label,
+body[data-tod="dusk"] .value-item, body[data-tod="night"] .value-item {
+  color: #FFF;
+  transition: color 0.6s ease;
+}
+body[data-tod="dusk"] .value-item, body[data-tod="night"] .value-item {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ---- Reveal choreography: cards fly in like turbulence-free landings ---- */
+.ws-reveal {
+  opacity: 0;
+  transform: translateY(34px) rotate(0.6deg) scale(0.985);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+.ws-reveal.is-landed {
+  opacity: 1;
+  transform: translateY(0) rotate(0) scale(1);
+}
+
+/* ---- Reduced motion: calm static mid-day sky ---- */
+@media (prefers-reduced-motion: reduce) {
+  .ws-sky__gradient { transform: translateY(-38%) !important; }
+  .ws-clouds svg { animation: none; }
+  .ws-sky__stars { display: none; }
+  .ws-route { display: none; }
+  .ws-alt { display: none; }
+  .photo-hero::after { animation: none; }
+  .ws-reveal { opacity: 1; transform: none; transition: none; }
+}
+/* Sidebar category labels get a readable chip once the sky darkens */
+body[data-tod="dusk"] .tb-activity-section__title,
+body[data-tod="night"] .tb-activity-section__title {
+  color: #FFF;
+  background: rgba(10, 17, 40, 0.35);
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.6s ease;
+}
+body[data-tod="dusk"] .tb-board-marker svg,
+body[data-tod="night"] .tb-board-marker svg { color: #FFF; }
+/* Mobile: column-direction tb-layout must stretch children, not size-to-content */
+@media (max-width: 900px) {
+  .tb-layout { align-items: stretch; }
+  .tb-main-col, .tb-side-col { width: 100%; min-width: 0; }
+}
+
+/* ============================================================
+   WINDOW SEAT v2 — varied heroes, cloud-wipe transitions,
+   deeper photo integration, readability + motion polish
+   ============================================================ */
+
+/* ---- Readability: firmer glass ---- */
+.dest-card,
+.tb-feature__card,
+.tip-card,
+.explorer__panel,
+.airline-card,
+.phase-card,
+.tb-block,
+.tb-notice,
+.airline-warning,
+.tb-time-popover {
+  background: rgba(255, 255, 255, 0.92);
+}
+.tip-row { background: rgba(240, 249, 255, 0.9); }
+
+/* ---- Hero variant: full-bleed vista (global.html) ----
+   The photo melts into the sky on every edge instead of
+   sitting in a frame — the view IS the page for a moment. */
+.photo-hero--vista {
+  max-width: none;
+  margin: 0 0 1.5rem;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 560px;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 62%, rgba(0,0,0,0) 99%);
+  mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 62%, rgba(0,0,0,0) 99%);
+}
+.photo-hero--vista .photo-hero__content { padding: 5rem 1.5rem 6rem; }
+.photo-hero--vista::after { display: none; }
+
+/* ---- Hero variant: postcard stack (sfo.html) ---- */
+.vista-head {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 2.5rem;
+  align-items: center;
+  padding-top: 4rem;
+  padding-bottom: 2.5rem;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+}
+.vista-head__text h1 {
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  margin: 0.4rem 0 1rem;
+}
+.vista-head__sub { color: var(--text-muted); font-size: 1.06rem; max-width: 46ch; }
+
+.postcards {
+  position: relative;
+  height: 420px;
+  perspective: 900px;
+}
+.postcard {
+  position: absolute;
+  margin: 0;
+  border: 10px solid #FFF;
+  border-bottom-width: 34px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 26px 50px -22px rgba(15, 48, 73, 0.5);
+  animation: postcard-bob 7s ease-in-out infinite;
+}
+.postcard--back {
+  width: 62%;
+  height: 56%;
+  right: 2%;
+  top: 2%;
+  transform: rotate(5deg);
+  animation-delay: -2.2s;
+}
+.postcard--mid {
+  width: 58%;
+  height: 54%;
+  left: 0;
+  bottom: 4%;
+  transform: rotate(-7deg);
+  animation-delay: -4.6s;
+}
+.postcard--front {
+  width: 68%;
+  height: 62%;
+  left: 18%;
+  top: 20%;
+  transform: rotate(-1deg) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  z-index: 2;
+  transition: transform 0.25s ease-out;
+  animation: none;
+}
+.postcard--front figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -30px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+@keyframes postcard-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -12px; }
+}
+@media (max-width: 860px) {
+  .vista-head { grid-template-columns: 1fr; padding-top: 3rem; }
+  .postcards { height: 340px; max-width: 440px; margin: 0 auto; width: 100%; }
+}
+
+/* ---- Timeblocker: photo lives inside the flight-deck card ---- */
+.tb-pagehead { padding: 3.5rem 0 2rem; max-width: 60ch; }
+.tb-pagehead h1 { font-size: clamp(2.3rem, 4.6vw, 3.3rem); margin-top: 0.4rem; }
+.tb-pagehead h1 em { font-style: italic; color: var(--horizon-blue); }
+.tb-hero {
+  position: relative;
+  background:
+    linear-gradient(100deg, rgba(9, 17, 38, 0.94) 0%, rgba(9, 17, 38, 0.82) 55%, rgba(9, 17, 38, 0.6) 100%),
+    url('images/departure-board.jpg') center 40% / cover no-repeat;
+  overflow: hidden;
+}
+
+/* ---- Photos zoom gently on hover ---- */
+.dest-card__photo,
+.postcard {
+  transition: transform 0.6s var(--ease);
+}
+.dest-card:hover .dest-card__photo { transform: scale(1.055); }
+.postcards:hover .postcard--back { transform: rotate(7deg) translateX(6px); }
+.postcards:hover .postcard--mid { transform: rotate(-9deg) translateX(-6px); }
+
+/* ---- Photo band melts into the sky ---- */
+.photo-band {
+  border-radius: 28px;
+  -webkit-mask-image: radial-gradient(140% 120% at 50% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(140% 120% at 50% 50%, #000 62%, transparent 100%);
+  border: none;
+}
+
+/* ---- Cloud-wipe page transitions ---- */
+.page-transition__puff {
+  position: absolute;
+  top: -25%;
+  height: 150%;
+  width: 95vmax;
+  pointer-events: none;
+  background: radial-gradient(closest-side,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.96) 45%,
+    rgba(255, 255, 255, 0.75) 62%,
+    rgba(255, 255, 255, 0) 78%);
+  opacity: 0;
+}
+.page-transition__puff--l { left: -78vmax; }
+.page-transition__puff--r { right: -78vmax; }
+
+/* Entrance: page loads with the clouds parting */
+.page-transition__puff--l { animation: puff-part-l 1.05s cubic-bezier(0.3, 0, 0.2, 1) forwards; }
+.page-transition__puff--r { animation: puff-part-r 1.05s cubic-bezier(0.3, 0, 0.2, 1) forwards; }
+@keyframes puff-part-l {
+  0% { transform: translateX(56vmax); opacity: 1; }
+  70% { opacity: 0.55; }
+  100% { transform: translateX(0); opacity: 0; }
+}
+@keyframes puff-part-r {
+  0% { transform: translateX(-56vmax); opacity: 1; }
+  70% { opacity: 0.55; }
+  100% { transform: translateX(0); opacity: 0; }
+}
+
+/* Exit: clouds close in before the browser navigates */
+.page-transition.is-exiting .page-transition__puff--l {
+  animation: puff-close-l 0.4s cubic-bezier(0.5, 0, 0.75, 0.4) forwards;
+}
+.page-transition.is-exiting .page-transition__puff--r {
+  animation: puff-close-r 0.4s cubic-bezier(0.5, 0, 0.75, 0.4) forwards;
+}
+@keyframes puff-close-l {
+  0% { transform: translateX(0); opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: translateX(56vmax); opacity: 1; }
+}
+@keyframes puff-close-r {
+  0% { transform: translateX(0); opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: translateX(-56vmax); opacity: 1; }
+}
+
+/* Page content rises in under the parting clouds */
+main {
+  animation: ws-page-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes ws-page-in {
+  0% { opacity: 0; transform: translateY(26px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Cross-document view transitions where supported */
+@view-transition { navigation: auto; }
+::view-transition-old(root) {
+  animation: vt-out 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes vt-out { to { opacity: 0; transform: translateY(-14px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(14px); } }
+
+/* ---- Night garnish: shooting stars ---- */
+.ws-shoot {
+  position: absolute;
+  width: 110px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  transform: rotate(32deg);
+  animation: ws-shoot-fly 1.1s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes ws-shoot-fly {
+  0% { opacity: 0; translate: 0 0; }
+  12% { opacity: 1; }
+  100% { opacity: 0; translate: -34vw 24vh; }
+}
+
+/* ---- Micro-motion ---- */
+.tb-activity-card { transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease); }
+.tb-activity-card:hover { transform: translateY(-2px) scale(1.03); }
+.btn:active, .tb-activity-card:active { transform: scale(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition__puff { display: none; }
+  main { animation: none; }
+  .postcard { animation: none; }
+  .ws-shoot { display: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+.tb-pagehead__sub { color: var(--text-muted); font-size: 1.04rem; margin-top: 0.9rem; max-width: 56ch; }
+body[data-tod="dusk"] .tb-pagehead h1, body[data-tod="night"] .tb-pagehead h1,
+body[data-tod="dusk"] .tb-pagehead__sub, body[data-tod="night"] .tb-pagehead__sub,
+body[data-tod="dusk"] .vista-head__text h1, body[data-tod="night"] .vista-head__text h1,
+body[data-tod="dusk"] .vista-head__sub, body[data-tod="night"] .vista-head__sub { color: #FFF; transition: color 0.6s ease; }
+
+/* ============================================================
+   WINDOW SEAT v3 — filmstrip marquee + timeblocker polaroid
+   ============================================================ */
+
+/* Auto-rolling filmstrip of journey photos (index) */
+.filmstrip { overflow: hidden; padding: 2.5rem 0 1rem; position: relative; }
+.filmstrip__track {
+  display: flex;
+  gap: 1.4rem;
+  width: max-content;
+  padding: 0.5rem 0 1.25rem;
+  animation: film-roll 55s linear infinite;
+  will-change: transform;
+}
+.filmstrip:hover .filmstrip__track { animation-play-state: paused; }
+.filmstrip__item {
+  flex: none;
+  width: 230px;
+  height: 156px;
+  border: 8px solid #FFF;
+  border-bottom-width: 22px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 16px 32px -14px rgba(15, 48, 73, 0.45);
+  transform: rotate(-1.6deg);
+  transition: transform 0.35s var(--ease);
+}
+.filmstrip__item:nth-child(even) { transform: rotate(1.4deg) translateY(6px); }
+.filmstrip__item:hover { transform: rotate(0deg) scale(1.07); z-index: 2; }
+@keyframes film-roll { to { transform: translateX(-50%); } }
+.filmstrip__label {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 1.5rem 1rem;
+}
+body[data-tod="dusk"] .filmstrip__label, body[data-tod="night"] .filmstrip__label { color: rgba(255, 255, 255, 0.75); }
+
+/* DON'T BE LATE polaroid beside the Timeblocker heading */
+.tb-pagehead { position: relative; }
+.tb-pagehead__polaroid {
+  position: absolute;
+  left: calc(100% + 2.5rem);
+  top: 2.5rem;
+  width: 240px;
+  height: 175px;
+  border: 9px solid #FFF;
+  border-bottom-width: 30px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 22px 40px -18px rgba(15, 48, 73, 0.45);
+  transform: rotate(4deg);
+  animation: postcard-bob 8s ease-in-out infinite;
+}
+@media (max-width: 900px) { .tb-pagehead__polaroid { display: none; } }
+@media (max-width: 1100px) { .tb-pagehead__polaroid { width: 200px; height: 146px; border-bottom-width: 24px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .filmstrip__track { animation: none; }
+  .tb-pagehead__polaroid { animation: none; }
+}
+
+/* ============================================================
+   SFO AIRTRAIN MAP — terminal navigation as a transit map
+   Stops are the real tab buttons (they keep .explorer__tab so
+   the existing panel logic works untouched). A little AirTrain
+   car drives the loop to whichever stop you pick, and takes the
+   spur down to the Transportation hub. script.js drives the car.
+   ============================================================ */
+.sfo-map {
+  position: relative;
+  height: 300px;
+  margin-bottom: 1.5rem;
+  background:
+    repeating-linear-gradient(0deg, rgba(20, 99, 155, 0.04) 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(90deg, rgba(20, 99, 155, 0.04) 0 1px, transparent 1px 34px),
+    rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 24px;
+  box-shadow: 0 18px 44px -22px rgba(15, 48, 73, 0.35);
+  overflow: hidden;
+}
+.sfo-map__legend {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+.sfo-map__road {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.sfo-map__loop {
+  fill: none;
+  stroke: rgba(14, 116, 177, 0.55);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 0.5 16;
+  animation: sfo-track-crawl 1.6s linear infinite;
+}
+.sfo-map__spur {
+  fill: none;
+  stroke: rgba(14, 116, 177, 0.35);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 0.5 13;
+}
+@keyframes sfo-track-crawl { to { stroke-dashoffset: -16.5; } }
+.sfo-map__car rect {
+  fill: var(--horizon-blue);
+  stroke: #FFF;
+  stroke-width: 2;
+}
+.sfo-map__car circle { fill: #FFF; }
+.sfo-map__car { filter: drop-shadow(0 4px 8px rgba(15, 48, 73, 0.4)); }
+
+.sfo-map__stop {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  z-index: 2;
+}
+.sfo-map__code {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2.5px solid rgba(14, 116, 177, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--deep-navy);
+  box-shadow: 0 8px 18px -8px rgba(15, 48, 73, 0.4);
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), background 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.sfo-map__code svg { width: 22px; height: 22px; }
+.sfo-map__name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--deep-navy);
+  background: rgba(255, 255, 255, 0.78);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+.sfo-map__stop:hover .sfo-map__code {
+  transform: scale(1.12);
+  border-color: var(--horizon-blue);
+}
+.sfo-map__stop.is-active .sfo-map__code {
+  background: var(--horizon-blue);
+  border-color: #FFF;
+  color: #FFF;
+  transform: scale(1.16);
+  animation: sfo-stop-pulse 2.2s ease-out infinite;
+}
+.sfo-map__stop.is-active .sfo-map__name {
+  background: var(--deep-navy);
+  color: #FFF;
+}
+@keyframes sfo-stop-pulse {
+  0% { box-shadow: 0 8px 18px -8px rgba(15, 48, 73, 0.4), 0 0 0 0 rgba(14, 165, 233, 0.45); }
+  70% { box-shadow: 0 8px 18px -8px rgba(15, 48, 73, 0.4), 0 0 0 14px rgba(14, 165, 233, 0); }
+  100% { box-shadow: 0 8px 18px -8px rgba(15, 48, 73, 0.4), 0 0 0 0 rgba(14, 165, 233, 0); }
+}
+
+@media (max-width: 700px) {
+  .sfo-map { height: 250px; border-radius: 18px; }
+  .sfo-map__code { width: 42px; height: 42px; font-size: 0.95rem; }
+  .sfo-map__name { font-size: 0.62rem; padding: 2px 7px; }
+  .sfo-map__legend { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sfo-map__loop { animation: none; }
+  .sfo-map__stop.is-active .sfo-map__code { animation: none; }
+}
+
+/* ============================================================
+   SFO Explorer: directional card travel + staggered arrivals
+   The tips card rides with the AirTrain — old content slides out
+   opposite the direction of travel, new content pulls in from
+   where the train is heading, then chips/tips stagger aboard.
+   ============================================================ */
+.explorer__panel.slide-out-w { animation: panel-out-w 0.19s cubic-bezier(0.4, 0, 1, 1) forwards; }
+.explorer__panel.slide-out-e { animation: panel-out-e 0.19s cubic-bezier(0.4, 0, 1, 1) forwards; }
+.explorer__panel.slide-in-e { animation: panel-in-e 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.explorer__panel.slide-in-w { animation: panel-in-w 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes panel-out-w {
+  to { opacity: 0; transform: translateX(-34px) scale(0.99); }
+}
+@keyframes panel-out-e {
+  to { opacity: 0; transform: translateX(34px) scale(0.99); }
+}
+@keyframes panel-in-e {
+  from { opacity: 0; transform: translateX(44px) scale(0.99); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes panel-in-w {
+  from { opacity: 0; transform: translateX(-44px) scale(0.99); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* Chips and tips stagger in once the card arrives */
+.explorer__panel.is-arriving .chip,
+.explorer__panel.is-arriving .tip-row {
+  animation: stop-content-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.explorer__panel.is-arriving .chip:nth-child(1) { animation-delay: 0.1s; }
+.explorer__panel.is-arriving .chip:nth-child(2) { animation-delay: 0.15s; }
+.explorer__panel.is-arriving .chip:nth-child(3) { animation-delay: 0.2s; }
+.explorer__panel.is-arriving .chip:nth-child(4) { animation-delay: 0.25s; }
+.explorer__panel.is-arriving .tip-row:nth-child(1) { animation-delay: 0.14s; }
+.explorer__panel.is-arriving .tip-row:nth-child(2) { animation-delay: 0.2s; }
+.explorer__panel.is-arriving .tip-row:nth-child(3) { animation-delay: 0.26s; }
+.explorer__panel.is-arriving .tip-row:nth-child(4) { animation-delay: 0.32s; }
+.explorer__panel.is-arriving .tip-row:nth-child(5) { animation-delay: 0.38s; }
+@keyframes stop-content-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Airline searcher: cards pop in with a ripple of delays */
+.airline-grid .airline-card { animation: card-pop 0.38s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.airline-grid .airline-card:nth-child(3n+2) { animation-delay: 0.06s; }
+.airline-grid .airline-card:nth-child(3n+3) { animation-delay: 0.12s; }
+.airline-grid .airline-card:nth-child(n+10) { animation-delay: 0.15s; }
+@keyframes card-pop {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.airline-card { transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
+.airline-card:hover { transform: translateY(-4px); box-shadow: 0 24px 44px -20px rgba(15, 48, 73, 0.45); }
+
+/* Taller AirTrain map so Terminal 2 has breathing room up top */
+.sfo-map { height: 330px; }
+@media (max-width: 700px) { .sfo-map { height: 265px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .explorer__panel.slide-out-w, .explorer__panel.slide-out-e,
+  .explorer__panel.slide-in-e, .explorer__panel.slide-in-w,
+  .explorer__panel.is-arriving .chip, .explorer__panel.is-arriving .tip-row,
+  .airline-grid .airline-card { animation: none; }
+}
+
+/* Timeblocker refresh: larger DON'T BE LATE polaroid + a pre-dawn
+   wing view behind the flight deck ("leave home early" energy) */
+.tb-pagehead__polaroid {
+  width: 320px;
+  height: 235px;
+  border-width: 10px;
+  border-bottom-width: 38px;
+}
+@media (max-width: 1200px) {
+  .tb-pagehead__polaroid { width: 260px; height: 190px; border-bottom-width: 30px; }
+}
+.tb-hero {
+  background:
+    linear-gradient(100deg, rgba(7, 14, 32, 0.92) 0%, rgba(7, 14, 32, 0.72) 52%, rgba(9, 20, 44, 0.45) 100%),
+    url('images/wing-dawn-dark.jpg') center 42% / cover no-repeat;
+}
+
+/* ============================================================
+   Timeblocker share card: save / share link / calendar export
+   ============================================================ */
+.tb-share {
+  margin-top: 2rem;
+  padding: 1.5rem 1.75rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: var(--radius-md);
+  box-shadow: 0 18px 44px -22px rgba(15, 48, 73, 0.4);
+}
+.tb-share__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--deep-navy);
+  margin-bottom: 0.3rem;
+}
+.tb-share__title svg { width: 20px; height: 20px; color: var(--horizon-blue); flex: none; }
+.tb-share__hint { color: var(--text-muted); font-size: 0.9rem; max-width: 62ch; margin-bottom: 1.1rem; }
+
+.tb-share__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.7rem;
+}
+.tb-share__date {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.tb-share__date input {
+  border: 1.5px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--deep-navy);
+  background: #FFF;
+  min-height: 44px;
+}
+.tb-share__date input:focus { outline: 2px solid var(--horizon-blue); outline-offset: 1px; }
+
+.tb-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.1rem;
+  min-height: 44px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border-soft);
+  background: #FFF;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--deep-navy);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+}
+.tb-share-btn svg { width: 17px; height: 17px; flex: none; }
+.tb-share-btn:hover { transform: translateY(-2px); border-color: var(--horizon-blue); box-shadow: 0 10px 20px -12px rgba(15, 48, 73, 0.4); }
+.tb-share-btn:active { transform: scale(0.97); }
+.tb-share-btn--primary {
+  background: var(--horizon-blue);
+  border-color: var(--horizon-blue);
+  color: #FFF;
+}
+.tb-share-btn--primary:hover { background: #0B93D1; }
+
+.tb-share__status {
+  min-height: 1.3em;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--phase-inflight);
+}
+@media (max-width: 640px) {
+  .tb-share__controls { align-items: stretch; flex-direction: column; }
+  .tb-share-btn { justify-content: center; }
+}
+.tb-share__url {
+  width: min(100%, 380px);
+  border: 1.5px solid var(--horizon-blue);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--deep-navy);
+  background: #FFF;
+}
+
+/* ============================================================
+   Flight-deck hero v2: boarding time + flight day side by side,
+   share/export tools as a slim strip in the hero footer
+   ============================================================ */
+.tb-hero__fields {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+.tb-date-input {
+  display: block;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  min-height: 46px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #FFF;
+  color-scheme: dark;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.tb-date-input:hover { border-color: rgba(255, 255, 255, 0.7); }
+.tb-date-input:focus { outline: 2px solid var(--horizon-blue); outline-offset: 2px; }
+.tb-date-input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.8; cursor: pointer; }
+
+.tb-hero__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+.tb-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  min-height: 42px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.07);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.tb-tool-btn svg { width: 16px; height: 16px; flex: none; }
+.tb-tool-btn:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.8); background: rgba(255, 255, 255, 0.14); }
+.tb-tool-btn:active { transform: scale(0.97); }
+.tb-tool-btn--primary {
+  background: var(--horizon-blue);
+  border-color: var(--horizon-blue);
+}
+.tb-tool-btn--primary:hover { background: #0B93D1; border-color: #0B93D1; }
+
+.tb-hero__status {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #9FE3C0;
+  margin-left: auto;
+}
+.tb-hero__status .tb-share__url {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+@media (max-width: 640px) {
+  .tb-hero__fields { justify-content: flex-start; }
+  .tb-hero__status { margin-left: 0; width: 100%; }
+}
+
+/* ============================================================
+   Timeblocker v3: matched stacked selectors, visible drop
+   targets, and "at the same time" paired activities
+   ============================================================ */
+
+/* ---- Flight day above Boarding time, identical sizing ---- */
+.tb-hero__fields {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  width: 210px;
+}
+.tb-hero__fields .tb-hero__flight { width: 100%; }
+.tb-time-field { width: 100%; }
+.tb-date-input,
+.tb-time-display {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #FFF;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.tb-date-input:hover,
+.tb-time-display:hover { border-color: rgba(255, 255, 255, 0.75); background: rgba(255, 255, 255, 0.16); }
+.tb-date-input:focus,
+.tb-time-display:focus-visible { outline: 2px solid var(--horizon-blue); outline-offset: 2px; }
+.tb-time-display svg { width: 17px; height: 17px; flex: none; opacity: 0.85; }
+@media (max-width: 640px) {
+  .tb-hero__fields { width: 100%; }
+}
+
+/* ---- Drag affordances: bigger grips, lifted ghost ---- */
+.tb-block__handle {
+  padding: 8px 6px;
+  margin: -4px 0 -4px -4px;
+  font-size: 16px;
+  cursor: grab;
+  border-radius: 8px;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.tb-block__handle:hover { background: var(--sky-pale); color: var(--deep-navy); }
+.tb-block__icon--grab { cursor: grab; }
+.tb-block__handle:active, .tb-block__icon--grab:active { cursor: grabbing; }
+.tb-block.is-dragging { opacity: 0.35; transform: scale(0.985); }
+.tb-activity-card.is-lifting { opacity: 0.45; border-style: solid; border-color: var(--horizon-blue); }
+
+/* ---- Insertion bar: exactly where the step will land ---- */
+.tb-drop-bar {
+  position: relative;
+  height: 6px;
+  margin: 4px 0 10px 28px;
+  border-radius: 6px;
+  background: var(--horizon-blue);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.22), 0 0 14px rgba(14, 165, 233, 0.55);
+  animation: drop-bar-pulse 0.9s ease-in-out infinite;
+  pointer-events: none;
+}
+.tb-drop-bar__plane {
+  position: absolute;
+  left: -26px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--horizon-blue);
+  color: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tb-drop-bar__plane svg { width: 12px; height: 12px; }
+@keyframes drop-bar-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* ---- "At the same time" pair drop hint ---- */
+.tb-block { position: relative; }
+.tb-block.pair-hint::after {
+  content: "\29C9  Drop to do both at the same time";
+  position: absolute;
+  inset: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14, 116, 177, 0.14);
+  backdrop-filter: blur(1.5px);
+  border: 2.5px dashed var(--horizon-blue);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--horizon-blue);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ---- Paired (duo) step ---- */
+.tb-block--duo { border-left-width: 4px; }
+.tb-block--duo::before {
+  height: 24px;
+  border-radius: 6px;
+  top: 14px;
+}
+.tb-pair {
+  display: block;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 2px dashed var(--border-soft);
+}
+.tb-pair__tie {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--horizon-blue);
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  margin-bottom: 8px;
+}
+.tb-pair__tie svg { width: 13px; height: 13px; }
+.tb-pair__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tb-pair__icon { width: 30px; height: 30px; border-radius: 8px; }
+.tb-pair__icon svg { width: 15px; height: 15px; }
+.tb-pair__title {
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--deep-navy);
+  flex: 1;
+  min-width: 60px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tb-pair__title:focus { outline: 1.5px solid var(--horizon-blue); background: var(--sky-mist); }
+.tb-pair__range { flex: 1; min-width: 60px; accent-color: var(--horizon-blue); height: 4px; }
+.tb-pair__mins { font-size: 0.78rem; color: var(--text-muted); min-width: 32px; text-align: right; }
+.tb-pair__split {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1.5px solid var(--border-soft);
+  background: #FFF;
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+.tb-pair__split svg { width: 12px; height: 12px; }
+.tb-pair__split:hover { border-color: var(--horizon-blue); color: var(--horizon-blue); }
+
+@media (max-width: 560px) {
+  .tb-pair__item { flex-wrap: wrap; }
+  .tb-pair__range { min-width: 100%; order: 4; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-drop-bar { animation: none; }
+}
+
+/* ============================================================
+   Flight-deck polish: side-opening time picker + bigger
+   leave-home time
+   ============================================================ */
+/* The picker opens BESIDE the boarding field (into the hero's
+   open space) so it never covers Flight day or the toolbar.
+   JS adds --below when there's no side room (mobile). */
+.tb-time-popover {
+  top: auto;
+  bottom: -2px;
+  right: calc(100% + 12px);
+  left: auto;
+}
+.tb-time-popover--below {
+  top: calc(100% + 8px);
+  bottom: auto;
+  right: 0;
+}
+
+.tb-hero__leave-time {
+  font-size: clamp(3.4rem, 6.5vw, 4.8rem);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 470">
+  <rect width="520" height="470" fill="#FFFFFF"/>
+  <path d="M110,340 C160,300 230,280 300,290" stroke="#BFE3F7" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <path d="M90,300 C150,255 235,232 320,245" stroke="#4FA8DC" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <g transform="translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)">
+    <path d="M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z" fill="#1B6FA8"/>
+  </g>
+  <g fill="#DCEFFB" opacity="0.9">
+    <ellipse cx="115" cy="175" rx="26" ry="18"/>
+    <ellipse cx="145" cy="158" rx="30" ry="22"/>
+    <ellipse cx="178" cy="170" rx="24" ry="17"/>
+    <rect x="95" y="172" width="105" height="26" rx="13"/>
+  </g>
+  <g fill="#EAF6FD" opacity="0.85">
+    <ellipse cx="398" cy="345" rx="16" ry="11"/>
+    <ellipse cx="415" cy="335" rx="19" ry="14"/>
+    <ellipse cx="433" cy="344" rx="15" ry="10"/>
+    <rect x="385" y="342" width="65" height="16" rx="8"/>
+  </g>
+  <text x="260" y="404" font-family="'Quicksand', 'Century Gothic', Calibri, 'Trebuchet MS', sans-serif" font-size="42" font-weight="700" fill="#154360" text-anchor="middle" letter-spacing="5">FLY EASY</text>
+  <text x="260" y="432" font-family="'Quicksand', 'Century Gothic', Calibri, 'Trebuchet MS', sans-serif" font-size="14" font-weight="600" fill="#5DADE2" text-anchor="middle" letter-spacing="2">CALM SKIES, EASY TRAVEL</text>
+</svg>
