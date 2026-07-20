@@ -547,6 +547,18 @@
 
     var MAPS_NOTE = "Double-check Google Maps for traffic and current travel time.";
 
+    /* Notes aren't part of the saved/shared plan format (see
+       packActivity), so they're re-attached by title on restore —
+       otherwise a step's warning would vanish the moment the plan
+       round-trips through localStorage or a share link. */
+    var NOTE_BY_TITLE = {
+      "Security": SECURITY_NOTE,
+      "Subway / transit": MAPS_NOTE,
+      "Bus": MAPS_NOTE,
+      "Driving": MAPS_NOTE,
+      "Taxi / rideshare": MAPS_NOTE
+    };
+
     var SECTIONS = [
       { title: "The essentials", cat: "airport", items: [
           { key: "bagdrop", title: "Check in / Baggage Drop off", icon: "bag", minutes: 15 },
@@ -1144,11 +1156,13 @@
       return [x.title, x.cat, x.icon, x.minutes];
     }
     function unpackActivity(row) {
+      var title = String(row[0] || "Step").slice(0, 80);
       return {
-        title: String(row[0] || "Step").slice(0, 80),
+        title: title,
         cat: VALID_CATS[row[1]] ? row[1] : "airport",
         icon: ICONS[row[2]] ? row[2] : "flag",
-        minutes: Math.min(360, Math.max(1, parseInt(row[3], 10) || 10))
+        minutes: Math.min(360, Math.max(1, parseInt(row[3], 10) || 10)),
+        note: NOTE_BY_TITLE[title] || null
       };
     }
 
