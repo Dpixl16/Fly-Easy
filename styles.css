@@ -2937,3 +2937,91 @@ body[data-tod="dusk"] .filmstrip__label, body[data-tod="night"] .filmstrip__labe
   letter-spacing: -0.01em;
   line-height: 1;
 }
+
+/* ============================================================
+   Printable itinerary — a plain paper-friendly sheet, built from
+   the live plan and swapped in only for @media print. Everything
+   else (nav, sky/parallax layers, interactive timeline) is hidden
+   via visibility so the site's fixed decorative layers can't leak
+   into the printout.
+   ============================================================ */
+.tb-print-sheet { display: none; }
+
+@media print {
+  @page { margin: 0.7in; }
+
+  body * { visibility: hidden; }
+  .tb-print-sheet, .tb-print-sheet * { visibility: visible; }
+
+  .tb-print-sheet {
+    display: block;
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    background: #fff;
+    color: #16181c;
+    font-family: var(--font-body, Arial, sans-serif);
+  }
+
+  .tb-print-brand {
+    margin: 0 0 4px;
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 21px;
+    font-weight: 600;
+    color: #101214;
+  }
+  .tb-print-meta {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    color: #55585e;
+  }
+  .tb-print-leave {
+    display: inline-block;
+    margin: 0 0 20px;
+    padding: 9px 16px;
+    border: 1.5px solid #16181c;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .tb-print-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid #ccc;
+  }
+  .tb-print-row {
+    display: flex;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px solid #ccc;
+    break-inside: avoid;
+  }
+  .tb-print-row--board .tb-print-title { font-weight: 700; }
+  .tb-print-time {
+    flex: 0 0 68px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 13px;
+    padding-top: 1px;
+  }
+  .tb-print-body { flex: 1; font-size: 13px; line-height: 1.45; }
+  .tb-print-title { font-weight: 600; }
+  .tb-print-dur { color: #55585e; font-size: 12px; }
+  .tb-print-partner, .tb-print-note {
+    display: block;
+    margin-top: 2px;
+    font-size: 11.5px;
+  }
+  .tb-print-partner { color: #33363b; }
+  .tb-print-note { color: #9a3b1f; }
+
+  .tb-print-footer {
+    margin-top: 16px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+    font-size: 11px;
+    color: #55585e;
+  }
+}

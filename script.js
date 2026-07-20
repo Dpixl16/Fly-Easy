@@ -537,9 +537,11 @@
       warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg>'
     };
 
+    var SECURITY_NOTE = "Beware of unpredictable security times — double-check current wait times before you go.";
+
     var DEFAULTS = [
       { title: "Check in / Baggage Drop off", cat: "airport", icon: "bag", minutes: 15 },
-      { title: "Security", cat: "airport", icon: "shield", minutes: 20 },
+      { title: "Security", cat: "airport", icon: "shield", minutes: 20, note: SECURITY_NOTE },
       { title: "Walk to your gate", cat: "airport", icon: "walk", minutes: 8 }
     ];
 
@@ -548,7 +550,7 @@
     var SECTIONS = [
       { title: "The essentials", cat: "airport", items: [
           { key: "bagdrop", title: "Check in / Baggage Drop off", icon: "bag", minutes: 15 },
-          { key: "security2", title: "Security", icon: "shield", minutes: 20 },
+          { key: "security2", title: "Security", icon: "shield", minutes: 20, note: SECURITY_NOTE },
           { key: "walk2", title: "Walk to your gate", icon: "walk", minutes: 8 }
         ]
       },
@@ -678,6 +680,42 @@
     }
 
     function escapeAttr(s) { return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+
+    function formatDateLong(dateStr) {
+      if (!dateStr) return "";
+      var d = new Date(dateStr + "T00:00:00");
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+    }
+
+    /* Builds a plain, print-friendly itinerary from the current
+       blocks — kept separate from the interactive DOM so printing
+       doesn't fight the site's fixed sky/parallax layers. */
+    function buildPrintSheet() {
+      var sheet = document.getElementById("tb-printSheet");
+      if (!sheet) return;
+      var dateStr = (dateInput && dateInput.value) || todayStr();
+      var leaveText = blocks.length ? formatDisplay(blocks[0].start) : "—";
+
+      var rowsHTML = blocks.map(function (b) {
+        var body = '<span class="tb-print-title">' + escapeAttr(b.title) + '</span> <span class="tb-print-dur">(' + b.minutes + ' min)</span>';
+        if (b.partner) {
+          body += '<span class="tb-print-partner">+ ' + escapeAttr(b.partner.title) + " (" + b.partner.minutes + " min, at the same time)</span>";
+        }
+        if (b.note) body += '<span class="tb-print-note">' + escapeAttr(b.note) + "</span>";
+        if (b.partner && b.partner.note) body += '<span class="tb-print-note">' + escapeAttr(b.partner.note) + "</span>";
+        return '<li class="tb-print-row"><span class="tb-print-time">' + formatDisplay(b.start) + '</span><span class="tb-print-body">' + body + "</span></li>";
+      }).join("");
+
+      rowsHTML += '<li class="tb-print-row tb-print-row--board"><span class="tb-print-time">' + formatDisplay(boardingMin()) + '</span><span class="tb-print-body"><span class="tb-print-title">Boarding</span></span></li>';
+
+      sheet.innerHTML =
+        '<p class="tb-print-brand">Fly Easy — Flight Day Plan</p>' +
+        '<p class="tb-print-meta">' + formatDateLong(dateStr) + "</p>" +
+        '<p class="tb-print-leave">Leave home by ' + leaveText + "</p>" +
+        '<ol class="tb-print-list">' + rowsHTML + "</ol>" +
+        '<p class="tb-print-footer">Estimates only — times can shift with traffic and lines. Confirm your gate on the airport monitors before you go.</p>';
+    }
 
     function render() {
       timelineEl.innerHTML = '<div class="tb-timeline__rail" aria-hidden="true"></div>';
@@ -1348,6 +1386,14 @@
         a.remove();
         window.setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
         flashStatus("Calendar file downloaded — opens in Apple & Outlook, imports into Google Calendar ✓");
+      });
+    }
+
+    var printBtn = document.getElementById("tb-printBtn");
+    if (printBtn) {
+      printBtn.addEventListener("click", function () {
+        buildPrintSheet();
+        window.print();
       });
     }
 
