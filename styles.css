@@ -29,6 +29,9 @@
   --phase-arrival-tint: #FCEADD;
   --tip-highlight: #B8791F;
   --tip-highlight-tint: #FBF1DD;
+  /* Distinct from --tip-highlight so "Food & drink" and "Relax &
+     explore" don't read as the same muddy amber in the sidebar. */
+  --heading-explore: #9C3D5E;
   --warning-red: #B42318;
   --warning-red-tint: #FCEAE8;
 
@@ -1683,6 +1686,29 @@ ul { margin: 0; padding: 0; list-style: none; }
 .tb-block__note { display: flex; align-items: flex-start; gap: 6px; margin-top: 8px; padding: 6px 8px; border-radius: 8px; background: var(--warning-red-tint); color: var(--warning-red); font-size: 0.72rem; font-weight: 600; line-height: 1.4; }
 .tb-block__note svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 1px; }
 
+@media (max-width: 640px) {
+  /* The name gets top billing: it keeps the first line (with
+     remove button), and the time drops to its own small, muted
+     line underneath instead of squeezing beside a long name. */
+  .tb-block__top { flex-wrap: wrap; }
+  .tb-block__title { order: 1; font-size: 1.02rem; }
+  .tb-block__remove { order: 2; }
+  .tb-block__time-input {
+    order: 3;
+    flex: 1 0 100%;
+    margin-top: 2px;
+    font-size: 0.72rem;
+    padding: 2px 6px;
+  }
+
+  /* The warning reclaims the width the icon column would
+     otherwise take, so it wraps to far fewer lines. */
+  .tb-block__note {
+    margin-left: -89px;
+    width: calc(100% + 89px);
+  }
+}
+
 .tb-timeline__end-drop { height: 14px; margin: -6px 0 12px 0; border-radius: 8px; }
 .tb-timeline__end-drop.drag-over { background: var(--sky-pale); outline: 1.5px dashed var(--horizon-blue); }
 
@@ -1700,7 +1726,16 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 .tb-activities__heading { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; margin: 0 0 4px; }
 .tb-activities__hint { font-size: 0.78rem; color: var(--text-muted); margin: 0 0 1.1rem; }
-.tb-activity-section__title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
+.tb-activity-section__title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 1.4rem 0 8px; }
+.tb-activity-section__title:first-child { margin-top: 0; }
+/* Colors driven by class (not inline style) so the night-mode
+   override below can actually win the cascade. */
+.tb-cat-title-going { color: var(--phase-predeparture); }
+.tb-cat-title-airport { color: var(--phase-departure); }
+.tb-cat-title-gate { color: var(--phase-inflight); }
+.tb-cat-title-food { color: var(--tip-highlight); }
+.tb-cat-title-explore { color: var(--heading-explore); }
+.tb-cat-title-none { color: var(--deep-navy); }
 .tb-activity-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .tb-activity-card {
   display: flex; align-items: center; gap: 6px;
@@ -2815,7 +2850,7 @@ body[data-tod="dusk"] .filmstrip__label, body[data-tod="night"] .filmstrip__labe
 /* ---- "At the same time" pair drop hint ---- */
 .tb-block { position: relative; }
 .tb-block.pair-hint::after {
-  content: "\29C9  Drop to do both at the same time";
+  content: "\29C9  Drop to do this at the same time";
   position: absolute;
   inset: -2px;
   display: flex;
@@ -2866,6 +2901,7 @@ body[data-tod="dusk"] .filmstrip__label, body[data-tod="night"] .filmstrip__labe
   align-items: center;
   gap: 8px;
 }
+.tb-pair__item + .tb-pair__item { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-soft); }
 .tb-pair__icon { width: 30px; height: 30px; border-radius: 8px; }
 .tb-pair__icon svg { width: 15px; height: 15px; }
 .tb-pair__title {

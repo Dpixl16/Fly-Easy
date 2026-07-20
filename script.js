@@ -534,7 +534,14 @@
       train: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="4" width="14" height="13" rx="3"/><path d="M5 12h14M9 17l-2 3M15 17l2 3"/><circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/></svg>',
       bus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 11h18M6 6V4h12v2"/><circle cx="7" cy="18" r="1.4" fill="currentColor" stroke="none"/><circle cx="17" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg>',
       taxi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="10" y="6" width="4" height="2.4" rx="0.5"/><path d="M4 16l1.5-5.5A2 2 0 017.4 9h9.2a2 2 0 011.9 1.5L20 16"/><rect x="3" y="16" width="18" height="4" rx="1.5"/><circle cx="7.5" cy="20" r="1.3" fill="currentColor" stroke="none"/><circle cx="16.5" cy="20" r="1.3" fill="currentColor" stroke="none"/></svg>',
-      warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg>'
+      warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg>',
+      parking: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9.2 16V8h3a2.4 2.4 0 010 4.8H9.2"/></svg>',
+      passport: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="2.3"/><path d="M9 16h6M8 19h8"/></svg>',
+      printer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V4h12v5"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v6H7z"/></svg>',
+      coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.3 15.2c0 1 1.1 1.8 2.7 1.8 1.9 0 3-1 3-2.3 0-3-5.7-1.5-5.7-4.4 0-1.3 1.2-2.3 3-2.3 1.6 0 2.6.7 2.7 1.7"/></svg>',
+      meal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.1"/></svg>',
+      stretch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="4.2" r="1.6" fill="currentColor" stroke="none"/><path d="M12 8v5M8 6.5l4 2 4-2M8 20l4-7 4 7"/></svg>',
+      headphones: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14.5v-2a8 8 0 0116 0v2"/><rect x="3" y="13.2" width="4.2" height="6.2" rx="1.5"/><rect x="16.8" y="13.2" width="4.2" height="6.2" rx="1.5"/></svg>'
     };
 
     var SECURITY_NOTE = "Beware of unpredictable security times — double-check current wait times before you go.";
@@ -556,42 +563,54 @@
       "Subway / transit": MAPS_NOTE,
       "Bus": MAPS_NOTE,
       "Driving": MAPS_NOTE,
-      "Taxi / rideshare": MAPS_NOTE
+      "Taxi / rideshare": MAPS_NOTE,
+      "Curbside drop-off": MAPS_NOTE
     };
 
+    /* Ordered to follow the actual shape of a travel day: get
+       there, clear the required steps, handle logistics, then
+       eat and unwind. */
     var SECTIONS = [
-      { title: "The essentials", cat: "airport", items: [
-          { key: "bagdrop", title: "Check in / Baggage Drop off", icon: "bag", minutes: 15 },
-          { key: "security2", title: "Security", icon: "shield", minutes: 20, note: SECURITY_NOTE },
-          { key: "walk2", title: "Walk to your gate", icon: "walk", minutes: 8 }
-        ]
-      },
       { title: "Getting to the airport", cat: "going", items: [
           { key: "subway", title: "Subway / transit", icon: "train", minutes: 25, note: MAPS_NOTE },
           { key: "bus", title: "Bus", icon: "bus", minutes: 30, note: MAPS_NOTE },
           { key: "driving", title: "Driving", icon: "car", minutes: 30, note: MAPS_NOTE },
-          { key: "taxi", title: "Taxi / rideshare", icon: "taxi", minutes: 25, note: MAPS_NOTE }
+          { key: "taxi", title: "Taxi / rideshare", icon: "taxi", minutes: 25, note: MAPS_NOTE },
+          { key: "parking", title: "Parking", icon: "parking", minutes: 10 },
+          { key: "dropoff", title: "Curbside drop-off", icon: "pin", minutes: 5, note: MAPS_NOTE }
+        ]
+      },
+      { title: "The essentials", cat: "airport", items: [
+          { key: "bagdrop", title: "Check in / Baggage Drop off", icon: "bag", minutes: 15 },
+          { key: "passport", title: "Passport control", icon: "passport", minutes: 15 },
+          { key: "security2", title: "Security", icon: "shield", minutes: 20, note: SECURITY_NOTE },
+          { key: "walk2", title: "Walk to your gate", icon: "walk", minutes: 8 }
+        ]
+      },
+      { title: "Errands", cat: "gate", items: [
+          { key: "restroom", title: "Restroom", icon: "restroom", minutes: 5 },
+          { key: "charging", title: "Charge devices", icon: "battery", minutes: 10 },
+          { key: "printing", title: "Print documents", icon: "printer", minutes: 5 },
+          { key: "currency", title: "Currency exchange", icon: "coin", minutes: 10 },
+          { key: "shopping", title: "Shopping", icon: "cart", minutes: 15 },
+          { key: "work", title: "Work", icon: "laptop", minutes: 20 }
         ]
       },
       { title: "Food & drink", cat: "food", items: [
           { key: "coffee", title: "Coffee", icon: "cup", minutes: 10 },
           { key: "food", title: "Grab food", icon: "fork", minutes: 20 },
+          { key: "meal", title: "Sit-down meal", icon: "meal", minutes: 30 },
           { key: "water", title: "Water refill", icon: "droplet", minutes: 5 }
         ]
       },
       { title: "Relax & explore", cat: "explore", items: [
           { key: "relax", title: "Time to relax", icon: "couch", minutes: 15 },
+          { key: "stretch", title: "Stretch / walk", icon: "stretch", minutes: 10 },
+          { key: "music", title: "Listen to music / podcast", icon: "headphones", minutes: 15 },
           { key: "lounge", title: "Airport lounge", icon: "star", minutes: 30 },
           { key: "planespotting", title: "Planespotting", icon: "eye", minutes: 10 },
           { key: "pictures", title: "Taking pictures", icon: "camera", minutes: 10 },
           { key: "explore", title: "Explore", icon: "compass", minutes: 15 }
-        ]
-      },
-      { title: "Errands", cat: "gate", items: [
-          { key: "shopping", title: "Shopping", icon: "cart", minutes: 15 },
-          { key: "restroom", title: "Restroom", icon: "restroom", minutes: 5 },
-          { key: "charging", title: "Charge devices", icon: "battery", minutes: 10 },
-          { key: "work", title: "Work", icon: "laptop", minutes: 20 }
         ]
       }
     ];
@@ -634,10 +653,18 @@
       return parseTime(boardingInput.value || "17:30");
     }
 
-    /* A block with a .partner runs two activities at once —
-       the schedule reserves the LONGER of the two durations. */
+    /* A block can carry up to 2 .partners (3 activities running
+       at once, total) — the schedule reserves the LONGEST of the
+       durations happening in that slot. */
+    var MAX_SIMULTANEOUS = 3;
     function effMinutes(b) {
-      return b.partner ? Math.max(b.minutes, b.partner.minutes) : b.minutes;
+      var m = b.minutes;
+      if (b.partners) {
+        for (var i = 0; i < b.partners.length; i++) {
+          if (b.partners[i].minutes > m) m = b.partners[i].minutes;
+        }
+      }
+      return m;
     }
 
     function cascadeBackwardFrom(index) {
@@ -680,8 +707,13 @@
         var timeInput = row.querySelector(".tb-block__time-input");
         if (document.activeElement !== timeInput) timeInput.value = format24(b.start);
         row.querySelector(".tb-block__mins").textContent = b.minutes + "m";
-        var pairMins = row.querySelector(".tb-pair__mins");
-        if (pairMins && b.partner) pairMins.textContent = b.partner.minutes + "m";
+        if (b.partners) {
+          row.querySelectorAll(".tb-pair__item").forEach(function (itemEl) {
+            var pi = parseInt(itemEl.dataset.pIndex, 10);
+            var mins = itemEl.querySelector(".tb-pair__mins");
+            if (mins && b.partners[pi]) mins.textContent = b.partners[pi].minutes + "m";
+          });
+        }
       });
     }
 
@@ -711,11 +743,17 @@
 
       var rowsHTML = blocks.map(function (b) {
         var body = '<span class="tb-print-title">' + escapeAttr(b.title) + '</span> <span class="tb-print-dur">(' + b.minutes + ' min)</span>';
-        if (b.partner) {
-          body += '<span class="tb-print-partner">+ ' + escapeAttr(b.partner.title) + " (" + b.partner.minutes + " min, at the same time)</span>";
+        if (b.partners) {
+          b.partners.forEach(function (p) {
+            body += '<span class="tb-print-partner">+ ' + escapeAttr(p.title) + " (" + p.minutes + " min, at the same time)</span>";
+          });
         }
         if (b.note) body += '<span class="tb-print-note">' + escapeAttr(b.note) + "</span>";
-        if (b.partner && b.partner.note) body += '<span class="tb-print-note">' + escapeAttr(b.partner.note) + "</span>";
+        if (b.partners) {
+          b.partners.forEach(function (p) {
+            if (p.note) body += '<span class="tb-print-note">' + escapeAttr(p.note) + "</span>";
+          });
+        }
         return '<li class="tb-print-row"><span class="tb-print-time">' + formatDisplay(b.start) + '</span><span class="tb-print-body">' + body + "</span></li>";
       }).join("");
 
@@ -734,28 +772,34 @@
       blocks.forEach(function (b) {
         var row = document.createElement("div");
         row.className = "tb-block";
-        if (b.partner) row.classList.add("tb-block--duo");
+        var hasPartners = b.partners && b.partners.length;
+        if (hasPartners) row.classList.add("tb-block--duo");
         row.dataset.id = b.id;
         row.classList.add("tb-cat-" + b.cat);
         row.style.borderLeftColor = getComputedStyle(row).color;
         var pairHTML = "";
-        if (b.partner) {
+        if (hasPartners) {
+          var itemsHTML = b.partners.map(function (p, pi) {
+            return (
+              '<span class="tb-pair__item" data-p-index="' + pi + '">' +
+                '<span class="tb-block__icon tb-pair__icon tb-cat-' + p.cat + '">' + ICONS[p.icon] + '</span>' +
+                '<input class="tb-pair__title" value="' + escapeAttr(p.title) + '" aria-label="Simultaneous activity name">' +
+                '<input type="range" class="tb-pair__range" min="0" max="120" step="5" value="' + p.minutes + '" aria-label="Simultaneous activity duration">' +
+                '<span class="tb-pair__mins">' + p.minutes + 'm</span>' +
+                '<button class="tb-pair__split" type="button" title="Split into its own step">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 7l-4 5 4 5M16 7l4 5-4 5"/></svg>' +
+                  'Split' +
+                '</button>' +
+              '</span>'
+            );
+          }).join("");
           pairHTML =
             '<span class="tb-pair">' +
               '<span class="tb-pair__tie">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 12h8M12 8v8"/><circle cx="12" cy="12" r="9"/></svg>' +
                 'At the same time' +
               '</span>' +
-              '<span class="tb-pair__item">' +
-                '<span class="tb-block__icon tb-pair__icon tb-cat-' + b.partner.cat + '">' + ICONS[b.partner.icon] + '</span>' +
-                '<input class="tb-pair__title" value="' + escapeAttr(b.partner.title) + '" aria-label="Simultaneous activity name">' +
-                '<input type="range" class="tb-pair__range" min="0" max="120" step="5" value="' + b.partner.minutes + '" aria-label="Simultaneous activity duration">' +
-                '<span class="tb-pair__mins">' + b.partner.minutes + 'm</span>' +
-                '<button class="tb-pair__split" type="button" title="Split into its own step">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 7l-4 5 4 5M16 7l4 5-4 5"/></svg>' +
-                  'Split' +
-                '</button>' +
-              '</span>' +
+              itemsHTML +
             '</span>';
         }
         row.innerHTML =
@@ -794,21 +838,25 @@
           updateDisplay();
         });
 
-        if (b.partner) {
-          row.querySelector(".tb-pair__title").addEventListener("input", function (e) { b.partner.title = e.target.value; });
-          row.querySelector(".tb-pair__range").addEventListener("input", function (e) {
-            b.partner.minutes = parseInt(e.target.value, 10);
-            var idx = blocks.findIndex(function (x) { return x.id === b.id; });
-            recalcFromIndex(idx);
-            updateDisplay();
-          });
-          row.querySelector(".tb-pair__split").addEventListener("click", function () {
-            var idx = blocks.findIndex(function (x) { return x.id === b.id; });
-            var p = b.partner;
-            b.partner = null;
-            blocks.splice(idx + 1, 0, { id: "b" + (nextId++), title: p.title, cat: p.cat, icon: p.icon, minutes: p.minutes, note: p.note || null });
-            resequenceFromBoarding();
-            render();
+        if (hasPartners) {
+          row.querySelectorAll(".tb-pair__item").forEach(function (itemEl) {
+            var pi = parseInt(itemEl.dataset.pIndex, 10);
+            itemEl.querySelector(".tb-pair__title").addEventListener("input", function (e) {
+              b.partners[pi].title = e.target.value;
+            });
+            itemEl.querySelector(".tb-pair__range").addEventListener("input", function (e) {
+              b.partners[pi].minutes = parseInt(e.target.value, 10);
+              var idx = blocks.findIndex(function (x) { return x.id === b.id; });
+              recalcFromIndex(idx);
+              updateDisplay();
+            });
+            itemEl.querySelector(".tb-pair__split").addEventListener("click", function () {
+              var idx = blocks.findIndex(function (x) { return x.id === b.id; });
+              var p = b.partners.splice(pi, 1)[0];
+              blocks.splice(idx + 1, 0, { id: "b" + (nextId++), title: p.title, cat: p.cat, icon: p.icon, minutes: p.minutes, note: p.note || null });
+              resequenceFromBoarding();
+              render();
+            });
           });
         }
 
@@ -857,10 +905,12 @@
     }
 
     function canPairWith(targetBlock) {
-      if (!dragPayload || targetBlock.partner) return false;
+      if (!dragPayload) return false;
+      var count = 1 + (targetBlock.partners ? targetBlock.partners.length : 0);
+      if (count >= MAX_SIMULTANEOUS) return false;
       if (dragPayload.type === "move") {
         var src = draggedBlock();
-        if (!src || src.id === targetBlock.id || src.partner) return false;
+        if (!src || src.id === targetBlock.id || (src.partners && src.partners.length)) return false;
       }
       return true;
     }
@@ -914,13 +964,14 @@
 
       if (spot.mode === "pair") {
         var target = spot.block;
+        target.partners = target.partners || [];
         if (payload.type === "new") {
-          target.partner = { title: payload.item.title, cat: payload.item.cat, icon: payload.item.icon, minutes: payload.item.minutes, note: payload.item.note || null };
+          target.partners.push({ title: payload.item.title, cat: payload.item.cat, icon: payload.item.icon, minutes: payload.item.minutes, note: payload.item.note || null });
         } else {
           var srcIdx = blocks.findIndex(function (x) { return x.id === payload.id; });
           if (srcIdx === -1) return;
           var src = blocks.splice(srcIdx, 1)[0];
-          target.partner = { title: src.title, cat: src.cat, icon: src.icon, minutes: src.minutes, note: src.note || null };
+          target.partners.push({ title: src.title, cat: src.cat, icon: src.icon, minutes: src.minutes, note: src.note || null });
         }
         resequenceFromBoarding();
         render();
@@ -950,14 +1001,9 @@
       activitySectionsEl.innerHTML = "";
       SECTIONS.forEach(function (section) {
         var titleEl = document.createElement("p");
-        titleEl.className = "tb-activity-section__title";
-        titleEl.style.color = section.cat ? ("var(--phase-predeparture)") : "var(--deep-navy)";
-        titleEl.classList.add("tb-cat-title-" + (section.cat || "none"));
+        titleEl.className = "tb-activity-section__title tb-cat-title-" + (section.cat || "none");
         activitySectionsEl.appendChild(titleEl);
         titleEl.textContent = section.title;
-
-        var catVarMap = { going: "var(--phase-predeparture)", airport: "var(--phase-departure)", gate: "var(--phase-inflight)", food: "var(--tip-highlight)", explore: "var(--phase-arrival)" };
-        titleEl.style.color = section.cat ? catVarMap[section.cat] : "var(--deep-navy)";
 
         var grid = document.createElement("div");
         grid.className = "tb-activity-grid";
@@ -1141,7 +1187,6 @@
     var VALID_CATS = { airport: 1, going: 1, food: 1, explore: 1, gate: 1 };
     var dateInput = document.getElementById("tb-flightDate");
     var statusEl = document.getElementById("tb-shareStatus");
-    var gcalBtn = document.getElementById("tb-gcalBtn");
     var saveTimer = null;
     var statusTimer = null;
 
@@ -1173,7 +1218,7 @@
         d: (dateInput && dateInput.value) || todayStr(),
         s: blocks.map(function (x) {
           var row = packActivity(x);
-          if (x.partner) row.push(packActivity(x.partner));
+          if (x.partners) x.partners.forEach(function (p) { row.push(packActivity(p)); });
           return row;
         })
       };
@@ -1185,7 +1230,13 @@
       blocks = plan.s.slice(0, 30).map(function (row) {
         var blk = unpackActivity(row);
         blk.id = "b" + (nextId++);
-        if (Array.isArray(row[4])) blk.partner = unpackActivity(row[4]);
+        /* row[4]/row[5] hold up to 2 packed partners (older links
+           only ever had one, at row[4] — this still reads those). */
+        var partners = [];
+        for (var i = 4; i < row.length && partners.length < MAX_SIMULTANEOUS - 1; i++) {
+          if (Array.isArray(row[i])) partners.push(unpackActivity(row[i]));
+        }
+        if (partners.length) blk.partners = partners;
         return blk;
       });
       boardingInput.value = plan.b;
@@ -1264,8 +1315,10 @@
         addEvent("leave", "✈️ Leave home — Fly Easy plan", leaveMin, leaveMin + 5, 15);
         blocks.forEach(function (b, i) {
           addEvent("step" + i, b.title, b.start, b.start + b.minutes);
-          if (b.partner) {
-            addEvent("step" + i + "p", b.partner.title + " (at the same time)", b.start, b.start + b.partner.minutes);
+          if (b.partners) {
+            b.partners.forEach(function (p, pi) {
+              addEvent("step" + i + "p" + pi, p.title + " (at the same time)", b.start, b.start + p.minutes);
+            });
           }
         });
         addEvent("board", "Boarding", boardingRawMin(), boardingRawMin() + 15);
@@ -1284,63 +1337,8 @@
       return m;
     }
 
-    /* Google Calendar has no multi-event URL, so the button walks
-       the plan one event per click — each click opens one
-       pre-filled Google tab, and the label counts you through. */
-    var gcalQueue = [];
-    var gcalIdx = 0;
-    var gcalLabel = document.getElementById("tb-gcalLabel");
-
-    function buildGcalQueue() {
-      var ev = [];
-      if (!blocks.length) return ev;
-      ev.push({ t: "✈️ Leave home — Fly Easy plan", s: blocks[0].start, e: blocks[0].start + 15 });
-      blocks.forEach(function (b) {
-        ev.push({ t: b.title, s: b.start, e: b.start + b.minutes });
-        if (b.partner) ev.push({ t: b.partner.title + " (at the same time)", s: b.start, e: b.start + b.partner.minutes });
-      });
-      ev.push({ t: "Boarding", s: boardingRawMin(), e: boardingRawMin() + 15 });
-      return ev;
-    }
-
-    function gcalHrefFor(ev) {
-      var dateStr = (dateInput && dateInput.value) || todayStr();
-      return "https://calendar.google.com/calendar/render?action=TEMPLATE" +
-        "&text=" + encodeURIComponent(ev.t) +
-        "&dates=" + fmtLocalDT(dateStr, ev.s) + "/" + fmtLocalDT(dateStr, ev.e) +
-        "&details=" + encodeURIComponent("Planned with Fly Easy Timeblocker");
-    }
-
-    function updateGcalLink() {
-      if (!gcalBtn) return;
-      gcalQueue = buildGcalQueue();
-      gcalIdx = 0;
-      if (!gcalQueue.length) return;
-      gcalBtn.href = gcalHrefFor(gcalQueue[0]);
-      if (gcalLabel) gcalLabel.textContent = "Google Calendar (" + gcalQueue.length + " events)";
-    }
-
-    if (gcalBtn) {
-      gcalBtn.addEventListener("click", function () {
-        /* the browser opens the current href; queue up the next event */
-        window.setTimeout(function () {
-          gcalIdx++;
-          if (gcalIdx < gcalQueue.length) {
-            gcalBtn.href = gcalHrefFor(gcalQueue[gcalIdx]);
-            if (gcalLabel) gcalLabel.textContent = "Add next event (" + (gcalIdx + 1) + "/" + gcalQueue.length + ")";
-            flashStatus("Event " + gcalIdx + " of " + gcalQueue.length + " opened — save it, then keep clicking to add the rest.");
-          } else {
-            if (gcalLabel) gcalLabel.textContent = "All " + gcalQueue.length + " opened ✓";
-            flashStatus("Every event opened in Google Calendar — hit Save on each tab.");
-            window.setTimeout(updateGcalLink, 5000);
-          }
-        }, 50);
-      });
-    }
-
     function savePlan() {
       try { localStorage.setItem(STORE_KEY, JSON.stringify(serializePlan())); } catch (e) {}
-      updateGcalLink();
     }
     function scheduleSave() {
       window.clearTimeout(saveTimer);
