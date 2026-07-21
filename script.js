@@ -129,7 +129,7 @@
       airlines: ["United Airlines", "Lufthansa", "ANA"],
       notes: [
         "🛬 <strong>Planespot at the end of G</strong> — an open-air terrace near Gate G14.",
-        "✨ <strong>\"Ceiling Flood\" light art, Level 2 (post-security)</strong> — Keith Sonnier's glowing neon installation overhead, a calm visual break near the G gates.",
+        "🚶 <strong>Budget extra walking time</strong> — Boarding Area G runs nearly 1,000 feet end to end, and connecting over from Terminal 3 alone is about a 6-minute walk.",
         "🍷 <strong>Mustards Bar &amp; Grill, Boarding Area G</strong> — sit-down Wine Country fare, open 7am–8pm, if you'd rather not eat at the gate."
       ]
     },
