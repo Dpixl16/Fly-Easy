@@ -242,6 +242,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--cloud-white);
   font-weight: 500;
 }
+/* Distinct warm accent so this stands apart from the regular nav
+   links — a deliberate "pop" rather than another blue/navy link. */
+.site-nav__links a.site-nav__cta {
+  background: var(--phase-arrival);
+  color: var(--cloud-white);
+  font-weight: 600;
+  margin-left: 0.2rem;
+}
+.site-nav__links a.site-nav__cta:hover { background: #A34F1D; color: var(--cloud-white); }
 
 /* ============================================================
    Buttons / links
@@ -1548,8 +1557,9 @@ ul { margin: 0; padding: 0; list-style: none; }
   .site-nav__inner { padding: 0.85rem 1.15rem; flex-wrap: wrap; row-gap: 0.5rem; }
   .site-nav__brand { white-space: nowrap; }
   .site-nav__word { font-size: 1.05rem; white-space: nowrap; }
-  .site-nav__links { font-size: 0.78rem; gap: 0.15rem; flex: 1 1 100%; }
+  .site-nav__links { font-size: 0.78rem; gap: 0.15rem; flex: 1 1 100%; flex-wrap: wrap; row-gap: 0.4rem; }
   .site-nav__links a { padding: 0.4rem 0.55rem; white-space: nowrap; }
+  .site-nav__links a.site-nav__cta { flex: 1 1 100%; margin-left: 0; text-align: center; }
   .container, .destinations, .page-header { padding-left: 0; padding-right: 0; }
   .container { padding: 0 1.15rem; }
   .hero__actions, .value-strip { flex-direction: column; align-items: flex-start; }
@@ -3061,3 +3071,90 @@ body[data-tod="dusk"] .filmstrip__label, body[data-tod="night"] .filmstrip__labe
     color: #55585e;
   }
 }
+
+/* ============================================================
+   Survey toast — bottom-right nudge to fill out the feedback form
+   ============================================================ */
+.survey-toast {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 500;
+  width: 300px;
+  max-width: calc(100vw - 2rem);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px rgba(15, 48, 73, 0.18);
+  padding: 1.1rem 1.25rem 1.25rem;
+  opacity: 0;
+  transform: translateY(16px) scale(0.98);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+  pointer-events: none;
+}
+.survey-toast.is-visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.survey-toast__close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--sky-mist);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.survey-toast__close svg { width: 13px; height: 13px; }
+.survey-toast__close:hover { background: var(--sky-pale); color: var(--deep-navy); }
+.survey-toast__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--deep-navy);
+  margin: 0 0 4px;
+  padding-right: 1.5rem;
+}
+.survey-toast__text {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0 0 0.9rem;
+}
+.survey-toast__cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--horizon-blue);
+  color: #FFF;
+  font-weight: 600;
+  font-size: 0.86rem;
+  text-decoration: none;
+  transition: background 0.2s var(--ease);
+}
+.survey-toast__cta:hover { background: #0B93D1; }
+
+@media (max-width: 480px) {
+  .survey-toast { left: 1rem; right: 1rem; width: auto; bottom: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .survey-toast { transition: opacity 0.2s linear; transform: none; }
+}
+
+/* Night mode: keep it legible against the dark sky too */
+body[data-tod="dusk"] .survey-toast,
+body[data-tod="night"] .survey-toast {
+  background: rgba(15, 48, 73, 0.92);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+body[data-tod="dusk"] .survey-toast__title, body[data-tod="night"] .survey-toast__title { color: #FFF; }
+body[data-tod="dusk"] .survey-toast__text, body[data-tod="night"] .survey-toast__text { color: rgba(255, 255, 255, 0.75); }
+body[data-tod="dusk"] .survey-toast__close, body[data-tod="night"] .survey-toast__close { background: rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.8); }

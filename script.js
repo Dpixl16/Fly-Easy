@@ -68,29 +68,29 @@
   function runTerminalExplorer(tabs) {
   var TERMINALS = {
     t1: {
-      eyebrow: "SFO · Boarding Area B",
+      eyebrow: "SFO · Boarding Areas B &amp; C",
       title: "Harvey Milk Terminal 1",
       badge: "Domestic",
       col1Label: "✈️ Main carriers",
       col2Label: "💆 Ease the stress here",
-      airlines: ["Alaska Airlines", "Southwest Airlines", "Sun Country"],
+      airlines: ["Alaska Airlines", "American Airlines", "Delta Air Lines", "Southwest Airlines"],
       notes: [
-        "🍜 <strong>Bun Mee, Gate B3</strong> — Bloomberg named it one of the best Vietnamese spots in any airport, worldwide.",
-        "🧸 <strong>\"Tree Town\" kids' spot, Gate B19</strong> — a padded, colorful play area to burn off energy before boarding.",
-        "🖼️ <strong>SFO Museum galleries throughout T1</strong> — rotating art and photography pre-security, plus \"Women of Afrofuturism\" post-security."
+        "🍜 <strong>Bun Mee, Terminal 1</strong> — a local favorite for Vietnamese bánh mì sandwiches, open early into the evening.",
+        "🧸 <strong>\"Tree Town\" kids' spot, Gate B18 (post-security)</strong> — a climbable structure carved from a reclaimed oak tree.",
+        "🖼️ <strong>SFO Museum galleries throughout T1</strong> — rotating art and photography pre-security, plus \"Women of Afrofuturism\" post-security (running through Oct. 2026)."
       ]
     },
     t2: {
-      eyebrow: "SFO · Boarding Areas C &amp; D",
+      eyebrow: "SFO · Boarding Area D",
       title: "Terminal 2",
       badge: "Domestic",
       col1Label: "✈️ Main carriers",
       col2Label: "💆 Ease the stress here",
-      airlines: ["American Airlines", "Delta Air Lines"],
+      airlines: ["Air Canada", "Breeze Airways", "WestJet"],
       notes: [
-        "🛬 <strong>Free planespotting before security</strong> — the SkyTerrace deck is landside, behind the Starbucks, open Fri–Mon 10am–6pm.",
-        "🧘 <strong>Yoga room just past security</strong> — free mats, no-shoes policy, in the corridor toward Terminal 1.",
-        "🍽️ <strong>Lark Creek Grill, Gate D1</strong> — named one of the world's best airport restaurants by Condé Nast Traveler."
+        "🛬 <strong>Free planespotting before security</strong> — the SkyTerrace deck is on the Terminal 2 roof, landside, open to the public.",
+        "🧘 <strong>Yoga room, Boarding Area D (just past security)</strong> — free mats, no-shoes policy, in the corridor toward Terminal 1.",
+        "🍽️ <strong>Lark Creek Grill, Boarding Area D</strong> — a Condé Nast Traveler pick for one of the world's best airport restaurants."
       ]
     },
     t3: {
@@ -101,9 +101,10 @@
       col2Label: "💆 Ease the stress here",
       airlines: ["United Airlines"],
       notes: [
+        "🚧 <strong>Under construction through 2027</strong> — part of the terminal is closed for the Terminal 3 West project; some United check-in has shifted to Terminal 2, and interim walkways route around the work zone.",
         "🧘 <strong>Yoga room near Gate E6</strong> — a free, self-guided space with mats provided; phones stay outside.",
         "🌈 <strong>\"Spirogyrate\" kids' spot, Gate E7</strong> — motion-activated, color-changing floor discs, a playful sensory stop.",
-        "⚾ <strong>SF Giants Clubhouse, Concourse F</strong> — ballpark-style food court fare and one of the livelier spots to eat."
+        "⚾ <strong>SF Giants Clubhouse, Gate F13</strong> — ballpark-style food (garlic fries, ballpark dogs) and one of the livelier spots to eat."
       ]
     },
     intlA: {
@@ -114,8 +115,8 @@
       col2Label: "💆 Ease the stress here",
       airlines: ["British Airways", "Cathay Pacific", "Emirates"],
       notes: [
-        "🧘 <strong>Berman Reflection Room</strong> — free meditation space before security, in the Main Hall near the check-in counters, open 9am–7pm.",
-        "🥖 <strong>Boudin, in Concourse A</strong> — SF's famous sourdough, serving clam chowder in a bread bowl.",
+        "🧘 <strong>Berman Reflection Room</strong> — free meditation space before security, in the Main Hall, distraction-free (no phones, no talking).",
+        "🥖 <strong>Boudin, Gate A2 (post-security)</strong> — SF's famous sourdough, serving clam chowder in a bread bowl until 11:30pm.",
         "🛋️ <strong>Most airline lounges cluster here</strong> — Air France/KLM, British Airways, Cathay Pacific, and more."
       ]
     },
@@ -127,9 +128,9 @@
       col2Label: "💆 Ease the stress here",
       airlines: ["United Airlines", "Lufthansa", "ANA"],
       notes: [
-        "🛬 <strong>Planespot at the end of G</strong> — an open-air terrace near Gate G14, open daily 7am–11:30pm.",
-        "✨ <strong>\"Ceiling Flood\" light art, Level 2</strong> — a free, glowing neon installation overhead, a calm visual break near the G gates.",
-        "🍷 <strong>Mustards Bar &amp; Grill</strong> — sit-down Wine Country fare if you'd rather not eat at the gate."
+        "🛬 <strong>Planespot at the end of G</strong> — an open-air terrace near Gate G14.",
+        "✨ <strong>\"Ceiling Flood\" light art, Level 2 (post-security)</strong> — Keith Sonnier's glowing neon installation overhead, a calm visual break near the G gates.",
+        "🍷 <strong>Mustards Bar &amp; Grill, Boarding Area G</strong> — sit-down Wine Country fare, open 7am–8pm, if you'd rather not eat at the gate."
       ]
     },
     transport: {
@@ -140,11 +141,11 @@
       col2Label: "🧭 Good to know",
       airlines: ["AirTrain", "BART", "Uber / Lyft", "Waymo"],
       notes: [
-        "🚊 <strong>AirTrain is free</strong> — runs 24/7 to every terminal, garage, and BART.",
-        "🚆 <strong>BART takes tap-to-pay</strong> — just tap a card or phone, no ticket needed.",
-        "🚗 <strong>Rideshare pickup is on the departures level</strong> — not arrivals.",
-        "🚙 <strong>Skip the crowds</strong> — request pickup at the Rental Car Center via AirTrain; far fewer riders than the main curb.",
-        "🤖 <strong>Waymo picks up at the Rental Car Center</strong> — a short, free AirTrain ride away."
+        "🚊 <strong>AirTrain is free</strong>, running 24/7 to every terminal, garage, and BART — but the Terminal 3 station is closed for construction through 2027; use the \"Terminals 2 &amp; 3\" stop instead.",
+        "🚆 <strong>BART takes tap-to-pay</strong> — tap a contactless card or phone at the gate, no Clipper card needed (though a Clipper card still gets you any discount fare you're eligible for).",
+        "🚗 <strong>Picking up an Uber/Lyft?</strong> For Terminals 1–3, that's Level 5 of the domestic garage, not the curb — a short walk or elevator ride from your terminal. The International Terminal is the exception: pickup stays on the Departures Level, 2nd curb.",
+        "🚗 <strong>Dropping someone off?</strong> That's the normal Departures Level curb for every terminal.",
+        "🤖 <strong>Waymo pickup/drop-off is at the Rental Car Center, Level 1 curbside</strong> — a short, free AirTrain ride away. It's a newer service at SFO, so availability may still be expanding."
       ]
     }
   };
@@ -274,34 +275,34 @@
 
   function runAirlineSearcher() {
   var AIRLINES = [
-    { code: "AS", name: "Alaska Airlines", terminal: "Terminal 1 · Boarding Area B", gates: "Gates B1–B27", domestic: true,
+    { code: "AS", name: "Alaska Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
       tip: "📲 The Alaska app sends gate-change alerts faster than the airport boards do." },
-    { code: "WN", name: "Southwest Airlines", terminal: "Terminal 1 · Boarding Area B", gates: "Gates B1–B27", domestic: true,
-      tip: "🎟️ Check in exactly 24 hours before departure for the best boarding position." },
-    { code: "SY", name: "Sun Country Airlines", terminal: "Terminal 1 · Boarding Area B", gates: "Gates B1–B27", domestic: true,
+    { code: "WN", name: "Southwest Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
+      tip: "🎟️ Southwest ended open seating in January 2026 — you'll get an assigned seat and boarding group at booking, just like other airlines. Checked bags are still free." },
+    { code: "SY", name: "Sun Country Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
       tip: "🗓️ A seasonal leisure carrier — double-check your flight is still scheduled as booked." },
-    { code: "B6", name: "JetBlue Airways", terminal: "Terminal 1 · Boarding Area B", gates: "Gates B1–B27", domestic: true,
+    { code: "B6", name: "JetBlue Airways", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
       tip: "📶 Free high-speed Wi-Fi and live TV at every seat, no membership needed." },
-    { code: "F9", name: "Frontier Airlines", terminal: "Terminal 1 · Boarding Area B", gates: "Gates B1–B27", domestic: true,
+    { code: "F9", name: "Frontier Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
       tip: "🎒 Add bags and seats online in advance — it's much cheaper than at the gate." },
-    { code: "NK", name: "Spirit Airlines", terminal: "Terminal 1 · Boarding Area B", gates: "Gates B1–B27", domestic: true,
+    { code: "NK", name: "Spirit Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
       tip: "🎒 Weigh and measure bags at home — oversize fees at the gate are steep." },
-    { code: "MX", name: "Breeze Airways", terminal: "Terminal 1 · Boarding Area B", gates: "Gates B1–B27", domestic: true,
-      tip: "📲 A newer low-cost carrier — the app is the fastest way to track your gate and boarding time." },
-    { code: "AA", name: "American Airlines", terminal: "Terminal 2 · Boarding Areas C & D", gates: "Gates C2–C11 · D1–D18", domestic: true,
-      tip: "📲 The app shows real-time gate and baggage info the moment you land." },
-    { code: "DL", name: "Delta Air Lines", terminal: "Terminal 2 · Boarding Areas C & D", gates: "Gates C2–C11 · D1–D18", domestic: true,
-      tip: "🧳 The Fly Delta app tracks your bag live from drop-off to the carousel." },
+    { code: "MX", name: "Breeze Airways", terminal: "Terminal 2", gates: "Gates D1–D18", domestic: true,
+      tip: "📲 A newer low-cost carrier based in Terminal 2 — the app is the fastest way to track your gate and boarding time." },
+    { code: "AA", name: "American Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
+      tip: "📲 Based in the renovated Terminal 1 (moved from Terminal 2 in 2020) — the app shows real-time gate and baggage info the moment you land." },
+    { code: "DL", name: "Delta Air Lines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
+      tip: "🧳 Now based in Terminal 1, not Terminal 2 — the Fly Delta app tracks your bag live from drop-off to the carousel." },
     { code: "UA", name: "United Airlines", terminal: "Terminal 3 (domestic) & International Terminal (intl.)", gates: "Gates E1–E13/F1–F22 · G1–G14", domestic: true,
-      tip: "🛫 SFO's United hub splits by flight type — Terminal 3 for domestic, the International Terminal for overseas." },
-    { code: "HA", name: "Hawaiian Airlines", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
-      tip: "🌺 Boards from the International Terminal, not a domestic gate — even to Hawaii." },
-    { code: "AC", name: "Air Canada", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
-      tip: "🛂 Even a quick hop to Canada means passport control — it's an international departure." },
-    { code: "WS", name: "WestJet", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
-      tip: "🛂 Even short Canada hops depart from the International Terminal, not a domestic gate." },
-    { code: "PD", name: "Porter Airlines", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
-      tip: "🇨🇦 A newer entrant to SFO — double-check your terminal since routes here are still growing." },
+      tip: "🛫 SFO's United hub splits by flight type — mostly Terminal 3 for domestic (a few flights use Terminal 2), the International Terminal for overseas." },
+    { code: "HA", name: "Hawaiian Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
+      tip: "🌺 Now boards from Terminal 1 alongside its parent Alaska Airlines, following the 2024 merger — no more trek to the International Terminal." },
+    { code: "AC", name: "Air Canada", terminal: "Terminal 2", gates: "Gates D1–D18", domestic: false,
+      tip: "🛂 Now based in Terminal 2, not the International Terminal — but a Canada trip is still an international departure, so bring your passport." },
+    { code: "WS", name: "WestJet", terminal: "Terminal 2", gates: "Gates D1–D18", domestic: false,
+      tip: "🛂 Now based in Terminal 2, not the International Terminal — a Canada hop is still an international departure, passport required." },
+    { code: "PD", name: "Porter Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: false,
+      tip: "🇨🇦 A newer, fast-growing entrant to SFO — its terminal has shifted before as routes expand, so double-check the day of travel." },
     { code: "BA", name: "British Airways", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
       tip: "🤝 Oneworld flyers can usually access a shared lounge in the International Terminal." },
     { code: "AF", name: "Air France", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
@@ -1933,4 +1934,49 @@
 
   setCar(state.len, 0);
   armIdle();
+})();
+
+/* ============================================================
+   Survey toast — nudges first-time visitors toward the feedback
+   form once, then stays dismissed (localStorage) either when
+   closed or once they click through to the survey.
+   ============================================================ */
+(function () {
+  var toast = document.getElementById("surveyToast");
+  if (!toast) return;
+  var KEY = "flyeasy-survey-dismissed";
+
+  function dismiss() {
+    toast.classList.remove("is-visible");
+    try { localStorage.setItem(KEY, "1"); } catch (e) {}
+  }
+
+  var alreadyDismissed = false;
+  try { alreadyDismissed = !!localStorage.getItem(KEY); } catch (e) {}
+  if (alreadyDismissed) return;
+
+  function reveal() {
+    toast.hidden = false;
+    window.requestAnimationFrame(function () { toast.classList.add("is-visible"); });
+  }
+
+  /* Never ambush the hero's own call-to-action buttons: wait for
+     the timer AND for the visitor to have scrolled past the top
+     of the page (the toast is tall enough on mobile to cover
+     whatever sits at the very bottom of a full-height hero). */
+  window.setTimeout(function () {
+    if (window.scrollY > 80) {
+      reveal();
+    } else {
+      window.addEventListener("scroll", function onScroll() {
+        if (window.scrollY > 80) {
+          window.removeEventListener("scroll", onScroll);
+          reveal();
+        }
+      }, { passive: true });
+    }
+  }, 9000);
+
+  toast.querySelector(".survey-toast__close").addEventListener("click", dismiss);
+  document.getElementById("surveyToastCta").addEventListener("click", dismiss);
 })();

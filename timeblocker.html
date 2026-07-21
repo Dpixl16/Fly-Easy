@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=42">
+<link rel="stylesheet" href="styles.css?v=44">
 </head>
 <body>
 
@@ -35,6 +35,7 @@
       <a href="global.html">Global Tips</a>
       <a href="sfo.html">SFO Tips</a>
       <a href="timeblocker.html" aria-current="page">Timeblocker</a>
+      <a class="site-nav__cta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
     </nav>
   </div>
 </header>
@@ -149,6 +150,15 @@
   </div>
 </footer>
 
-<script src="script.js?v=43"></script>
+<div class="survey-toast" id="surveyToast" hidden>
+  <button class="survey-toast__close" type="button" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <p class="survey-toast__title">Got a sec?</p>
+  <p class="survey-toast__text">Help shape Fly Easy — a quick survey on what's working and what's missing.</p>
+  <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
+</div>
+
+<script src="script.js?v=47"></script>
 </body>
 </html>
