@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Global Tips — Fly Easy</title>
 <meta name="description" content="Global Tips: the most useful departure, in-flight, and arrival tips that work at any airport in the world.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22195 118 212 224%22><path d=%22M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z%22 fill=%22%231B6FA8%22 transform=%22translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)%22/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=44">
+<link rel="stylesheet" href="styles.css?v=48">
 </head>
 <body>
 
@@ -30,15 +30,39 @@
       <span class="site-nav__mark"><img src="images/flyeasy-mark.svg" alt="" width="48" height="34"></span>
       <span class="site-nav__word">Fly Easy</span>
     </a>
-    <nav class="site-nav__links" aria-label="Main navigation">
+    <div class="site-nav__right">
+      <nav class="site-nav__links" id="siteNavLinks" aria-label="Main navigation">
       <a href="index.html">Home</a>
       <a href="global.html" aria-current="page">Global Tips</a>
       <a href="sfo.html">SFO Tips</a>
       <a href="timeblocker.html">Timeblocker</a>
+      </nav>
       <a class="site-nav__cta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
-    </nav>
+      <button class="site-nav__toggle" id="siteNavToggle" type="button" aria-expanded="false" aria-controls="siteNavLinks" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
   </div>
 </header>
+
+<nav class="mobile-tabbar" aria-label="Primary">
+  <a class="mobile-tabbar__item" href="index.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M4 10.5L12 4l8 6.5"/><path d="M6 9.5V19a1 1 0 001 1h3v-6h4v6h3a1 1 0 001-1V9.5"/></svg></span>
+    <span class="mobile-tabbar__label">Home</span>
+  </a>
+  <a class="mobile-tabbar__item" href="global.html" aria-current="page">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
+    <span class="mobile-tabbar__label">Global</span>
+  </a>
+  <a class="mobile-tabbar__item" href="sfo.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-5h6v5"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2"/></svg></span>
+    <span class="mobile-tabbar__label">SFO</span>
+  </a>
+  <a class="mobile-tabbar__item" href="timeblocker.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+    <span class="mobile-tabbar__label">Timeblocker</span>
+  </a>
+</nav>
 
 <main id="main">
 
@@ -257,7 +281,7 @@
 
             <div class="phase-tip reveal">
               <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v6M12 9l-4 2M12 9l4 2M12 13l-3 6M12 13l3 6"/></svg></span></span>
-              <span class="phase-tip__text"><strong>Stretch every couple hours</strong> — a quick aisle walk or seated stretch keeps circulation moving on longer flights.</span>
+              <span class="phase-tip__text"><strong>Get up at least once an hour</strong> — the CDC recommends walking the aisle or stretching your legs and calves that often on longer flights to keep circulation moving.</span>
             </div>
 
           </div>
@@ -377,6 +401,7 @@
       <a href="global.html">Global Tips</a>
       <a href="sfo.html">SFO Tips</a>
       <a href="timeblocker.html">Timeblocker</a>
+      <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
     </nav>
     <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
     <p class="site-footer__credit">Photography via Unsplash &amp; Pexels.</p>
@@ -392,6 +417,6 @@
   <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
 </div>
 
-<script src="script.js?v=48"></script>
+<script src="script.js?v=51"></script>
 </body>
 </html>

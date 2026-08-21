@@ -65,6 +65,10 @@
   var tbTimelineEl = document.getElementById("tb-timeline");
   if (tbTimelineEl) runTimeblocker();
 
+  /* ---------------- Packer Assistant ---------------- */
+  var pkRunwayEl = document.getElementById("pk-runway");
+  if (pkRunwayEl) runPackerAssistant();
+
   function runTerminalExplorer(tabs) {
   var TERMINALS = {
     t1: {
@@ -73,11 +77,11 @@
       badge: "Domestic",
       col1Label: "✈️ Main carriers",
       col2Label: "💆 Ease the stress here",
-      airlines: ["Alaska Airlines", "American Airlines", "Delta Air Lines", "Southwest Airlines"],
+      airlines: ["Alaska Airlines", "American Airlines", "Delta Air Lines", "Hawaiian Airlines"],
       notes: [
         "🍜 <strong>Bun Mee, Terminal 1</strong> — a local favorite for Vietnamese bánh mì sandwiches, open early into the evening.",
         "🧸 <strong>\"Tree Town\" kids' spot, Gate B18 (post-security)</strong> — a climbable structure carved from a reclaimed oak tree.",
-        "🖼️ <strong>SFO Museum galleries throughout T1</strong> — rotating art and photography pre-security, plus \"Women of Afrofuturism\" post-security (running through Oct. 2026)."
+        "🖼️ <strong>SFO Museum galleries throughout T1</strong> — rotating art and photography pre-security, plus \"Women of Afrofuturism\" post-security, an exhibit on Afrofuturist art and history."
       ]
     },
     t2: {
@@ -86,7 +90,7 @@
       badge: "Domestic",
       col1Label: "✈️ Main carriers",
       col2Label: "💆 Ease the stress here",
-      airlines: ["Air Canada", "Breeze Airways", "WestJet"],
+      airlines: ["Air Canada", "Breeze Airways", "Southwest Airlines", "WestJet"],
       notes: [
         "🛬 <strong>Free planespotting before security</strong> — the SkyTerrace deck is on the Terminal 2 roof, landside, open to the public.",
         "🧘 <strong>Yoga room, Boarding Area D (just past security)</strong> — free mats, no-shoes policy, in the corridor toward Terminal 1.",
@@ -130,7 +134,7 @@
       notes: [
         "🛬 <strong>Planespot at the end of G</strong> — an open-air terrace near Gate G14.",
         "🚶 <strong>Budget extra walking time</strong> — Boarding Area G runs nearly 1,000 feet end to end, and connecting over from Terminal 3 alone is about a 6-minute walk.",
-        "🍷 <strong>Mustards Bar &amp; Grill, Boarding Area G</strong> — sit-down Wine Country fare, open 7am–8pm, if you'd rather not eat at the gate."
+        "🍷 <strong>Mustards Bar &amp; Grill, Boarding Area G</strong> — sit-down Wine Country fare, open 7am–11pm, if you'd rather not eat at the gate."
       ]
     },
     transport: {
@@ -277,8 +281,8 @@
   var AIRLINES = [
     { code: "AS", name: "Alaska Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
       tip: "📲 The Alaska app sends gate-change alerts faster than the airport boards do." },
-    { code: "WN", name: "Southwest Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
-      tip: "🎟️ Southwest ended open seating in January 2026 — you'll get an assigned seat and boarding group at booking, just like other airlines. Checked bags are still free." },
+    { code: "WN", name: "Southwest Airlines", terminal: "Terminal 2", gates: "Gates D1–D18", domestic: true,
+      tip: "🎟️ Southwest moved to Terminal 2 and ended open seating in January 2026 — you'll get an assigned seat and boarding group at booking. Checked bags are no longer free on most fares, so double-check yours before you pack." },
     { code: "SY", name: "Sun Country Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
       tip: "🗓️ A seasonal leisure carrier — double-check your flight is still scheduled as booked." },
     { code: "B6", name: "JetBlue Airways", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
@@ -337,8 +341,8 @@
       tip: "🤝 A Star Alliance carrier — reciprocal lounge access often applies nearby." },
     { code: "TK", name: "Turkish Airlines", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
       tip: "💧 One of the longest hauls out of SFO — hydrate and stretch before boarding." },
-    { code: "EI", name: "Aer Lingus", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
-      tip: "🍀 Ireland's flag carrier — a handy nonstop to Dublin for onward Europe connections." },
+    { code: "EI", name: "Aer Lingus", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: false,
+      tip: "🍀 Ireland's flag carrier, based out of Terminal 1 — a handy nonstop to Dublin for onward Europe connections." },
     { code: "AI", name: "Air India", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
       tip: "🔁 One of the only nonstops linking SFO directly with India — book early, seats sell out." },
     { code: "YP", name: "Air Premia", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
@@ -1446,6 +1450,690 @@
     render();
     savePlan();
   }
+
+  function runPackerAssistant() {
+
+    var ICONS = {
+      passport: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="9" r="2.3"/><path d="M9 15h6"/></svg>',
+      wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16.5" cy="14" r="1" fill="currentColor" stroke="none"/></svg>',
+      phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 19h2"/></svg>',
+      pill: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M12 12L8 16"/></svg>',
+      key: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="4"/><path d="M11 11l9 9M16 16l2.5-2.5M18.5 18.5L21 16"/></svg>',
+      shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>',
+      droplet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c-1 3-6 8.2-6 12a6 6 0 0012 0c0-3.8-5-9-6-12z"/></svg>',
+      shirt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4L3 8l3 3 2-1.5V21h8V9.5L18 11l3-3-5-4-2 2h-4L8 4z"/></svg>',
+      sock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2v10l-4.5 6a2.5 2.5 0 002 4H16a2.5 2.5 0 002.5-2.5V2"/><path d="M9 8h9.5"/></svg>',
+      jacket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4L4 7l2.5 3L8 9v12h8V9l1.5 1L20 7l-4-3-2 2h-4L8 4z"/><path d="M12 9v9"/></svg>',
+      sunscreen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="5" width="8" height="16" rx="2"/><path d="M10 5V3h4v2"/><circle cx="12" cy="12" r="2.5"/></svg>',
+      sunglasses: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="13" r="3.2"/><circle cx="17.5" cy="13" r="3.2"/><path d="M9.7 12h4.6M3 12l1.5-4h3M21 12l-1.5-4h-3"/></svg>',
+      swim: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8c3-4 13-4 16 0M6 14c2.5-3 9.5-3 12 0M3 19c2-2.5 7-2.5 9 0s7 2.5 9 0"/></svg>',
+      laptop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="10" rx="1.5"/><path d="M2 19h20l-1.5-3h-17L2 19z"/></svg>',
+      camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.3-2.4a1 1 0 01.9-.6h3.6a1 1 0 01.9.6L16 7"/><circle cx="12" cy="13.5" r="3.3"/></svg>',
+      boot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v9l-5 4.5A2 2 0 004 19h16a1 1 0 001-1c0-3-2-4-5-5l-3-1V2"/></svg>',
+      snowflake: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M4.5 6l15 12M19.5 6l-15 12M2 12h20M6 4.5l3 3M15 16.5l3 3M18 4.5l-3 3M9 16.5l-3 3"/></svg>',
+      umbrella: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 0118 0H3z"/><path d="M12 12v8a2 2 0 01-4 0M12 3v2"/></svg>',
+      briefcase: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M3 12h18"/></svg>',
+      tie: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6l1 4-4 2-4-2 1-4z"/><path d="M11 9l-2 9 3 3 3-3-2-9"/></svg>',
+      firstaid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M12 11v6M9 14h6"/></svg>',
+      battery: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="16" height="8" rx="2"/><rect x="19" y="10.5" width="2" height="3" rx="1" fill="currentColor" stroke="none"/><path d="M10.5 8l-2 4h3l-2 4"/></svg>',
+      scissors: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><path d="M8 7.5L20 20M8 16.5L20 4"/></svg>',
+      razor: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="8" rx="1.5"/><path d="M12 11v10M8 21h8"/></svg>',
+      tooth: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l14 2-2 4H8L6 6"/><path d="M8 8v3a2 2 0 002 2h4a2 2 0 002-2V8"/></svg>',
+      bottle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 2h4v3l2 3v12a2 2 0 01-2 2h-4a2 2 0 01-2-2V8l2-3V2z"/><path d="M9 12h6"/></svg>',
+      flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3v18"/><path d="M6 4h11l-2 4 2 4H6"/></svg>',
+      warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg>',
+      backpack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 8V6a5 5 0 0110 0v2"/><rect x="5" y="8" width="14" height="13" rx="2.5"/><path d="M9 12h6"/></svg>',
+      carryon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4V2.5h6V4M9 9v8M15 9v8"/></svg>',
+      personal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M8 9V7a3 3 0 016 0v2"/></svg>',
+      checked: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg>',
+      sports: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="18" height="9" rx="3"/><path d="M8 9V7a1 1 0 011-1h6a1 1 0 011 1v2"/></svg>',
+      snack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a9 9 0 109 9c-2 0-3-1-3-3s-1-3-3-3-3-1-3-3z"/><circle cx="9" cy="14" r="0.8" fill="currentColor" stroke="none"/><circle cx="13" cy="16.5" r="0.8" fill="currentColor" stroke="none"/><circle cx="10.5" cy="18.5" r="0.8" fill="currentColor" stroke="none"/></svg>',
+      blanket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h18v9a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/><path d="M3 9h18M3 13h18M8 5v11M13 5v11"/></svg>',
+      neckpillow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10a5 5 0 015-6h6a5 5 0 015 6v1a5 5 0 01-5 5h-1a1 1 0 00-1 1v1a1 1 0 01-2 0v-1a1 1 0 00-1-1H9a5 5 0 01-5-5v-1z"/></svg>'
+    };
+
+    var BAG_META = {
+      backpack: { label: "Carry-on Backpack", icon: "backpack", carryOn: true },
+      carryon:  { label: "Carry-on Luggage",  icon: "carryon",  carryOn: true },
+      personal: { label: "Personal Item",     icon: "personal", carryOn: true },
+      checked:  { label: "Checked Bag",       icon: "checked",  carryOn: false },
+      sports:   { label: "Sports / Ski Bag",  icon: "sports",   carryOn: false }
+    };
+
+    // One distinct color per bag TYPE (not just carry-on vs checked) so
+    // the whole tab/panel reads as "this specific bag" at a glance —
+    // separate from the bold carry-on/checked pill, which is the
+    // functional TSA signal and stays binary.
+    var TYPE_THEME = {
+      backpack: { color: "#0EA5E9", tint: "#E6F6FE", border: "#8FD9F8" }, // horizon blue
+      personal: { color: "#6B4E8C", tint: "#EFEAFB", border: "#C9B9E3" }, // dusk purple
+      carryon:  { color: "#0A6E63", tint: "#E1F4F1", border: "#9AD1C7" }, // teal
+      checked:  { color: "#B8791F", tint: "#FBF1DD", border: "#E9C685" }, // amber
+      sports:   { color: "#B85C24", tint: "#FCEADD", border: "#EDB48A" }  // rust
+    };
+
+    var ESSENTIALS_DEFAULT = [
+      { title: "Passport / government ID", icon: "passport" },
+      { title: "Boarding pass / itinerary", icon: "passport" },
+      { title: "Wallet, cards &amp; some cash", icon: "wallet" },
+      { title: "Phone + charger", icon: "phone" },
+      { title: "Medications (original bottles)", icon: "pill" },
+      { title: "House &amp; car keys", icon: "key" },
+      { title: "Travel insurance / emergency contacts", icon: "shield" },
+      { title: "Reusable water bottle (empty)", icon: "bottle" }
+    ];
+
+    // Bag-type access groups — which bag tabs a suggestion is offered in.
+    // FLIGHT: only bags you keep with you and open during the flight.
+    // CARRYON: must legally stay in a carry-on-class bag (never checked), but
+    //   any of them (backpack / personal item / roller) is fine.
+    // STOWED: bulk clothing & full-size toiletries you won't touch mid-flight —
+    //   offered for the roller, the checked bag, and the sports bag.
+    // CHECKED_ONLY: TSA prohibits these from every carry-on-class bag.
+    var FLIGHT = ["backpack", "personal"];
+    var CARRYON = ["backpack", "personal", "carryon"];
+    var STOWED = ["carryon", "checked", "sports"];
+    var CHECKED_ONLY = ["checked", "sports"];
+
+    // Suggestion pool: category -> items.
+    // Every quantity is derived from trip length, and every bag type —
+    // including the carry-ons — reacts to climate, so a 2-day warm trip
+    // and a 14-day cold one never produce the same list.
+    function buildSuggestionPool(days, climate) {
+      var pool = { Clothing: [], Toiletries: [], Electronics: [], "Comfort & carry-on": [], "Gear & extras": [] };
+
+      function push(cat, title, icon, showIn, qty, tsa) {
+        if (pool[cat].some(function (i) { return i.title === title; })) return;
+        pool[cat].push({ title: title, icon: icon, showIn: showIn, qty: Math.max(1, qty || 1), tsa: tsa || null });
+      }
+      // one per day, capped so a 30-day trip doesn't suggest 30 shirts —
+      // past ~10 you're doing laundry, not packing more
+      function perDay(pad, cap) { return Math.max(1, Math.min(days + (pad || 0), cap || 10)); }
+      function every(n, cap) { return Math.max(1, Math.min(Math.ceil(days / n), cap || 6)); }
+
+      var isLong = days > 7;
+      var isShort = days <= 2;
+
+      var LIQUID_TSA = { limit: "carryOnLimit", note: "Containers over 3.4oz must go in a checked bag." };
+      var BATTERY_TSA = { limit: "checkedRestricted", note: "Spare batteries and power banks must go in carry-on — they're not allowed in checked bags." };
+      var BLADE_TSA = { limit: "carryOnRestricted", note: "Blades of any length and multi-tools with knives must go in checked luggage." };
+
+      /* ---- everyday clothing (stowed bags) — all day-scaled ----
+         tropical gets its own breathable-tops line below, so the generic
+         one is skipped there to avoid suggesting tops twice */
+      if (climate !== "tropical") push("Clothing", "T-shirts / tops", "shirt", STOWED, perDay(0, 10));
+      push("Clothing", "Underwear", "shirt", STOWED, perDay(1, 12));
+      push("Clothing", "Socks", "sock", STOWED, perDay(1, 12));
+      push("Clothing", "Pants / bottoms", "shirt", STOWED, every(3, 5));
+      push("Clothing", "Pajamas / sleepwear", "shirt", STOWED, isLong ? 2 : 1);
+      push("Clothing", "Comfortable walking shoes", "boot", STOWED, 1);
+      if (!isShort) push("Clothing", "Nicer outfit (dinner / event)", "tie", STOWED, 1);
+
+      /* ---- climate drives BOTH the stowed wardrobe and what you keep
+              with you in the cabin ---- */
+      if (climate === "cold") {
+        push("Clothing", "Heavy winter coat", "jacket", STOWED, 1);
+        push("Clothing", "Sweaters / fleece", "jacket", STOWED, every(3, 4));
+        push("Clothing", "Thermal base layers", "jacket", STOWED, every(4, 3));
+        push("Clothing", "Wool socks", "sock", STOWED, every(3, 4));
+        push("Clothing", "Winter boots", "boot", STOWED, 1);
+        push("Clothing", "Gloves, hat &amp; scarf", "jacket", CARRYON, 1);
+        push("Comfort & carry-on", "Hand &amp; toe warmers", "snowflake", FLIGHT, Math.min(days, 8));
+        push("Toiletries", "Lip balm &amp; moisturizer", "droplet", CARRYON, 1);
+      } else if (climate === "mild") {
+        push("Clothing", "Light jacket", "jacket", STOWED, 1);
+        push("Clothing", "Layering long-sleeves", "shirt", STOWED, every(3, 4));
+        push("Gear & extras", "Compact umbrella", "umbrella", CARRYON, 1);
+      } else if (climate === "warm") {
+        push("Clothing", "Shorts", "shirt", STOWED, every(2, 5));
+        push("Clothing", "Swimsuit", "swim", STOWED, isShort ? 1 : 2);
+        push("Clothing", "Sandals / flip-flops", "boot", STOWED, 1);
+        push("Clothing", "Light evening layer", "jacket", STOWED, 1);
+        push("Toiletries", "Sunscreen", "sunscreen", STOWED, 1, LIQUID_TSA);
+        push("Gear & extras", "Sunglasses", "sunglasses", CARRYON, 1);
+        push("Gear & extras", "Hat / cap", "boot", CARRYON, 1);
+      } else if (climate === "tropical") {
+        push("Clothing", "Light breathable tops", "shirt", STOWED, perDay(0, 8));
+        push("Clothing", "Shorts", "shirt", STOWED, every(2, 5));
+        push("Clothing", "Swimsuit", "swim", STOWED, isShort ? 1 : 2);
+        push("Clothing", "Sandals / flip-flops", "boot", STOWED, 1);
+        push("Toiletries", "Sunscreen", "sunscreen", STOWED, 1, LIQUID_TSA);
+        push("Toiletries", "Bug spray", "sunscreen", STOWED, 1, LIQUID_TSA);
+        push("Gear & extras", "Rain poncho", "umbrella", CARRYON, 1);
+        push("Gear & extras", "Sunglasses", "sunglasses", CARRYON, 1);
+        push("Gear & extras", "Quick-dry towel", "swim", STOWED, 1);
+      }
+
+      /* ---- the cabin layer: planes run cold in every climate, but what
+              you'd realistically carry differs ---- */
+      if (climate === "cold") {
+        push("Clothing", "Warm jacket (wear or carry on)", "jacket", CARRYON, 1);
+      } else {
+        push("Clothing", "Hoodie or light layer for the cabin", "jacket", CARRYON, 1);
+      }
+
+      /* ---- toiletries — sized to the trip ---- */
+      push("Toiletries", "Toothbrush &amp; toothpaste", "tooth", STOWED, 1);
+      push("Toiletries", "Shampoo / conditioner", "droplet", STOWED, 1, LIQUID_TSA);
+      push("Toiletries", "Deodorant", "sunscreen", STOWED, 1);
+      push("Toiletries", "Razor", "razor", STOWED, 1);
+      if (isLong) push("Toiletries", "Laundry detergent pods", "droplet", STOWED, 1);
+
+      /* ---- electronics — carry-on only by TSA rule ---- */
+      push("Electronics", "Phone charger &amp; cable", "phone", CARRYON, 1);
+      push("Electronics", "Power bank", "battery", CARRYON, 1, BATTERY_TSA);
+      push("Electronics", "Headphones", "phone", CARRYON, 1);
+      push("Electronics", "Laptop + charger", "laptop", CARRYON, 1);
+      if (isLong) push("Electronics", "Travel adapter", "battery", CARRYON, 1);
+
+      /* ---- in-flight comfort — longer flights earn more of it ---- */
+      push("Comfort & carry-on", "Snacks", "snack", FLIGHT, isShort ? 2 : 3);
+      push("Comfort & carry-on", "Neck pillow", "neckpillow", FLIGHT, 1);
+      push("Comfort & carry-on", "Travel blanket", "blanket", FLIGHT, 1);
+      push("Comfort & carry-on", "Refillable water bottle", "bottle", FLIGHT, 1);
+
+      /* ---- general gear ---- */
+      push("Gear & extras", "Day bag", "backpack", STOWED, 1);
+      push("Gear & extras", "First-aid kit / basic meds", "firstaid", STOWED, 1);
+      if (isLong) push("Gear & extras", "Packing cubes", "checked", STOWED, 1);
+      push("Gear & extras", "Multi-tool / scissors", "scissors", CHECKED_ONLY, 1, BLADE_TSA);
+
+      return pool;
+    }
+
+    // ---------------- state ----------------
+    var state = {
+      trip: { days: 5, climate: "mild" },
+      essentials: ESSENTIALS_DEFAULT.map(function (e, i) { return Object.assign({ id: "es" + i, checked: false }, e); }),
+      bags: [],
+      activeTab: null, // set once the traveler adds their first bag
+      nextBagId: 1,
+      nextItemId: 1
+    };
+
+    function makeBag(type) {
+      var meta = BAG_META[type];
+      var id = "bag" + (state.nextBagId++);
+      // `name` is the auto type label ("Personal Item 1") and always stays
+      // accurate; `customName` is whatever the traveler renames it to
+      // ("Fanny Pack"). The type label is never overwritten, so it can
+      // keep showing underneath as a reminder of what the bag really is.
+      return { id: id, type: type, name: meta.label, customName: "", items: [] };
+    }
+    function bagLabel(bag) { return bag.customName.trim() || bag.name; }
+    var CLIMATE_WORD = { cold: "cold", mild: "mild", warm: "warm", tropical: "hot, humid" };
+    function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
+
+    // Every bag is numbered from the moment it's added ("Checked Bag 1"),
+    // so adding a second of the same type just continues the sequence
+    // ("Checked Bag 2") — each keeps its own separate items array/list.
+    function renumberBags() {
+      var seen = {};
+      state.bags.forEach(function (b) {
+        var meta = BAG_META[b.type];
+        seen[b.type] = (seen[b.type] || 0) + 1;
+        b.name = meta.label + " " + seen[b.type];
+      });
+    }
+
+    // ---------------- dom refs ----------------
+    var tabsEl = document.getElementById("pk-tabs");
+    var bagPickerEl = document.getElementById("pk-bagPicker");
+    var essentialsListEl = document.getElementById("pk-essentialsList");
+    var bagPanelsEl = document.getElementById("pk-bagPanels");
+    var runwayFillEl = document.getElementById("pk-runwayFill");
+    var runwayPlaneEl = document.getElementById("pk-runwayPlane");
+    var runwayPctEl = document.getElementById("pk-runwayPct");
+    var runwayStatusEl = document.getElementById("pk-runwayStatus");
+    var runwayEl = document.getElementById("pk-runway");
+
+    // ---------------- trip controls ----------------
+    // A stepper and a segmented control instead of a free-text number
+    // field and a dropdown — nothing to mistype, and the current choice
+    // is always visible. Both only tune what gets recommended.
+    var DAY_MIN = 1, DAY_MAX = 30;
+    var daysValEl = document.getElementById("pk-daysVal");
+    var daysDownBtn = document.getElementById("pk-daysDown");
+    var daysUpBtn = document.getElementById("pk-daysUp");
+    var climateEl = document.getElementById("pk-climate");
+
+    function setDays(n) {
+      state.trip.days = Math.min(DAY_MAX, Math.max(DAY_MIN, n));
+      daysValEl.textContent = state.trip.days;
+      daysDownBtn.disabled = state.trip.days <= DAY_MIN;
+      daysUpBtn.disabled = state.trip.days >= DAY_MAX;
+      renderActiveBagPanel();
+    }
+    daysDownBtn.addEventListener("click", function () { setDays(state.trip.days - 1); });
+    daysUpBtn.addEventListener("click", function () { setDays(state.trip.days + 1); });
+
+    climateEl.addEventListener("click", function (e) {
+      var btn = e.target.closest("button[data-climate]");
+      if (!btn || btn.dataset.climate === state.trip.climate) return;
+      state.trip.climate = btn.dataset.climate;
+      climateEl.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("is-active", b === btn);
+      });
+      renderActiveBagPanel();
+    });
+
+    // ---------------- tabs (bags only — essentials lives in its own card) ----------------
+    // Remembers which bags were already finished, so the "Packed" stamp
+    // only animates the moment a bag actually completes — not every time
+    // the tabs happen to re-render for some other bag.
+    var wasComplete = {};
+
+    function renderTabs() {
+      tabsEl.innerHTML = "";
+
+      state.bags.forEach(function (bag) {
+        var meta = BAG_META[bag.type];
+        var theme = TYPE_THEME[bag.type];
+        // a bag counts as packed only once it has items AND all are ticked
+        var total = bag.items.length;
+        var done = bag.items.filter(function (i) { return i.checked; }).length;
+        var complete = total > 0 && done === total;
+        var justPacked = complete && !wasComplete[bag.id];
+        wasComplete[bag.id] = complete;
+
+        var tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = "pk-tab" + (state.activeTab === bag.id ? " is-active" : "") +
+          (complete ? " is-complete" : "") + (justPacked ? " is-just-packed" : "");
+        tab.style.setProperty("--tab-color", theme.color);
+        tab.style.setProperty("--tab-tint", theme.tint);
+        tab.style.setProperty("--tab-border", theme.border);
+        tab.innerHTML =
+          '<span class="pk-tab__badges">' +
+            '<span class="pk-tab__type-badge ' + (meta.carryOn ? "is-carryon" : "is-checked") + '">' + (meta.carryOn ? "Carry-on" : "Checked") + '</span>' +
+            (complete
+              ? '<span class="pk-tab__packed"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>Packed</span>'
+              : (total ? '<span class="pk-tab__count">' + done + '/' + total + '</span>' : '')) +
+          '</span>' +
+          '<span class="pk-tab__row">' +
+            '<span class="icon">' + ICONS[meta.icon] + '</span>' +
+            '<span class="pk-tab__name">' + esc(bagLabel(bag)) + '</span>' +
+            '<span class="pk-tab__close" data-close="' + bag.id + '" title="Remove this bag">&times;</span>' +
+          '</span>' +
+          // renamed bags keep their real type visible underneath
+          (bag.customName.trim() ? '<span class="pk-tab__type-note">' + bag.name + '</span>' : '');
+        tab.addEventListener("click", function (e) {
+          if (e.target.dataset.close) {
+            state.bags = state.bags.filter(function (b) { return b.id !== bag.id; });
+            renumberBags();
+            if (state.activeTab === bag.id) state.activeTab = state.bags.length ? state.bags[0].id : null;
+            render();
+            return;
+          }
+          state.activeTab = bag.id;
+          bagPickerEl.classList.remove("is-open");
+          render();
+        });
+        tabsEl.appendChild(tab);
+      });
+
+      var addTab = document.createElement("button");
+      addTab.className = "pk-tab-add" + (bagPickerEl.classList.contains("is-open") ? " is-open" : "");
+      addTab.type = "button";
+      addTab.innerHTML = '<span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></span> Add a bag';
+      addTab.addEventListener("click", function () {
+        bagPickerEl.classList.toggle("is-open");
+        addTab.classList.toggle("is-open");
+      });
+      tabsEl.appendChild(addTab);
+    }
+
+    bagPickerEl.addEventListener("click", function (e) {
+      var opt = e.target.closest(".pk-bag-option");
+      if (!opt) return;
+      var bag = makeBag(opt.dataset.bagtype);
+      state.bags.push(bag);
+      renumberBags();
+      state.activeTab = bag.id;
+      bagPickerEl.classList.remove("is-open");
+      render();
+    });
+
+    // ---------------- essentials card (compact, always visible) ----------------
+    function renderEssentials() {
+      essentialsListEl.innerHTML = "";
+      if (!state.essentials.length) {
+        essentialsListEl.innerHTML = '<p class="pk-empty-note">No essentials yet — add one below.</p>';
+        return;
+      }
+      state.essentials.forEach(function (item) {
+        essentialsListEl.appendChild(buildItemRow(item, {
+          onToggle: function () { item.checked = !item.checked; renderEssentials(); updateProgress(); },
+          onRemove: function () { state.essentials = state.essentials.filter(function (i) { return i.id !== item.id; }); render(); },
+          onRename: function (val) { item.title = val; },
+          compact: true
+        }));
+      });
+    }
+
+    document.getElementById("pk-essentialsAddBtn").addEventListener("click", addEssentialFromInput);
+    document.getElementById("pk-essentialsInput").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") addEssentialFromInput();
+    });
+    function addEssentialFromInput() {
+      var input = document.getElementById("pk-essentialsInput");
+      var val = input.value.trim();
+      if (!val) return;
+      state.essentials.push({ id: "es" + (state.nextItemId++), title: val, icon: "flag", checked: false, isNew: true });
+      input.value = "";
+      render();
+    }
+
+    // ---------------- bag panels ----------------
+    function activeBag() {
+      return state.bags.find(function (b) { return b.id === state.activeTab; });
+    }
+
+    function renderBagPanels() {
+      bagPanelsEl.innerHTML = "";
+      if (!state.bags.length) {
+        bagPanelsEl.innerHTML =
+          '<div class="pk-card pk-bags-empty pk-enter">' +
+            '<p class="pk-empty-note">No bags yet — tap <strong>+ Add a bag</strong> above to start your first packing list.</p>' +
+          '</div>';
+        return;
+      }
+      state.bags.forEach(function (bag) {
+        var panel = document.createElement("div");
+        panel.className = "pk-card pk-bag-panel pk-panel" + (state.activeTab === bag.id ? " is-active" : "");
+        panel.dataset.bagid = bag.id;
+        panel.style.setProperty("--tab-color", TYPE_THEME[bag.type].color);
+
+        var meta = BAG_META[bag.type];
+        panel.innerHTML =
+          '<div class="pk-bag-head">' +
+            '<div class="pk-bag-head__main">' +
+              '<span class="pk-bag-name-wrap">' +
+                '<input class="pk-bag-name" data-rename value="' + esc(bagLabel(bag)) + '" ' +
+                  'placeholder="' + esc(bag.name) + '" aria-label="Rename this bag" spellcheck="false">' +
+                '<span class="pk-bag-name__pencil icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20h4L20 8l-4-4L4 16v4z"/></svg></span>' +
+              '</span>' +
+              '<span class="pk-type-pill ' + (meta.carryOn ? "is-carryon" : "is-checked") + '">' + (meta.carryOn ? "Carry-on" : "Checked") + '</span>' +
+            '</div>' +
+            // the real bag type always stays visible, even after renaming
+            '<p class="pk-card__sub"><b>' + bag.name + '</b> · ' +
+              (meta.carryOn ? "Goes through security with you — TSA rules apply." : "Goes in the cargo hold — screened, but not carried through security.") + '</p>' +
+          '</div>' +
+          '<div class="pk-bag-progress" data-progress></div>' +
+          '<div class="pk-layout">' +
+            '<div class="pk-list-col">' +
+              '<div class="pk-checklist" data-checklist></div>' +
+              '<div class="pk-add-custom">' +
+                '<input type="text" placeholder="Add a custom item…" data-custom-input>' +
+                '<button type="button" data-custom-add>Add</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="pk-suggest"><div data-suggest></div></div>' +
+          '</div>';
+
+        bagPanelsEl.appendChild(panel);
+
+        panel.querySelector("[data-custom-add]").addEventListener("click", function () { addCustomToBag(bag, panel); });
+        panel.querySelector("[data-custom-input]").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") addCustomToBag(bag, panel);
+        });
+
+        // Rename: update the tab live as they type, but don't re-render
+        // the whole panel or the field would lose focus mid-word.
+        var renameEl = panel.querySelector("[data-rename]");
+        renameEl.addEventListener("input", function () {
+          bag.customName = renameEl.value;
+          renderTabs();
+          var sub = panel.querySelector(".pk-card__sub b");
+          if (sub) sub.textContent = bag.name;
+        });
+        renameEl.addEventListener("blur", function () {
+          if (!bag.customName.trim()) { bag.customName = ""; renameEl.value = bag.name; }
+          renderTabs();
+        });
+
+        renderBagProgress(bag, panel.querySelector("[data-progress]"));
+        renderChecklist(bag, panel.querySelector("[data-checklist]"), panel.querySelector("[data-progress]"));
+        renderSuggestions(bag, panel.querySelector("[data-suggest]"));
+      });
+    }
+
+    function renderActiveBagPanel() {
+      var bag = activeBag();
+      if (!bag) return;
+      var panel = bagPanelsEl.querySelector('[data-bagid="' + bag.id + '"]');
+      if (!panel) return;
+      renderBagProgress(bag, panel.querySelector("[data-progress]"));
+      renderChecklist(bag, panel.querySelector("[data-checklist]"), panel.querySelector("[data-progress]"));
+      renderSuggestions(bag, panel.querySelector("[data-suggest]"));
+    }
+
+    function addCustomToBag(bag, panel) {
+      var input = panel.querySelector("[data-custom-input]");
+      var val = input.value.trim();
+      if (!val) return;
+      bag.items.push({ id: "it" + (state.nextItemId++), title: val, icon: "flag", qty: 1, checked: false, tsa: null, isNew: true });
+      input.value = "";
+      render();
+    }
+
+    /* Counts what's actually been packed off this bag's own list —
+       a real, knowable number, unlike a space estimate. */
+    function renderBagProgress(bag, el) {
+      if (!el) return;
+      var total = bag.items.length;
+      var done = bag.items.filter(function (i) { return i.checked; }).length;
+      if (!total) { el.innerHTML = ""; return; }
+      var pct = Math.round((done / total) * 100);
+      el.innerHTML =
+        '<div class="pk-bag-progress__top">' +
+          '<span class="pk-bag-progress__label">' + done + ' of ' + total + ' packed</span>' +
+          (pct === 100 ? '<span class="pk-bag-progress__done">Bag complete</span>' : '<span class="pk-bag-progress__pct">' + pct + '%</span>') +
+        '</div>' +
+        '<div class="pk-bag-progress__track"><div class="pk-bag-progress__fill" style="width:' + pct + '%"></div></div>';
+    }
+
+    function renderChecklist(bag, el, progressEl) {
+      el.innerHTML = "";
+      if (!bag.items.length) {
+        if (progressEl) renderBagProgress(bag, progressEl);
+        el.innerHTML = '<p class="pk-empty-note">Nothing on this list yet — tap a recommendation on the right, or add your own below.</p>';
+        return;
+      }
+      var groups = {};
+      var order = [];
+      bag.items.forEach(function (item) {
+        var cat = item.cat || "Items";
+        if (!groups[cat]) { groups[cat] = []; order.push(cat); }
+        groups[cat].push(item);
+      });
+      order.forEach(function (cat) {
+        var section = document.createElement("div");
+        section.className = "pk-list-section";
+        var title = document.createElement("p");
+        title.className = "pk-list-section__title";
+        title.textContent = cat;
+        section.appendChild(title);
+        groups[cat].sort(function (a, b) { return (a.checked === b.checked) ? 0 : (a.checked ? 1 : -1); });
+        groups[cat].forEach(function (item) {
+          section.appendChild(buildItemRow(item, {
+            onToggle: function () {
+              item.checked = !item.checked;
+              renderChecklist(bag, el, progressEl);
+              if (progressEl) renderBagProgress(bag, progressEl);
+              renderTabs(); // so the "Packed" stamp appears/clears live
+              updateProgress();
+            },
+            onRemove: function () { bag.items = bag.items.filter(function (i) { return i.id !== item.id; }); render(); },
+            onQty: function (delta) {
+              item.qty = Math.max(1, item.qty + delta);
+              renderChecklist(bag, el, progressEl);
+              updateProgress();
+            },
+            onRename: function (val) { item.title = val; },
+            bagCarryOn: BAG_META[bag.type].carryOn
+          }));
+        });
+        el.appendChild(section);
+      });
+    }
+
+    function buildItemRow(item, handlers) {
+      var row = document.createElement("div");
+      row.className = "pk-item-row" + (item.checked ? " is-checked" : "") + (item.isNew ? " is-new" : "") + (handlers.compact ? " pk-item-row--compact" : "");
+      item.isNew = false;
+
+      var tsaHtml = "";
+      if (item.tsa && handlers.bagCarryOn !== undefined) {
+        var showWarn = (item.tsa.limit === "carryOnLimit" && handlers.bagCarryOn) ||
+                        (item.tsa.limit === "carryOnRestricted" && handlers.bagCarryOn) ||
+                        (item.tsa.limit === "checkedRestricted" && !handlers.bagCarryOn);
+        if (showWarn) {
+          tsaHtml = '<span class="pk-tsa-badge" data-tip="' + item.tsa.note.replace(/"/g, "&quot;") + '">' + ICONS.warn + ' TSA</span>';
+        }
+      }
+
+      row.innerHTML =
+        '<button class="pk-check' + (item.checked ? ' is-on' : '') + '" type="button" aria-label="Toggle packed">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>' +
+        '</button>' +
+        '<span class="pk-item-row__icon icon">' + (ICONS[item.icon] || ICONS.flag) + '</span>' +
+        '<span class="pk-item-row__main">' +
+          '<span class="pk-item-row__title-line">' +
+            '<input class="pk-item-row__title" value="' + item.title.replace(/"/g, "&quot;") + '">' +
+          '</span>' +
+          tsaHtml +
+          (item.qty !== undefined ? '<span class="pk-qty"><button type="button" data-dec>&minus;</button><span class="pk-qty__val">' + item.qty + '</span><button type="button" data-inc>+</button></span>' : "") +
+        '</span>' +
+        '<button class="pk-item-remove" type="button" aria-label="Remove item">&times;</button>';
+
+      row.querySelector(".pk-check").addEventListener("click", handlers.onToggle);
+      row.querySelector(".pk-item-remove").addEventListener("click", handlers.onRemove);
+      row.querySelector(".pk-item-row__title").addEventListener("input", function (e) { handlers.onRename(e.target.value); });
+      var inc = row.querySelector("[data-inc]");
+      var dec = row.querySelector("[data-dec]");
+      if (inc) inc.addEventListener("click", function () { handlers.onQty(1); });
+      if (dec) dec.addEventListener("click", function () { handlers.onQty(-1); });
+
+      return row;
+    }
+
+    function renderSuggestions(bag, el) {
+      var pool = buildSuggestionPool(state.trip.days, state.trip.climate);
+      var meta = BAG_META[bag.type];
+      el.innerHTML = '<p class="pk-suggest__title">Recommended</p><p class="pk-suggest__hint">Sized for ' + state.trip.days + ' days in ' + CLIMATE_WORD[state.trip.climate] + ' weather. Tap what you want; skip the rest.</p>';
+
+      Object.keys(pool).forEach(function (cat) {
+        var items = pool[cat].filter(function (sug) { return sug.showIn.indexOf(bag.type) !== -1; });
+        if (!items.length) return;
+        var section = document.createElement("div");
+        section.className = "pk-suggest-section";
+        var title = document.createElement("p");
+        title.className = "pk-suggest-section__title";
+        title.textContent = cat;
+        section.appendChild(title);
+
+        var grid = document.createElement("div");
+        grid.className = "pk-suggest-grid";
+        items.forEach(function (sug) {
+          var already = bag.items.some(function (i) { return i.title === sug.title; });
+          var card = document.createElement("button");
+          card.type = "button";
+          card.className = "pk-suggest-card" + (already ? " is-added" : "");
+          card.innerHTML =
+            '<span class="pk-suggest-card__icon icon">' + (ICONS[sug.icon] || ICONS.flag) + '</span>' +
+            '<span class="pk-suggest-card__label">' + sug.title + '</span>' +
+            (sug.qty > 1 ? '<span class="pk-suggest-card__qty">&times;' + sug.qty + '</span>' : '');
+          if (!already) {
+            card.addEventListener("click", function () {
+              bag.items.push({ id: "it" + (state.nextItemId++), title: sug.title, icon: sug.icon, qty: sug.qty, cat: cat, checked: false, tsa: sug.tsa, isNew: true });
+              render();
+            });
+          }
+          grid.appendChild(card);
+        });
+        section.appendChild(grid);
+        el.appendChild(section);
+      });
+    }
+
+    // ---------------- progress runway ----------------
+    // Tracks essentials only — that's the list where a single missed
+    // item (passport, wallet) can actually derail the trip, so it's
+    // the one number worth surfacing prominently. Any essential the
+    // traveler adds themselves (via the input below) is a real array
+    // entry in state.essentials, so it's automatically included here.
+    function updateProgress() {
+      var total = state.essentials.length;
+      var done = state.essentials.filter(function (i) { return i.checked; }).length;
+      var pct = total ? Math.round((done / total) * 100) : 0;
+
+      runwayFillEl.style.width = pct + "%";
+      runwayPlaneEl.style.left = pct + "%";
+      runwayPctEl.textContent = pct + "%";
+      runwayPlaneEl.classList.toggle("is-taxiing", pct > 0 && pct < 100);
+      runwayEl.classList.toggle("is-ready", pct === 100 && total > 0);
+
+      if (total === 0) runwayStatusEl.textContent = "Add an essential below to start tracking.";
+      else if (pct === 0) runwayStatusEl.textContent = done + " of " + total + " essentials packed — let's get started.";
+      else if (pct < 100) runwayStatusEl.textContent = done + " of " + total + " essentials packed.";
+      else runwayStatusEl.textContent = "All essentials packed — " + total + " of " + total + " checked off.";
+    }
+
+    // ---------------- TSA accordion ----------------
+    var tsaPanel = document.getElementById("pk-tsaPanel");
+    document.getElementById("pk-tsaHead").addEventListener("click", function () {
+      tsaPanel.classList.toggle("is-open");
+    });
+
+    // ---------------- print ----------------
+    function buildPrintSheet(onlyActive) {
+      var sheet = document.getElementById("pk-printSheet");
+      var html = '<h1>Fly Easy — Packing List</h1>';
+
+      function bagBlock(title, items) {
+        var block = '<div class="pk-print-bag"><h2>' + title + '</h2>';
+        if (!items.length) block += '<p style="color:#666; font-size:0.85rem;">No items yet.</p>';
+        items.forEach(function (i) {
+          block += '<div class="pk-print-item"><span class="pk-print-box"></span><span>' + i.title + (i.qty > 1 ? ' &times; ' + i.qty : '') + '</span></div>';
+        });
+        block += '</div>';
+        return block;
+      }
+
+      html += bagBlock("Essentials", state.essentials);
+
+      if (onlyActive) {
+        var bag = activeBag();
+        if (bag) html += bagBlock(bagLabel(bag), bag.items);
+      } else {
+        state.bags.forEach(function (bag) { html += bagBlock(bagLabel(bag), bag.items); });
+      }
+
+      sheet.innerHTML = html;
+    }
+
+    document.getElementById("pk-printActive").addEventListener("click", function () {
+      buildPrintSheet(true);
+      window.print();
+    });
+    document.getElementById("pk-printAll").addEventListener("click", function () {
+      buildPrintSheet(false);
+      window.print();
+    });
+
+    // ---------------- master render ----------------
+    function render() {
+      renderTabs();
+      renderEssentials();
+      renderBagPanels();
+      updateProgress();
+    }
+
+    // No default bags — the picker starts empty until the traveler adds
+    // their first one, so bags only appear once added.
+    render();
+  }
 })();
 
 /* ============================================================
@@ -1744,20 +2432,40 @@
    ============================================================ */
 (function () {
   var map = document.getElementById("sfo-map");
-  var path = document.getElementById("sfo-road-path");
-  var car = document.getElementById("sfo-car");
-  if (!map || !path || !car) return;
+  if (!map) return;
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var totalLen = path.getTotalLength();
 
-  /* Sample the loop once so each stop can find its spot on the track */
+  /* Two hand-drawn tracks, not one scaled to fit both: the desktop
+     loop is a wide flat oval (viewBox 1000x374) that looks stretched
+     and unrealistic if force-fit into the mobile card's ~5:4 box, so
+     below 640px we drive the redrawn --mobile track instead (see
+     styles.css and the sfo-map__road--mobile svg in sfo.html). Stop
+     coordinates below are each track's own viewBox units, matching
+     the terminal buttons' left/top percentages in the markup. */
+  var CONFIGS = {
+    desktop: {
+      pathId: "sfo-road-path",
+      carId: "sfo-car",
+      stops: { intlA: [100, 245], t1: [220, 82], t2: [500, 41], t3: [780, 82], intlG: [900, 245] },
+      junction: [500, 41],
+      spur: { x: 500, yTop: 45, yBottom: 200 },
+      parkOffset: 38
+    },
+    mobile: {
+      pathId: "sfo-road-path-mobile",
+      carId: "sfo-car-mobile",
+      stops: { intlA: [40, 240], t1: [88, 99], t2: [200, 64], t3: [312, 99], intlG: [360, 240] },
+      junction: [200, 64],
+      spur: { x: 200, yTop: 85, yBottom: 205 },
+      parkOffset: 16
+    }
+  };
+  var mobileQuery = window.matchMedia("(max-width: 640px)");
   var SAMPLES = 400;
-  var pts = [];
-  for (var i = 0; i <= SAMPLES; i++) {
-    var p = path.getPointAtLength((i / SAMPLES) * totalLen);
-    pts.push(p);
-  }
+
+  var path, car, totalLen, pts, STOP_LEN, JUNCTION_LEN, SPUR, PARK_OFFSET;
+
   function nearestLen(x, y) {
     var best = 0, bestD = Infinity;
     for (var i = 0; i <= SAMPLES; i++) {
@@ -1767,26 +2475,41 @@
     }
     return (best / SAMPLES) * totalLen;
   }
-
-  /* Stop coordinates in viewBox units (1000 x 340).
-     The car parks just short of each station so it stays visible
+  /* The car parks just short of each station so it stays visible
      beside the badge instead of hiding underneath it. */
-  var PARK_OFFSET = 38;
   function parkLen(rawLen) {
     return rawLen <= PARK_OFFSET + 4 ? rawLen + PARK_OFFSET : rawLen - PARK_OFFSET;
   }
-  var STOP_LEN = {
-    intlA: parkLen(nearestLen(100, 245)),
-    t1: parkLen(nearestLen(220, 82)),
-    t2: parkLen(nearestLen(500, 41)),
-    t3: parkLen(nearestLen(780, 82)),
-    intlG: parkLen(nearestLen(900, 245))
-  };
-  var JUNCTION_LEN = nearestLen(500, 41);
-  var SPUR = { x: 500, yTop: 45, yBottom: 200 };
+
+  function activeConfigKey() { return mobileQuery.matches ? "mobile" : "desktop"; }
+
+  function setup(configKey) {
+    var cfg = CONFIGS[configKey];
+    var nextPath = document.getElementById(cfg.pathId);
+    var nextCar = document.getElementById(cfg.carId);
+    if (!nextPath || !nextCar) return false;
+    path = nextPath;
+    car = nextCar;
+
+    totalLen = path.getTotalLength();
+    pts = [];
+    for (var i = 0; i <= SAMPLES; i++) pts.push(path.getPointAtLength((i / SAMPLES) * totalLen));
+
+    PARK_OFFSET = cfg.parkOffset;
+    STOP_LEN = {};
+    Object.keys(cfg.stops).forEach(function (key) {
+      var xy = cfg.stops[key];
+      STOP_LEN[key] = parkLen(nearestLen(xy[0], xy[1]));
+    });
+    JUNCTION_LEN = nearestLen(cfg.junction[0], cfg.junction[1]);
+    SPUR = cfg.spur;
+    return true;
+  }
+
+  if (!setup(activeConfigKey())) return;
 
   /* Car state: position along loop + how far down the spur (0-1) */
-  var state = { len: STOP_LEN.t1, spur: 0 };
+  var state = { len: STOP_LEN.t1, spur: 0, stopKey: "t1" };
   var animId = null;
 
   function setCar(len, spur) {
@@ -1821,6 +2544,7 @@
 
   function driveTo(key) {
     if (animId) window.cancelAnimationFrame(animId);
+    state.stopKey = key;
     var targetSpur = key === "transport";
     var targetLen = targetSpur ? JUNCTION_LEN : STOP_LEN[key];
     if (targetLen === undefined) return;
@@ -1934,6 +2658,25 @@
 
   setCar(state.len, 0);
   armIdle();
+
+  /* If the viewport crosses the 640px line (resize, rotation), swap
+     to the other track and re-park the car at the same stop instead
+     of leaving it mid-flight on a track that's no longer shown. */
+  function handleBreakpointChange() {
+    if (animId) window.cancelAnimationFrame(animId);
+    var wasPatrolling = patrolling;
+    stopPatrol();
+    var stopKey = !wasPatrolling && state.stopKey ? state.stopKey : "t1";
+    var wasSpur = !wasPatrolling && state.spur > 0;
+    if (!setup(activeConfigKey())) return;
+    state.len = wasSpur ? JUNCTION_LEN : (STOP_LEN[stopKey] !== undefined ? STOP_LEN[stopKey] : STOP_LEN.t1);
+    state.spur = wasSpur ? 1 : 0;
+    state.stopKey = stopKey;
+    setCar(state.len, state.spur);
+    armIdle();
+  }
+  if (mobileQuery.addEventListener) mobileQuery.addEventListener("change", handleBreakpointChange);
+  else mobileQuery.addListener(handleBreakpointChange);
 })();
 
 /* ============================================================
@@ -1979,4 +2722,50 @@
 
   toast.querySelector(".survey-toast__close").addEventListener("click", dismiss);
   document.getElementById("surveyToastCta").addEventListener("click", dismiss);
+})();
+
+/* ============================================================
+   Nav hamburger — below desktop width the page links collapse
+   behind a toggle button; this just opens/closes that dropdown
+   and keeps it in sync with clicks outside, link taps, and the
+   viewport growing back past the breakpoint.
+   ============================================================ */
+(function () {
+  var toggle = document.getElementById("siteNavToggle");
+  var links = document.getElementById("siteNavLinks");
+  if (!toggle || !links) return;
+
+  function close() {
+    links.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+  }
+  function open() {
+    links.classList.add("is-open");
+    toggle.setAttribute("aria-expanded", "true");
+  }
+
+  toggle.addEventListener("click", function () {
+    if (links.classList.contains("is-open")) close(); else open();
+  });
+
+  links.querySelectorAll("a").forEach(function (a) {
+    a.addEventListener("click", close);
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!links.classList.contains("is-open")) return;
+    if (links.contains(e.target) || toggle.contains(e.target)) return;
+    close();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && links.classList.contains("is-open")) {
+      close();
+      toggle.focus();
+    }
+  });
+
+  window.addEventListener("resize", function () {
+    if (window.innerWidth > 1024) close();
+  });
 })();

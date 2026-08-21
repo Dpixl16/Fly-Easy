@@ -210,6 +210,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   gap: 0.65rem;
   text-decoration: none;
   color: var(--deep-navy);
+  flex: none;
 }
 .site-nav__mark {
   display: flex;
@@ -224,6 +225,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   letter-spacing: 0.01em;
 }
 
+/* Everything but the brand lives in one right-hand cluster, so the
+   two of them can just split the row with justify-content: space-
+   between — no fiddly 3-way distribution to get right. */
+.site-nav__right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .site-nav__links {
   display: flex;
   gap: 0.4rem;
@@ -234,6 +244,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--text-muted);
   padding: 0.5rem 0.9rem;
   border-radius: var(--radius-pill);
+  white-space: nowrap;
   transition: background 0.2s var(--ease), color 0.2s var(--ease);
 }
 .site-nav__links a:hover { background: var(--sky-pale); color: var(--deep-navy); }
@@ -243,14 +254,156 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-weight: 500;
 }
 /* Distinct warm accent so this stands apart from the regular nav
-   links — a deliberate "pop" rather than another blue/navy link. */
-.site-nav__links a.site-nav__cta {
+   links — a deliberate "pop" rather than another blue/navy link.
+   Sits outside .site-nav__links now so it stays visible even when
+   the page links collapse into the hamburger menu below desktop. */
+.site-nav__cta {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-pill);
   background: var(--phase-arrival);
   color: var(--cloud-white);
   font-weight: 600;
-  margin-left: 0.2rem;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  flex: none;
+  transition: background 0.2s var(--ease);
 }
-.site-nav__links a.site-nav__cta:hover { background: #A34F1D; color: var(--cloud-white); }
+.site-nav__cta:hover { background: #A34F1D; color: var(--cloud-white); }
+
+/* Hidden on desktop; becomes the entry point to the page links
+   once they no longer fit in one row (see max-width: 1024px). */
+.site-nav__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border-soft);
+  background: var(--cloud-white);
+  color: var(--deep-navy);
+  cursor: pointer;
+  flex: none;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.site-nav__toggle svg { width: 19px; height: 19px; }
+.site-nav__toggle:hover { border-color: var(--horizon-blue); color: var(--horizon-blue); }
+.site-nav__toggle[aria-expanded="true"] { background: var(--sky-pale); border-color: var(--horizon-blue); color: var(--horizon-blue); }
+
+/* Below desktop width, 5 page links no longer fit beside the CTA
+   without crowding — swap them for a hamburger-triggered dropdown.
+   "Suggest a tip" stays visible; it's a click-through CTA, not a
+   page link, so it doesn't belong behind the toggle. */
+@media (max-width: 1024px) {
+  .site-nav__toggle { display: inline-flex; }
+  .site-nav__links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0.15rem;
+    background: var(--cloud-white);
+    padding: 0.6rem 1.15rem 0.9rem;
+    border-top: 1px solid var(--border-soft);
+    box-shadow: 0 16px 28px rgba(15, 48, 73, 0.12);
+  }
+  .site-nav__links.is-open { display: flex; }
+  .site-nav__links a { padding: 0.75rem 0.9rem; font-size: 0.95rem; }
+
+  body[data-tod="dusk"] .site-nav__links,
+  body[data-tod="night"] .site-nav__links {
+    background: rgba(10, 17, 40, 0.97);
+    border-top-color: rgba(255, 255, 255, 0.14);
+  }
+}
+
+/* ============================================================
+   Mobile bottom tab bar — below 640px, five page links crammed
+   behind a top-corner hamburger meant an extra tap just to see
+   where you could go. A fixed bottom bar puts every page one
+   thumb-reach away, the way a phone nav should work. The top bar
+   keeps just the brand and the "Suggest a tip" CTA; the page links
+   and the hamburger that opened them move to the bottom bar.
+   ============================================================ */
+.mobile-tabbar { display: none; }
+
+@media (max-width: 640px) {
+  .site-nav__links { display: none !important; }
+  .site-nav__toggle { display: none; }
+
+  body { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
+
+  .mobile-tabbar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-soft);
+    padding: 0.3rem 0.3rem calc(0.3rem + env(safe-area-inset-bottom));
+    box-shadow: 0 -10px 28px -16px rgba(15, 48, 73, 0.22);
+    animation: tabbar-rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes tabbar-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mobile-tabbar__item {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0.4rem 0.15rem 0.35rem;
+  text-decoration: none;
+  color: var(--text-muted);
+  border-radius: 16px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease), transform 0.15s var(--ease);
+}
+.mobile-tabbar__icon { width: 22px; height: 22px; transition: transform 0.25s var(--ease); }
+.mobile-tabbar__label { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.01em; white-space: nowrap; }
+
+.mobile-tabbar__item:active { transform: scale(0.92); }
+
+.mobile-tabbar__item[aria-current="page"] {
+  color: var(--deep-navy);
+  background: var(--sky-pale);
+}
+.mobile-tabbar__item[aria-current="page"] .mobile-tabbar__icon { transform: translateY(-1px); }
+
+body[data-tod="dusk"] .mobile-tabbar,
+body[data-tod="night"] .mobile-tabbar {
+  background: rgba(10, 17, 40, 0.94);
+  border-top-color: rgba(255, 255, 255, 0.14);
+}
+body[data-tod="dusk"] .mobile-tabbar__item,
+body[data-tod="night"] .mobile-tabbar__item { color: rgba(255, 255, 255, 0.6); }
+body[data-tod="dusk"] .mobile-tabbar__item[aria-current="page"],
+body[data-tod="night"] .mobile-tabbar__item[aria-current="page"] {
+  color: #FFF;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-tabbar { animation: none; }
+  .mobile-tabbar__item, .mobile-tabbar__icon { transition: none; }
+}
 
 /* ============================================================
    Buttons / links
@@ -520,6 +673,20 @@ ul { margin: 0; padding: 0; list-style: none; }
 .dest-card--sfo .dest-card__cta { color: var(--amber-badge); }
 .dest-card__cta .icon { width: 15px; height: 15px; transition: transform 0.2s var(--ease); }
 .dest-card:hover .dest-card__cta .icon { transform: translateX(4px); }
+
+/* Packer's own accent — distinct from Global's blue and SFO's
+   amber, and echoes the teal in its card photo. */
+.dest-card--packer .dest-card__icon { background: var(--phase-inflight-tint); color: var(--phase-inflight); }
+.dest-card--packer .dest-card__list li::before { background: var(--phase-inflight); }
+.dest-card--packer .dest-card__cta { color: var(--phase-inflight); }
+
+/* ============================================================
+   Packer promo card (index.html) — a single, simple dest-card
+   grouped with Timeblocker as a "tool", not with the tips guides
+   below it. Capped narrower than the full container so it reads
+   as one card, not a stretched banner. */
+.pk-promo { padding: 0 0 0.5rem; }
+.pk-promo__card { max-width: 560px; margin: 0 auto; }
 
 /* ============================================================
    Timeblocker feature banner (index.html)
@@ -1520,7 +1687,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .site-footer__brand img { height: 26px; width: auto; display: block; }
 .site-footer__links {
   display: flex;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
   justify-content: center;
   font-size: 0.85rem;
   margin-bottom: 1.1rem;
@@ -1554,12 +1722,9 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 @media (max-width: 640px) {
-  .site-nav__inner { padding: 0.85rem 1.15rem; flex-wrap: wrap; row-gap: 0.5rem; }
-  .site-nav__brand { white-space: nowrap; }
+  .site-nav__inner { padding: 0.85rem 1.15rem; }
   .site-nav__word { font-size: 1.05rem; white-space: nowrap; }
-  .site-nav__links { font-size: 0.78rem; gap: 0.15rem; flex: 1 1 100%; flex-wrap: wrap; row-gap: 0.4rem; }
-  .site-nav__links a { padding: 0.4rem 0.55rem; white-space: nowrap; }
-  .site-nav__links a.site-nav__cta { flex: 1 1 100%; margin-left: 0; text-align: center; }
+  .site-nav__cta { padding: 0.5rem 0.8rem; font-size: 0.86rem; }
   .container, .destinations, .page-header { padding-left: 0; padding-right: 0; }
   .container { padding: 0 1.15rem; }
   .hero__actions, .value-strip { flex-direction: column; align-items: flex-start; }
@@ -1583,8 +1748,18 @@ ul { margin: 0; padding: 0; list-style: none; }
   .photo-band { min-height: 340px; margin: 2rem 0; border-radius: 20px; }
   .photo-band__scrim { background: linear-gradient(180deg, rgba(15, 48, 73, 0.2) 0%, rgba(15, 48, 73, 0.82) 62%); }
   .photo-band__content { max-width: none; padding: 1.75rem; }
-  .page-toggle { width: 100%; }
-  .page-toggle__btn { flex: 1 1 auto; justify-content: center; text-align: center; }
+  .page-toggle { width: 100%; flex-wrap: nowrap; gap: 0.3rem; padding: 0.3rem; }
+  .page-toggle__btn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    padding: 0.6rem 0.5rem;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+  .page-toggle__btn .icon { width: 16px; height: 16px; flex: none; }
   .airline-search__filters { width: 100%; }
   .airline-filter { flex: 1 1 auto; text-align: center; }
   .airline-warning { flex-direction: column; }
@@ -2561,6 +2736,22 @@ body[data-tod="dusk"] .filmstrip__label, body[data-tod="night"] .filmstrip__labe
 .sfo-map { height: 330px; }
 @media (max-width: 700px) { .sfo-map { height: 265px; } }
 
+/* ============================================================
+   AirTrain map on mobile — the desktop track (viewBox 1000x374,
+   a wide flat oval) was being force-stretched with
+   preserveAspectRatio="none" into the mobile card's much more
+   square box, distorting the loop and the car. Below 640px we
+   show the redrawn --mobile track instead, and let the card's
+   own aspect-ratio match that track's viewBox exactly (400x320)
+   so nothing has to stretch to fit.
+   ============================================================ */
+.sfo-map__road--mobile { display: none; }
+@media (max-width: 640px) {
+  .sfo-map { height: auto; aspect-ratio: 400 / 320; }
+  .sfo-map__road--desktop { display: none; }
+  .sfo-map__road--mobile { display: block; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .explorer__panel.slide-out-w, .explorer__panel.slide-out-e,
   .explorer__panel.slide-in-e, .explorer__panel.slide-in-w,
@@ -3158,3 +3349,450 @@ body[data-tod="night"] .survey-toast {
 body[data-tod="dusk"] .survey-toast__title, body[data-tod="night"] .survey-toast__title { color: #FFF; }
 body[data-tod="dusk"] .survey-toast__text, body[data-tod="night"] .survey-toast__text { color: rgba(255, 255, 255, 0.75); }
 body[data-tod="dusk"] .survey-toast__close, body[data-tod="night"] .survey-toast__close { background: rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.8); }
+
+/* ============================================================
+   Packer Assistant
+   ============================================================ */
+.pk-page { padding-top: 2.4rem; padding-bottom: 1rem; }
+
+/* hero sits directly on the sky, like tb-pagehead */
+.pk-hero { max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem 1rem; animation: pkFadeUp 0.7s var(--ease) both; }
+.pk-hero .eyebrow { text-transform: uppercase; letter-spacing: 0.09em; font-size: 0.78rem; font-weight: 600; color: var(--horizon-blue); margin-bottom: 0.6rem; display: block; transition: color 0.6s ease; }
+.pk-hero h1 { font-size: clamp(1.8rem, 3.2vw, 2.6rem); color: var(--deep-navy); transition: color 0.6s ease; }
+.pk-hero h1 em { color: var(--horizon-blue); font-style: normal; transition: color 0.6s ease; }
+.pk-hero p { color: var(--text-muted); max-width: 60ch; margin-top: 0.7rem; font-size: 1.02rem; transition: color 0.6s ease; }
+
+/* page shell: main column + sticky TSA rail on the right */
+.pk-wrap { max-width: 1300px; margin: 0 auto; padding: 0 1.5rem 5rem; position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) 292px; gap: 1.5rem; align-items: start; }
+.pk-main-col { min-width: 0; }
+.pk-side-col { position: sticky; top: 1.5rem; min-width: 0; }
+@media (max-width: 1080px) {
+  .pk-wrap { grid-template-columns: 1fr; }
+  .pk-side-col { position: static; }
+}
+
+@keyframes pkFadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.pk-enter { animation: pkFadeUp 0.6s var(--ease) both; }
+
+/* card shell */
+.pk-card { background: var(--cloud-white); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.7rem; margin-top: 1.5rem; box-shadow: 0 1px 2px rgba(15, 48, 73, 0.04); }
+.pk-card__title { font-size: 1.15rem; color: var(--deep-navy); margin-bottom: 0.2rem; }
+.pk-card__sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; }
+
+/* runway progress: a "window" onto the real sky behind it */
+.pk-runway {
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.3rem 0.9rem;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.6s ease, border-color 0.6s ease;
+}
+.pk-runway__top { display: flex; align-items: baseline; justify-content: space-between; position: relative; z-index: 1; }
+.pk-runway__label { color: var(--deep-navy); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; transition: color 0.6s ease; }
+.pk-runway__pct { color: var(--deep-navy); font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; transition: color 0.6s ease; }
+.pk-runway__track {
+  position: relative; margin-top: 0.85rem; height: 3px;
+  background: repeating-linear-gradient(90deg, rgba(15, 48, 73, 0.3) 0 18px, transparent 18px 34px);
+  border-radius: 2px;
+  transition: background 0.6s ease;
+}
+.pk-runway__fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--horizon-blue); border-radius: 2px; width: 0%; transition: width 0.6s var(--ease); }
+.pk-runway__plane {
+  position: absolute; top: 50%; left: 0%;
+  transform: translate(-50%, -60%) rotate(-90deg);
+  width: 30px; height: 30px; color: var(--deep-navy);
+  transition: left 0.6s var(--ease), color 0.6s ease;
+  filter: drop-shadow(0 2px 5px rgba(15, 48, 73, 0.35));
+}
+.pk-runway__plane svg { width: 100%; height: 100%; }
+.pk-runway__plane.is-taxiing { animation: pkPlaneWobble 1.6s ease-in-out infinite; }
+@keyframes pkPlaneWobble { 0%,100% { transform: translate(-50%, -60%) rotate(-90deg) translateY(0); } 50% { transform: translate(-50%, -60%) rotate(-90deg) translateY(-3px); } }
+/* status + "cleared" badge share one row so the card stays short */
+.pk-runway__foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 0.7rem; position: relative; z-index: 1; min-height: 22px; }
+.pk-runway__status { font-size: 0.82rem; color: var(--text-muted); transition: color 0.3s var(--ease); }
+.pk-runway.is-ready .pk-runway__status { color: var(--phase-inflight); font-weight: 600; }
+.pk-runway__badge {
+  display: inline-flex; align-items: center; gap: 0.35rem; flex-shrink: 0;
+  background: var(--phase-inflight-tint); border: 1px solid var(--phase-inflight);
+  padding: 0.2rem 0.6rem; border-radius: var(--radius-pill);
+  font-size: 0.74rem; font-weight: 700; color: var(--phase-inflight);
+  opacity: 0; transform: scale(0.9); transition: all 0.4s var(--ease);
+}
+.pk-runway.is-ready .pk-runway__badge { opacity: 1; transform: scale(1); }
+.pk-runway__badge .icon { width: 12px; height: 12px; }
+/* the runway sits on the live sky, so its badge needs a solid backing
+   once the background goes dark */
+body[data-tod="dusk"] .pk-runway__badge,
+body[data-tod="night"] .pk-runway__badge { background: rgba(169, 240, 198, 0.16); color: #A9F0C6; border-color: rgba(169, 240, 198, 0.45); }
+body[data-tod="dusk"] .pk-runway.is-ready .pk-runway__status,
+body[data-tod="night"] .pk-runway.is-ready .pk-runway__status { color: #A9F0C6; }
+
+/* the double-check caution lives inside the essentials card */
+.pk-essentials-warn { display: flex; align-items: flex-start; gap: 0.4rem; margin-top: 0.45rem; font-size: 0.765rem; color: var(--warning-red); font-weight: 600; line-height: 1.4; }
+.pk-essentials-warn .icon { width: 14px; height: 14px; flex-shrink: 0; margin-top: 0.08rem; }
+
+/* Text sitting directly on the sky needs to relegitimize itself as
+   the sky darkens through dusk/night — mirrors the rest of the site. */
+body[data-tod="dusk"] .pk-hero h1, body[data-tod="night"] .pk-hero h1 { color: #fff; }
+body[data-tod="dusk"] .pk-hero p, body[data-tod="night"] .pk-hero p { color: rgba(255, 255, 255, 0.78); }
+body[data-tod="dusk"] .pk-hero .eyebrow, body[data-tod="night"] .pk-hero .eyebrow { color: #BFE3F7; }
+body[data-tod="dusk"] .pk-runway, body[data-tod="night"] .pk-runway { background: rgba(10, 20, 40, 0.35); border-color: rgba(255, 255, 255, 0.2); }
+body[data-tod="dusk"] .pk-runway__label, body[data-tod="night"] .pk-runway__label,
+body[data-tod="dusk"] .pk-runway__pct, body[data-tod="night"] .pk-runway__pct { color: #fff; }
+body[data-tod="dusk"] .pk-runway__status, body[data-tod="night"] .pk-runway__status { color: #BFE3F7; }
+body[data-tod="dusk"] .pk-runway__track, body[data-tod="night"] .pk-runway__track {
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.32) 0 18px, transparent 18px 34px);
+}
+body[data-tod="dusk"] .pk-runway__plane, body[data-tod="night"] .pk-runway__plane { color: #fff; }
+body[data-tod="dusk"] .pk-bags-head__title, body[data-tod="night"] .pk-bags-head__title { color: #fff; }
+body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__sub { color: rgba(255, 255, 255, 0.75); }
+
+/* essentials: compact, purple-tinted, always visible. Carries the
+   double-check caution inline. */
+.pk-essentials-card { background: var(--phase-predeparture-tint); border-color: rgba(107, 78, 140, 0.25); margin-top: 0.75rem; padding: 1.15rem 1.3rem 1.25rem; }
+.pk-essentials-card .pk-card__sub { margin-bottom: 0; }
+.pk-essentials-card__head { display: flex; align-items: flex-start; gap: 0.7rem; margin-bottom: 0.85rem; }
+.pk-essentials-card__icon {
+  width: 34px; height: 34px; border-radius: var(--radius-pill); background: rgba(255, 255, 255, 0.65);
+  color: var(--phase-predeparture); display: flex; align-items: center; justify-content: center;
+  padding: 7px; flex-shrink: 0; margin-top: 0.1rem;
+}
+.pk-essentials-card .pk-card__title { color: var(--phase-predeparture); }
+.pk-essentials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.3rem 0.6rem; }
+
+/* "your bags" intro, with trip controls inline on the right */
+.pk-bags-head { margin-top: 2.2rem; padding: 0 0.2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.pk-bags-head__title { font-size: 1.2rem; color: var(--deep-navy); transition: color 0.6s ease; }
+.pk-bags-head__sub { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem; transition: color 0.6s ease; }
+
+.pk-trip-bar { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+
+/* days: a stepper, so there's no free-text field to mistype */
+.pk-stepper { display: inline-flex; align-items: center; background: var(--cloud-white); border: 1px solid var(--border-soft); border-radius: var(--radius-pill); overflow: hidden; }
+.pk-stepper button {
+  border: none; background: transparent; color: var(--text-muted);
+  width: 24px; height: 28px; font-size: 0.95rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.pk-stepper button:hover { background: var(--sky-pale); color: var(--horizon-blue); }
+.pk-stepper button:disabled { opacity: 0.3; pointer-events: none; }
+.pk-stepper__val { font-size: 0.78rem; color: var(--text-muted); padding: 0 0.15rem; min-width: 4.6rem; text-align: center; white-space: nowrap; }
+.pk-stepper__val b { color: var(--deep-navy); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* climate: a segmented control — one tap, always shows the choice */
+.pk-segment { display: inline-flex; background: var(--cloud-white); border: 1px solid var(--border-soft); border-radius: var(--radius-pill); padding: 2px; }
+.pk-segment button {
+  border: none; background: transparent; color: var(--text-muted);
+  padding: 0.24rem 0.6rem; border-radius: var(--radius-pill);
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+.pk-segment button:hover { color: var(--deep-navy); }
+.pk-segment button.is-active { background: var(--horizon-blue); color: #fff; }
+
+/* airline limits caution, sits directly above the bag tabs */
+.pk-airline-warn {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  background: var(--warning-red-tint);
+  border: 1px solid rgba(180, 35, 24, 0.22);
+  border-left: 3px solid var(--warning-red);
+  border-radius: 0 12px 12px 0;
+  padding: 0.6rem 0.85rem;
+  margin-top: 0.9rem;
+}
+.pk-airline-warn__icon { width: 17px; height: 17px; color: var(--warning-red); flex-shrink: 0; margin-top: 0.12rem; }
+.pk-airline-warn__title { font-size: 0.8rem; font-weight: 800; color: var(--warning-red); margin-bottom: 0.1rem; }
+.pk-airline-warn__text { font-size: 0.765rem; color: var(--deep-navy); line-height: 1.45; }
+.pk-airline-warn__text b { font-weight: 700; color: var(--warning-red); }
+
+/* bag tabs: card-style switcher, fully colored per bag type.
+   Each tab's --tab-color/--tab-tint/--tab-border custom properties
+   are set inline by renderTabs() from TYPE_THEME, so the whole card
+   — not just an icon — reads as "this one." */
+.pk-tabs { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.6rem; margin-top: 0.9rem; }
+.pk-tab {
+  border: 1.5px solid var(--tab-border, var(--border-soft));
+  background: var(--tab-tint, var(--cloud-white));
+  cursor: pointer;
+  border-radius: var(--radius-md); padding: 0.6rem 0.85rem; text-align: left;
+  display: flex; flex-direction: column; gap: 0.35rem; min-width: 168px;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.pk-tab:hover { transform: translateY(-1px); }
+.pk-tab.is-active { border-color: var(--tab-color, var(--horizon-blue)); border-width: 2px; box-shadow: 0 4px 12px rgba(15, 48, 73, 0.16); }
+.pk-tab__row { display: flex; align-items: center; gap: 0.5rem; width: 100%; }
+.pk-tab .icon { width: 18px; height: 18px; color: var(--tab-color, var(--horizon-blue)); flex-shrink: 0; }
+.pk-tab__name { font-size: 0.87rem; font-weight: 700; color: var(--deep-navy); flex: 1; white-space: nowrap; }
+.pk-tab__close { opacity: 0.45; font-size: 1rem; line-height: 1; padding: 0 0.1rem; flex-shrink: 0; }
+.pk-tab__close:hover { opacity: 1; color: var(--warning-red); }
+.pk-tab__badges { display: flex; align-items: center; gap: 0.3rem; }
+/* solid, bold, high-contrast — this is the TSA-relevant signal */
+.pk-tab__type-badge { font-size: 0.63rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.16rem 0.55rem; border-radius: var(--radius-pill); color: #fff; }
+.pk-tab__type-badge.is-carryon { background: var(--phase-departure); }
+.pk-tab__type-badge.is-checked { background: var(--tip-highlight); }
+/* quiet running count while there's still packing to do */
+.pk-tab__count { font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.02em; }
+/* a loud green stamp the moment the bag is finished */
+.pk-tab__packed {
+  display: inline-flex; align-items: center; gap: 0.22rem;
+  background: var(--phase-inflight); color: #fff;
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 0.16rem 0.5rem 0.16rem 0.4rem; border-radius: var(--radius-pill);
+}
+.pk-tab__packed .icon { width: 9px; height: 9px; }
+.pk-tab__packed .icon svg { stroke-width: 3.2; }
+/* only the bag that just finished animates */
+.pk-tab.is-just-packed .pk-tab__packed { animation: pkStamp 0.42s var(--ease) both; }
+@keyframes pkStamp { 0% { transform: scale(0.5); opacity: 0; } 65% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+/* the whole tab picks up a green edge so completed bags are obvious
+   at a glance across the row, without losing their type colour */
+.pk-tab.is-complete { border-color: var(--phase-inflight); background: linear-gradient(var(--phase-inflight-tint), var(--phase-inflight-tint)) padding-box, var(--tab-tint); }
+.pk-tab.is-complete .pk-tab__name { color: var(--phase-inflight); }
+.pk-tab.is-complete.is-active { box-shadow: 0 4px 12px rgba(10, 110, 99, 0.22); }
+
+.pk-tab-add {
+  border: 1.5px dashed var(--border-soft); background: transparent; color: var(--horizon-blue);
+  border-radius: var(--radius-pill); padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 0.32rem; align-self: center;
+  white-space: nowrap; transition: all 0.2s var(--ease);
+}
+.pk-tab-add .icon { width: 13px; height: 13px; }
+.pk-tab-add:hover { background: var(--sky-pale); border-color: var(--horizon-blue); }
+.pk-tab-add.is-open { background: var(--sky-pale); border-style: solid; }
+
+/* add-bag picker: grouped by carry-on vs checked */
+.pk-bag-picker {
+  margin-top: 0.8rem; display: none; flex-direction: column; gap: 1rem;
+  padding: 1.1rem 1.2rem; background: var(--sky-pale); border-radius: var(--radius-md);
+  animation: pkFadeUp 0.3s var(--ease) both;
+}
+.pk-bag-picker.is-open { display: flex; }
+.pk-bag-picker__label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--deep-navy); margin-bottom: 0.55rem; }
+.pk-bag-picker__label span { font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--text-muted); }
+.pk-bag-picker__row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.pk-bag-option {
+  border: 1px solid var(--border-soft); background: #fff; padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; color: var(--deep-navy);
+  display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s var(--ease);
+}
+.pk-bag-option:hover { border-color: var(--horizon-blue); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(14,165,233,0.15); }
+.pk-bag-option .icon { width: 18px; height: 18px; color: var(--horizon-blue); }
+
+/* carry-on / checked pill on each bag panel's own header —
+   solid + bold, since this is the functional TSA distinction */
+.pk-type-pill {
+  display: inline-flex; align-items: center; font-size: 0.7rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.05em; padding: 0.24rem 0.65rem;
+  border-radius: var(--radius-pill); margin-left: 0.6rem; vertical-align: middle;
+  color: #fff;
+}
+.pk-type-pill.is-carryon { background: var(--phase-departure); }
+.pk-type-pill.is-checked { background: var(--tip-highlight); }
+
+/* the bag panel itself picks up the same per-type accent as its tab,
+   as a left-edge stripe, so the color story continues into the list */
+.pk-bag-panel { border-left: 5px solid var(--tab-color, var(--border-soft)); padding: 1.2rem 1.3rem; }
+.pk-bag-panel .pk-card__title { font-size: 1.05rem; }
+.pk-bag-panel .pk-card__sub { font-size: 0.82rem; margin-bottom: 0; }
+.pk-bag-panel .pk-card__sub b { color: var(--tab-color, var(--deep-navy)); font-weight: 700; }
+
+/* rename field: looks like the heading until you hover or focus it */
+.pk-bag-head__main { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.pk-bag-name-wrap { position: relative; display: inline-flex; align-items: center; }
+.pk-bag-name {
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--deep-navy);
+  border: 1px solid transparent; background: transparent; border-radius: 8px;
+  padding: 0.1rem 1.5rem 0.1rem 0.35rem; margin-left: -0.35rem;
+  width: 15ch; max-width: 100%;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.pk-bag-name:hover { border-color: var(--border-soft); background: var(--sky-mist); }
+.pk-bag-name:focus { outline: none; border-color: var(--horizon-blue); background: #fff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14); }
+.pk-bag-name__pencil { position: absolute; right: 0.35rem; width: 12px; height: 12px; color: var(--border-soft); pointer-events: none; transition: color 0.18s var(--ease); }
+.pk-bag-name-wrap:hover .pk-bag-name__pencil { color: var(--horizon-blue); }
+.pk-bag-name:focus + .pk-bag-name__pencil { opacity: 0; }
+
+/* renamed tabs show the real bag type in small print underneath */
+.pk-tab__type-note { font-size: 0.64rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.01em; padding-left: 1.6rem; margin-top: -0.2rem; }
+
+/* panels */
+.pk-panel { display: none; }
+.pk-panel.is-active { display: block; animation: pkPanelIn 0.35s var(--ease) both; }
+@keyframes pkPanelIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* per-bag packed progress */
+.pk-bag-progress:not(:empty) { margin-top: 1.1rem; }
+.pk-bag-progress__top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.4rem; }
+.pk-bag-progress__label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+.pk-bag-progress__pct { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; color: var(--tab-color, var(--horizon-blue)); }
+.pk-bag-progress__done { font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--phase-inflight); }
+.pk-bag-progress__track { height: 6px; border-radius: var(--radius-pill); background: var(--sky-mist); border: 1px solid var(--border-soft); overflow: hidden; }
+.pk-bag-progress__fill { height: 100%; background: var(--tab-color, var(--horizon-blue)); border-radius: var(--radius-pill); width: 0%; transition: width 0.45s var(--ease); }
+
+/* layout: checklist + suggestions */
+.pk-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.1rem; align-items: start; }
+@media (max-width: 880px) { .pk-layout { grid-template-columns: 1fr; } }
+.pk-list-col { min-width: 0; }
+
+.pk-list-section { margin-bottom: 0.75rem; }
+.pk-list-section:last-child { margin-bottom: 0; }
+.pk-list-section__title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.25rem; }
+.pk-item-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.28rem 0.4rem; border-radius: 10px;
+  border: 1px solid transparent;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), opacity 0.3s var(--ease);
+}
+.pk-item-row:hover { background: var(--sky-mist); border-color: var(--border-soft); }
+.pk-item-row.is-checked { opacity: 0.5; }
+.pk-item-row.is-checked .pk-item-row__title { text-decoration: line-through; color: var(--text-muted); }
+
+.pk-check { width: 18px; height: 18px; border-radius: 6px; border: 1.6px solid var(--border-soft); background: #fff; flex-shrink: 0; position: relative; transition: all 0.2s var(--ease); }
+.pk-check svg { position: absolute; inset: 0; margin: auto; width: 11px; height: 11px; color: #fff; stroke-dasharray: 20; stroke-dashoffset: 20; transition: stroke-dashoffset 0.3s var(--ease) 0.05s; }
+.pk-check.is-on { background: var(--horizon-blue); border-color: var(--horizon-blue); }
+.pk-check.is-on svg { stroke-dashoffset: 0; }
+
+.pk-item-row__icon { width: 22px; height: 22px; border-radius: var(--radius-pill); background: var(--icon-bg); color: var(--horizon-blue); display: flex; align-items: center; justify-content: center; padding: 4px; flex-shrink: 0; }
+/* one single line: title, badges, qty and remove all share the row */
+.pk-item-row__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.35rem; }
+.pk-item-row__title-line { display: flex; align-items: center; gap: 0.35rem; flex: 1; min-width: 0; }
+.pk-item-row__title { border: none; background: transparent; font-size: 0.84rem; color: var(--deep-navy); font-weight: 500; padding: 0.05rem 0.15rem; border-radius: 4px; flex: 1 1 auto; min-width: 60px; width: 100%; }
+.pk-item-row__title:focus { outline: 2px solid var(--horizon-blue); background: #fff; }
+.pk-tsa-badge {
+  display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.62rem; font-weight: 700;
+  padding: 0.05rem 0.35rem; border-radius: var(--radius-pill); flex-shrink: 0;
+  background: var(--warning-red-tint); color: var(--warning-red);
+  cursor: help; position: relative;
+}
+.pk-tsa-badge .icon { width: 9px; height: 9px; }
+.pk-tsa-badge[data-tip]:hover::after {
+  content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); right: 0;
+  background: var(--deep-navy); color: #fff; font-weight: 500; font-size: 0.74rem;
+  padding: 0.5rem 0.7rem; border-radius: 10px; width: 210px; white-space: normal;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2); z-index: 5; animation: pkFadeUp 0.2s var(--ease) both;
+}
+.pk-qty { display: flex; align-items: center; gap: 0.15rem; flex-shrink: 0; }
+.pk-qty button { width: 17px; height: 17px; border-radius: 5px; border: 1px solid var(--border-soft); background: #fff; color: var(--text-muted); font-size: 0.7rem; line-height: 1; display: flex; align-items: center; justify-content: center; }
+.pk-qty button:hover { border-color: var(--horizon-blue); color: var(--horizon-blue); }
+.pk-qty__val { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); min-width: 1.2rem; text-align: center; }
+.pk-item-remove {
+  border: none; background: transparent; color: #9FBACD; font-size: 0.95rem;
+  width: 19px; height: 19px; border-radius: 50%; flex-shrink: 0; transition: all 0.2s var(--ease);
+  display: flex; align-items: center; justify-content: center;
+}
+.pk-item-row:hover .pk-item-remove { color: var(--text-muted); }
+.pk-item-remove:hover { background: var(--warning-red-tint); color: var(--warning-red); }
+/* essentials are a fixed default list, so the "don't need this one"
+   affordance has to be visible without hunting for it */
+.pk-essentials-card .pk-item-remove { color: #A08FC0; }
+.pk-essentials-card .pk-item-row:hover .pk-item-remove { color: var(--phase-predeparture); }
+
+.pk-empty-note { font-size: 0.82rem; color: var(--text-muted); padding: 0.5rem 0.2rem; font-style: italic; }
+
+.pk-add-custom { display: flex; gap: 0.4rem; margin-top: 0.75rem; }
+.pk-add-custom input { flex: 1; padding: 0.45rem 0.75rem; border: 1px solid var(--border-soft); border-radius: 10px; background: var(--sky-mist); font-size: 0.84rem; }
+.pk-add-custom button { border: none; background: var(--deep-navy); color: #fff; padding: 0 0.95rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; transition: background 0.2s var(--ease); }
+.pk-add-custom button:hover { background: #133A57; }
+
+/* recommendations: compact wrapping pills, capped height so the
+   page doesn't stretch as categories grow */
+.pk-suggest { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; padding-right: 0.35rem; }
+.pk-suggest::-webkit-scrollbar { width: 6px; }
+.pk-suggest::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 3px; }
+.pk-suggest__title { font-size: 0.9rem; color: var(--deep-navy); margin-bottom: 0.1rem; }
+.pk-suggest__hint { font-size: 0.76rem; color: var(--text-muted); margin-bottom: 0.6rem; }
+.pk-suggest-section__title { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin: 0.65rem 0 0.35rem; padding-top: 0.55rem; border-top: 1px dashed var(--border-soft); }
+.pk-suggest-section:first-child .pk-suggest-section__title { border-top: none; padding-top: 0; margin-top: 0; }
+/* wrapping pills instead of a 2-column card grid */
+.pk-suggest-grid { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.pk-suggest-card {
+  border: 1px solid var(--border-soft); background: var(--cloud-white);
+  border-radius: var(--radius-pill); padding: 0.25rem 0.55rem 0.25rem 0.35rem; text-align: left;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  transition: all 0.15s var(--ease);
+}
+.pk-suggest-card:hover { border-color: var(--horizon-blue); background: var(--sky-mist); }
+.pk-suggest-card.is-added { opacity: 0.35; pointer-events: none; }
+.pk-suggest-card__icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--horizon-blue); }
+.pk-suggest-card__label { font-size: 0.75rem; font-weight: 500; color: var(--deep-navy); line-height: 1.2; white-space: nowrap; }
+.pk-suggest-card__qty { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
+
+/* flying add animation */
+@keyframes pkFlyIn { 0% { transform: scale(0.4) translateY(10px); opacity: 0; } 60% { transform: scale(1.05) translateY(-2px); opacity: 1; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+.pk-item-row.is-new { animation: pkFlyIn 0.4s var(--ease) both; }
+
+/* TSA tips: compact sticky rail */
+.pk-tsa-panel { margin-top: 1.5rem; padding: 1rem 1.05rem; max-height: calc(100vh - 3rem); overflow-y: auto; }
+.pk-tsa-panel::-webkit-scrollbar { width: 6px; }
+.pk-tsa-panel::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 3px; }
+.pk-tsa-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; cursor: pointer; }
+.pk-tsa-head__left { display: flex; align-items: center; gap: 0.55rem; }
+.pk-tsa-head__icon { width: 30px; height: 30px; border-radius: var(--radius-pill); background: var(--warning-red-tint); color: var(--warning-red); display: flex; align-items: center; justify-content: center; padding: 7px; flex-shrink: 0; }
+.pk-tsa-head h2 { font-size: 0.95rem; }
+.pk-tsa-head__sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem; line-height: 1.35; }
+.pk-tsa-caret { width: 15px; height: 15px; color: var(--text-muted); transition: transform 0.3s var(--ease); flex-shrink: 0; }
+.pk-tsa-panel.is-open .pk-tsa-caret { transform: rotate(180deg); }
+.pk-tsa-body { max-height: 0; overflow: hidden; transition: max-height 0.45s var(--ease); }
+.pk-tsa-panel.is-open .pk-tsa-body { max-height: 3000px; }
+/* TSA rules as short colour-coded bullet blocks — each block carries a
+   left accent in the colour of its verdict, so the whole rail reads as
+   a scannable legend rather than paragraphs. */
+.pk-tsa-list { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.9rem; }
+.pk-rule { border-left: 3px solid var(--rule-color); background: var(--rule-tint); border-radius: 0 10px 10px 0; padding: 0.55rem 0.7rem 0.6rem; }
+.pk-rule--limit { --rule-color: var(--tip-highlight); --rule-tint: var(--tip-highlight-tint); }
+.pk-rule--no    { --rule-color: var(--warning-red);  --rule-tint: var(--warning-red-tint); }
+.pk-rule--yes   { --rule-color: var(--phase-inflight); --rule-tint: var(--phase-inflight-tint); }
+.pk-rule--info  { --rule-color: var(--phase-departure); --rule-tint: var(--phase-departure-tint); }
+
+.pk-rule__head { display: flex; align-items: center; gap: 0.35rem; font-size: 0.79rem; font-weight: 800; color: var(--deep-navy); margin-bottom: 0.3rem; }
+.pk-rule__emoji { font-size: 0.92rem; line-height: 1; }
+.pk-rule__points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.18rem; }
+.pk-rule__points li { position: relative; padding-left: 0.85rem; font-size: 0.735rem; line-height: 1.35; color: var(--text-muted); }
+.pk-rule__points li b { color: var(--deep-navy); font-weight: 700; }
+/* neutral bullet, then per-status glyphs that replace it */
+.pk-rule__points li::before { content: "\2022"; position: absolute; left: 0.15rem; top: -0.02em; color: var(--rule-color); font-weight: 700; }
+.pk-rule__points li.is-ok::before   { content: "\2713"; color: var(--phase-inflight); font-size: 0.72rem; }
+.pk-rule__points li.is-bad::before  { content: "\2715"; color: var(--warning-red); font-size: 0.68rem; }
+.pk-rule__points li.is-warn::before { content: "\26A0"; color: var(--tip-highlight); font-size: 0.68rem; }
+.pk-rule__points li.is-ok b   { color: var(--phase-inflight); }
+.pk-rule__points li.is-bad b  { color: var(--warning-red); }
+
+.pk-tsa-foot { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.9rem; line-height: 1.45; }
+.pk-tsa-foot a { color: var(--horizon-blue); font-weight: 600; text-decoration: none; }
+.pk-tsa-foot a:hover { text-decoration: underline; }
+
+/* print bar */
+.pk-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
+.pk-btn { border: none; border-radius: var(--radius-pill); padding: 0.7rem 1.3rem; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s var(--ease); }
+.pk-btn .icon { width: 16px; height: 16px; }
+.pk-btn--primary { background: var(--deep-navy); color: #fff; }
+.pk-btn--primary:hover { background: #133A57; transform: translateY(-1px); }
+.pk-btn--ghost { background: var(--sky-pale); color: var(--deep-navy); }
+.pk-btn--ghost:hover { background: var(--border-soft); }
+
+@media (max-width: 640px) {
+  .pk-suggest-grid { grid-template-columns: 1fr; }
+}
+
+/* Packer printable sheet — same technique as Timeblocker's:
+   everything hidden by the shared print rule above except this. */
+.pk-print-sheet { display: none; }
+@media print {
+  .pk-print-sheet, .pk-print-sheet * { visibility: visible; }
+  .pk-print-sheet {
+    display: block; position: absolute; inset: 0 auto auto 0; width: 100%;
+    background: #fff; color: #16181c; font-family: var(--font-body, Arial, sans-serif);
+    padding: 0.2in 0;
+  }
+  .pk-print-sheet h1 { font-family: var(--font-display, Georgia, serif); font-size: 21px; margin-bottom: 1.2rem; }
+  .pk-print-bag { break-inside: avoid; margin-bottom: 1.4rem; }
+  .pk-print-bag h2 { font-size: 1.1rem; margin-bottom: 0.4rem; border-bottom: 1.5px solid #16181c; padding-bottom: 0.25rem; }
+  .pk-print-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.22rem 0; font-size: 0.92rem; border-bottom: 1px solid #ccc; }
+  .pk-print-box { width: 13px; height: 13px; border: 1.4px solid #16181c; flex-shrink: 0; }
+}
