@@ -11,6 +11,7 @@ fine for a deployed site (GitHub Pages, which is unaffected by this
 file), but it's confusing during local development.
 """
 import http.server
+import os
 import sys
 
 
@@ -23,5 +24,11 @@ class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 4173
+    # An explicit CLI arg wins; otherwise defer to $PORT (set by the
+    # harness when it assigns a free port) and fall back to 4173 for
+    # plain manual runs.
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = int(os.environ.get("PORT", 4173))
     http.server.test(HandlerClass=NoCacheHandler, port=port)

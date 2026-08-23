@@ -4,8 +4,9 @@
     {
       "name": "fly-easy-static",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["devserver.py", "4173"],
-      "port": 4173
+      "runtimeArgs": ["devserver.py"],
+      "port": 4173,
+      "autoPort": true
     }
   ]
 }
