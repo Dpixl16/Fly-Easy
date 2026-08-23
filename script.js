@@ -1489,7 +1489,8 @@
       sports: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="18" height="9" rx="3"/><path d="M8 9V7a1 1 0 011-1h6a1 1 0 011 1v2"/></svg>',
       snack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a9 9 0 109 9c-2 0-3-1-3-3s-1-3-3-3-3-1-3-3z"/><circle cx="9" cy="14" r="0.8" fill="currentColor" stroke="none"/><circle cx="13" cy="16.5" r="0.8" fill="currentColor" stroke="none"/><circle cx="10.5" cy="18.5" r="0.8" fill="currentColor" stroke="none"/></svg>',
       blanket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h18v9a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/><path d="M3 9h18M3 13h18M8 5v11M13 5v11"/></svg>',
-      neckpillow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10a5 5 0 015-6h6a5 5 0 015 6v1a5 5 0 01-5 5h-1a1 1 0 00-1 1v1a1 1 0 01-2 0v-1a1 1 0 00-1-1H9a5 5 0 01-5-5v-1z"/></svg>'
+      neckpillow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10a5 5 0 015-6h6a5 5 0 015 6v1a5 5 0 01-5 5h-1a1 1 0 00-1 1v1a1 1 0 01-2 0v-1a1 1 0 00-1-1H9a5 5 0 01-5-5v-1z"/></svg>',
+      search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>'
     };
 
     var BAG_META = {
@@ -1523,6 +1524,9 @@
       { title: "Reusable water bottle (empty)", icon: "bottle" }
     ];
 
+    var WIZARD_STEPS = ["trip", "essentials", "bags", "review"];
+    var STEP_LABEL = { trip: "Trip", essentials: "Essentials", bags: "Bags", review: "Review" };
+
     // Bag-type access groups — which bag tabs a suggestion is offered in.
     // FLIGHT: only bags you keep with you and open during the flight.
     // CARRYON: must legally stay in a carry-on-class bag (never checked), but
@@ -1535,16 +1539,21 @@
     var STOWED = ["carryon", "checked", "sports"];
     var CHECKED_ONLY = ["checked", "sports"];
 
+    var TOP_PICKS_MAX = 6;
+
     // Suggestion pool: category -> items.
     // Every quantity is derived from trip length, and every bag type —
     // including the carry-ons — reacts to climate, so a 2-day warm trip
-    // and a 14-day cold one never produce the same list.
+    // and a 14-day cold one never produce the same list. A handful of
+    // items are flagged `top: true` — the ones almost everyone packs —
+    // so the Bags step can lead with a short curated row instead of the
+    // whole pool at once; the rest lives one tap away under "Browse all".
     function buildSuggestionPool(days, climate) {
       var pool = { Clothing: [], Toiletries: [], Electronics: [], "Comfort & carry-on": [], "Gear & extras": [] };
 
-      function push(cat, title, icon, showIn, qty, tsa) {
+      function push(cat, title, icon, showIn, qty, tsa, top) {
         if (pool[cat].some(function (i) { return i.title === title; })) return;
-        pool[cat].push({ title: title, icon: icon, showIn: showIn, qty: Math.max(1, qty || 1), tsa: tsa || null });
+        pool[cat].push({ title: title, icon: icon, showIn: showIn, qty: Math.max(1, qty || 1), tsa: tsa || null, top: !!top, cat: cat });
       }
       // one per day, capped so a 30-day trip doesn't suggest 30 shirts —
       // past ~10 you're doing laundry, not packing more
@@ -1561,18 +1570,18 @@
       /* ---- everyday clothing (stowed bags) — all day-scaled ----
          tropical gets its own breathable-tops line below, so the generic
          one is skipped there to avoid suggesting tops twice */
-      if (climate !== "tropical") push("Clothing", "T-shirts / tops", "shirt", STOWED, perDay(0, 10));
-      push("Clothing", "Underwear", "shirt", STOWED, perDay(1, 12));
-      push("Clothing", "Socks", "sock", STOWED, perDay(1, 12));
+      if (climate !== "tropical") push("Clothing", "T-shirts / tops", "shirt", STOWED, perDay(0, 10), null, true);
+      push("Clothing", "Underwear", "shirt", STOWED, perDay(1, 12), null, true);
+      push("Clothing", "Socks", "sock", STOWED, perDay(1, 12), null, true);
       push("Clothing", "Pants / bottoms", "shirt", STOWED, every(3, 5));
       push("Clothing", "Pajamas / sleepwear", "shirt", STOWED, isLong ? 2 : 1);
-      push("Clothing", "Comfortable walking shoes", "boot", STOWED, 1);
+      push("Clothing", "Comfortable walking shoes", "boot", STOWED, 1, null, true);
       if (!isShort) push("Clothing", "Nicer outfit (dinner / event)", "tie", STOWED, 1);
 
       /* ---- climate drives BOTH the stowed wardrobe and what you keep
               with you in the cabin ---- */
       if (climate === "cold") {
-        push("Clothing", "Heavy winter coat", "jacket", STOWED, 1);
+        push("Clothing", "Heavy winter coat", "jacket", STOWED, 1, null, true);
         push("Clothing", "Sweaters / fleece", "jacket", STOWED, every(3, 4));
         push("Clothing", "Thermal base layers", "jacket", STOWED, every(4, 3));
         push("Clothing", "Wool socks", "sock", STOWED, every(3, 4));
@@ -1589,15 +1598,15 @@
         push("Clothing", "Swimsuit", "swim", STOWED, isShort ? 1 : 2);
         push("Clothing", "Sandals / flip-flops", "boot", STOWED, 1);
         push("Clothing", "Light evening layer", "jacket", STOWED, 1);
-        push("Toiletries", "Sunscreen", "sunscreen", STOWED, 1, LIQUID_TSA);
+        push("Toiletries", "Sunscreen", "sunscreen", STOWED, 1, LIQUID_TSA, true);
         push("Gear & extras", "Sunglasses", "sunglasses", CARRYON, 1);
         push("Gear & extras", "Hat / cap", "boot", CARRYON, 1);
       } else if (climate === "tropical") {
-        push("Clothing", "Light breathable tops", "shirt", STOWED, perDay(0, 8));
+        push("Clothing", "Light breathable tops", "shirt", STOWED, perDay(0, 8), null, true);
         push("Clothing", "Shorts", "shirt", STOWED, every(2, 5));
         push("Clothing", "Swimsuit", "swim", STOWED, isShort ? 1 : 2);
         push("Clothing", "Sandals / flip-flops", "boot", STOWED, 1);
-        push("Toiletries", "Sunscreen", "sunscreen", STOWED, 1, LIQUID_TSA);
+        push("Toiletries", "Sunscreen", "sunscreen", STOWED, 1, LIQUID_TSA, true);
         push("Toiletries", "Bug spray", "sunscreen", STOWED, 1, LIQUID_TSA);
         push("Gear & extras", "Rain poncho", "umbrella", CARRYON, 1);
         push("Gear & extras", "Sunglasses", "sunglasses", CARRYON, 1);
@@ -1613,42 +1622,73 @@
       }
 
       /* ---- toiletries — sized to the trip ---- */
-      push("Toiletries", "Toothbrush &amp; toothpaste", "tooth", STOWED, 1);
+      push("Toiletries", "Toothbrush &amp; toothpaste", "tooth", STOWED, 1, null, true);
       push("Toiletries", "Shampoo / conditioner", "droplet", STOWED, 1, LIQUID_TSA);
-      push("Toiletries", "Deodorant", "sunscreen", STOWED, 1);
+      push("Toiletries", "Deodorant", "sunscreen", STOWED, 1, null, true);
       push("Toiletries", "Razor", "razor", STOWED, 1);
       if (isLong) push("Toiletries", "Laundry detergent pods", "droplet", STOWED, 1);
 
       /* ---- electronics — carry-on only by TSA rule ---- */
-      push("Electronics", "Phone charger &amp; cable", "phone", CARRYON, 1);
+      push("Electronics", "Phone charger &amp; cable", "phone", CARRYON, 1, null, true);
       push("Electronics", "Power bank", "battery", CARRYON, 1, BATTERY_TSA);
       push("Electronics", "Headphones", "phone", CARRYON, 1);
       push("Electronics", "Laptop + charger", "laptop", CARRYON, 1);
       if (isLong) push("Electronics", "Travel adapter", "battery", CARRYON, 1);
 
       /* ---- in-flight comfort — longer flights earn more of it ---- */
-      push("Comfort & carry-on", "Snacks", "snack", FLIGHT, isShort ? 2 : 3);
+      push("Comfort & carry-on", "Snacks", "snack", FLIGHT, isShort ? 2 : 3, null, true);
       push("Comfort & carry-on", "Neck pillow", "neckpillow", FLIGHT, 1);
       push("Comfort & carry-on", "Travel blanket", "blanket", FLIGHT, 1);
       push("Comfort & carry-on", "Refillable water bottle", "bottle", FLIGHT, 1);
 
       /* ---- general gear ---- */
       push("Gear & extras", "Day bag", "backpack", STOWED, 1);
-      push("Gear & extras", "First-aid kit / basic meds", "firstaid", STOWED, 1);
+      push("Gear & extras", "First-aid kit / basic meds", "firstaid", STOWED, 1, null, true);
       if (isLong) push("Gear & extras", "Packing cubes", "checked", STOWED, 1);
       push("Gear & extras", "Multi-tool / scissors", "scissors", CHECKED_ONLY, 1, BLADE_TSA);
 
       return pool;
     }
 
+    var CAT_ORDER = ["Clothing", "Toiletries", "Electronics", "Comfort & carry-on", "Gear & extras"];
+
+    function poolFlat(pool) {
+      var out = [];
+      CAT_ORDER.forEach(function (cat) { pool[cat].forEach(function (i) { out.push(i); }); });
+      return out;
+    }
+
+    function topPicksFor(bag, pool) {
+      var already = {};
+      bag.items.forEach(function (i) { already[i.title] = true; });
+      return poolFlat(pool).filter(function (sug) {
+        return sug.top && sug.showIn.indexOf(bag.type) !== -1 && !already[sug.title];
+      }).slice(0, TOP_PICKS_MAX);
+    }
+
+    function searchSuggestions(bag, pool, query) {
+      var q = query.trim().toLowerCase();
+      if (!q) return [];
+      var already = {};
+      bag.items.forEach(function (i) { already[i.title] = true; });
+      return poolFlat(pool).filter(function (sug) {
+        return sug.showIn.indexOf(bag.type) !== -1 && !already[sug.title] &&
+          sug.title.toLowerCase().indexOf(q) !== -1;
+      }).slice(0, 6);
+    }
+
     // ---------------- state ----------------
+    var nextId = 1; // one shared counter for every essential/item id — seeded
+                     // essentials use their own "es-seed-" namespace instead,
+                     // so a user-added item can never collide with a default.
     var state = {
       trip: { days: 5, climate: "mild" },
-      essentials: ESSENTIALS_DEFAULT.map(function (e, i) { return Object.assign({ id: "es" + i, checked: false }, e); }),
+      essentials: ESSENTIALS_DEFAULT.map(function (e, i) { return Object.assign({ id: "es-seed-" + i, checked: false }, e); }),
       bags: [],
       activeTab: null, // set once the traveler adds their first bag
       nextBagId: 1,
-      nextItemId: 1
+      wizardStep: "trip",
+      essentialsReviewOpen: false // review-step dropdown, collapsed by default
     };
 
     function makeBag(type) {
@@ -1658,10 +1698,11 @@
       // accurate; `customName` is whatever the traveler renames it to
       // ("Fanny Pack"). The type label is never overwritten, so it can
       // keep showing underneath as a reminder of what the bag really is.
-      return { id: id, type: type, name: meta.label, customName: "", items: [] };
+      return { id: id, type: type, name: meta.label, customName: "", items: [], browseOpen: false, reviewOpen: false, query: "" };
     }
     function bagLabel(bag) { return bag.customName.trim() || bag.name; }
     var CLIMATE_WORD = { cold: "cold", mild: "mild", warm: "warm", tropical: "hot, humid" };
+    var CLIMATE_LABEL = { cold: "Cold", mild: "Mild", warm: "Warm", tropical: "Tropical" };
     function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
 
     // Every bag is numbered from the moment it's added ("Checked Bag 1"),
@@ -1676,6 +1717,111 @@
       });
     }
 
+    // ---------------- persistence ----------------
+    // Plain versioned JSON (unlike Timeblocker's packed-array format —
+    // Packer doesn't need URL-shareable compactness) with the same
+    // defensive-restore posture: every field is validated/clamped/
+    // whitelisted before it's trusted, so a corrupted or hand-edited
+    // localStorage value can never crash the page.
+    var STORE_KEY = "flyeasy-pk-plan";
+    var CLIMATES = { cold: 1, mild: 1, warm: 1, tropical: 1 };
+    var TSA_LIMITS = { carryOnLimit: 1, carryOnRestricted: 1, checkedRestricted: 1 };
+    var saveTimer = null;
+
+    function cleanTsa(t) {
+      if (!t || typeof t !== "object" || !TSA_LIMITS[t.limit]) return null;
+      return { limit: t.limit, note: String(t.note || "").slice(0, 200) };
+    }
+    function cleanIcon(i) { return ICONS[i] ? i : "flag"; }
+    function cleanItem(raw) {
+      if (!raw || typeof raw !== "object") return null;
+      var title = String(raw.title || "").trim().slice(0, 140);
+      if (!title) return null;
+      return {
+        id: "it" + (nextId++),
+        title: title,
+        icon: cleanIcon(raw.icon),
+        qty: Math.min(99, Math.max(1, parseInt(raw.qty, 10) || 1)),
+        cat: raw.cat ? String(raw.cat).slice(0, 40) : undefined,
+        checked: !!raw.checked,
+        tsa: cleanTsa(raw.tsa)
+      };
+    }
+
+    function serializeState() {
+      return {
+        v: 1,
+        trip: { days: state.trip.days, climate: state.trip.climate },
+        wizardStep: state.wizardStep,
+        activeTab: state.activeTab,
+        essentials: state.essentials.map(function (e) {
+          return { id: e.id, title: e.title, icon: e.icon, checked: !!e.checked };
+        }),
+        bags: state.bags.map(function (b) {
+          return {
+            id: b.id, type: b.type, customName: b.customName,
+            items: b.items.map(function (i) {
+              return { title: i.title, icon: i.icon, qty: i.qty, cat: i.cat, checked: i.checked, tsa: i.tsa };
+            })
+          };
+        })
+      };
+    }
+
+    function restoreState(raw) {
+      if (!raw || raw.v !== 1) return false;
+      try {
+        var days = Math.min(30, Math.max(1, parseInt(raw.trip && raw.trip.days, 10) || 5));
+        var climate = (raw.trip && CLIMATES[raw.trip.climate]) ? raw.trip.climate : "mild";
+
+        var essentials = [];
+        if (Array.isArray(raw.essentials)) {
+          raw.essentials.slice(0, 60).forEach(function (e) {
+            if (!e || typeof e !== "object") return;
+            var title = String(e.title || "").trim().slice(0, 140);
+            if (!title) return;
+            essentials.push({ id: "es" + (nextId++), title: title, icon: cleanIcon(e.icon), checked: !!e.checked });
+          });
+        }
+        if (!essentials.length) essentials = ESSENTIALS_DEFAULT.map(function (e, i) { return Object.assign({ id: "es-seed-" + i, checked: false }, e); });
+
+        var bags = [];
+        if (Array.isArray(raw.bags)) {
+          raw.bags.slice(0, 20).forEach(function (b) {
+            if (!b || typeof b !== "object" || !BAG_META[b.type]) return;
+            var bag = { id: "bag" + (state.nextBagId++), type: b.type, name: BAG_META[b.type].label, customName: String(b.customName || "").slice(0, 60), items: [], browseOpen: false, reviewOpen: false, query: "" };
+            if (Array.isArray(b.items)) {
+              b.items.slice(0, 80).forEach(function (raw2) {
+                var item = cleanItem(raw2);
+                if (item) bag.items.push(item);
+              });
+            }
+            bags.push(bag);
+          });
+        }
+
+        var wizardStep = WIZARD_STEPS.indexOf(raw.wizardStep) !== -1 ? raw.wizardStep : "trip";
+        var activeTab = bags.some(function (b) { return b.id === raw.activeTab; }) ? raw.activeTab : (bags.length ? bags[0].id : null);
+
+        state.trip.days = days;
+        state.trip.climate = climate;
+        state.essentials = essentials;
+        state.bags = bags;
+        state.wizardStep = wizardStep;
+        state.activeTab = activeTab;
+        renumberBags();
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function savePlan() {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(serializeState())); } catch (e) {}
+    }
+    function scheduleSave() {
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(savePlan, 250);
+    }
+
     // ---------------- dom refs ----------------
     var tabsEl = document.getElementById("pk-tabs");
     var bagPickerEl = document.getElementById("pk-bagPicker");
@@ -1686,6 +1832,55 @@
     var runwayPctEl = document.getElementById("pk-runwayPct");
     var runwayStatusEl = document.getElementById("pk-runwayStatus");
     var runwayEl = document.getElementById("pk-runway");
+
+    // ---------------- wizard shell ----------------
+    // Non-blocking: every step is reachable at any time. "Complete" on
+    // the tracker just means "you've moved past this step already" —
+    // packing is planned over days, not filled out top-to-bottom once.
+    var stepsEl = document.getElementById("pk-steps");
+    var stepsCaptionEl = document.getElementById("pk-stepsCaption");
+    var stepPanels = {};
+    WIZARD_STEPS.forEach(function (s) {
+      stepPanels[s] = document.querySelector('[data-step-panel="' + s + '"]');
+    });
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function goToStep(step) {
+      if (WIZARD_STEPS.indexOf(step) === -1) return;
+      state.wizardStep = step;
+      // A full re-render on every step change (cheap at this scale) is
+      // what guarantees Review's numbers — and every other step — are
+      // never stale: several interactions (checkbox toggles, bag
+      // renames) intentionally skip the full render for performance/
+      // focus reasons where they happen, so this is the one place that
+      // catches all of them before the traveler actually looks.
+      render();
+      updateStepsUI();
+      scheduleSave();
+      var shell = document.querySelector(".pk-wizard-shell");
+      if (shell) shell.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    }
+
+    function updateStepsUI() {
+      var curIndex = WIZARD_STEPS.indexOf(state.wizardStep);
+      WIZARD_STEPS.forEach(function (s, i) {
+        var tab = stepsEl.querySelector('[data-step="' + s + '"]');
+        if (tab) {
+          tab.classList.toggle("is-active", s === state.wizardStep);
+          tab.classList.toggle("is-complete", i < curIndex);
+        }
+        if (stepPanels[s]) stepPanels[s].classList.toggle("is-active", s === state.wizardStep);
+      });
+      if (stepsCaptionEl) stepsCaptionEl.textContent = "Step " + (curIndex + 1) + " of " + WIZARD_STEPS.length + " — " + STEP_LABEL[state.wizardStep];
+    }
+
+    stepsEl.addEventListener("click", function (e) {
+      var tab = e.target.closest(".pk-step");
+      if (tab) goToStep(tab.dataset.step);
+    });
+    document.querySelectorAll("[data-goto]").forEach(function (btn) {
+      btn.addEventListener("click", function () { goToStep(btn.dataset.goto); });
+    });
 
     // ---------------- trip controls ----------------
     // A stepper and a segmented control instead of a free-text number
@@ -1703,6 +1898,7 @@
       daysDownBtn.disabled = state.trip.days <= DAY_MIN;
       daysUpBtn.disabled = state.trip.days >= DAY_MAX;
       renderActiveBagPanel();
+      scheduleSave();
     }
     daysDownBtn.addEventListener("click", function () { setDays(state.trip.days - 1); });
     daysUpBtn.addEventListener("click", function () { setDays(state.trip.days + 1); });
@@ -1715,9 +1911,10 @@
         b.classList.toggle("is-active", b === btn);
       });
       renderActiveBagPanel();
+      scheduleSave();
     });
 
-    // ---------------- tabs (bags only — essentials lives in its own card) ----------------
+    // ---------------- tabs (bags only — essentials lives in its own step) ----------------
     // Remembers which bags were already finished, so the "Packed" stamp
     // only animates the moment a bag actually completes — not every time
     // the tabs happen to re-render for some other bag.
@@ -1763,11 +1960,13 @@
             renumberBags();
             if (state.activeTab === bag.id) state.activeTab = state.bags.length ? state.bags[0].id : null;
             render();
+            scheduleSave();
             return;
           }
           state.activeTab = bag.id;
           bagPickerEl.classList.remove("is-open");
           render();
+          scheduleSave();
         });
         tabsEl.appendChild(tab);
       });
@@ -1792,9 +1991,10 @@
       state.activeTab = bag.id;
       bagPickerEl.classList.remove("is-open");
       render();
+      scheduleSave();
     });
 
-    // ---------------- essentials card (compact, always visible) ----------------
+    // ---------------- essentials (its own wizard step) ----------------
     function renderEssentials() {
       essentialsListEl.innerHTML = "";
       if (!state.essentials.length) {
@@ -1803,9 +2003,9 @@
       }
       state.essentials.forEach(function (item) {
         essentialsListEl.appendChild(buildItemRow(item, {
-          onToggle: function () { item.checked = !item.checked; renderEssentials(); updateProgress(); },
-          onRemove: function () { state.essentials = state.essentials.filter(function (i) { return i.id !== item.id; }); render(); },
-          onRename: function (val) { item.title = val; },
+          onToggle: function () { item.checked = !item.checked; renderEssentials(); updateProgress(); scheduleSave(); },
+          onRemove: function () { state.essentials = state.essentials.filter(function (i) { return i.id !== item.id; }); render(); scheduleSave(); },
+          onRename: function (val) { item.title = val; scheduleSave(); },
           compact: true
         }));
       });
@@ -1819,9 +2019,13 @@
       var input = document.getElementById("pk-essentialsInput");
       var val = input.value.trim();
       if (!val) return;
-      state.essentials.push({ id: "es" + (state.nextItemId++), title: val, icon: "flag", checked: false, isNew: true });
+      // Uses the shared `nextId` counter (not the seeded essentials'
+      // own "es-seed-" ids), so a user-added essential can never
+      // collide with — and accidentally delete — a default one.
+      state.essentials.push({ id: "es" + (nextId++), title: val, icon: "flag", checked: false, isNew: true });
       input.value = "";
       render();
+      scheduleSave();
     }
 
     // ---------------- bag panels ----------------
@@ -1854,28 +2058,31 @@
                 '<span class="pk-bag-name__pencil icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20h4L20 8l-4-4L4 16v4z"/></svg></span>' +
               '</span>' +
               '<span class="pk-type-pill ' + (meta.carryOn ? "is-carryon" : "is-checked") + '">' + (meta.carryOn ? "Carry-on" : "Checked") + '</span>' +
+              '<button type="button" class="pk-bag-print" data-print title="Print this bag’s list"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a1 1 0 01-1-1v-5a2 2 0 012-2h14a2 2 0 012 2v5a1 1 0 01-1 1h-2M6 14h12v7H6z"/></svg></span></button>' +
             '</div>' +
             // the real bag type always stays visible, even after renaming
             '<p class="pk-card__sub"><b>' + bag.name + '</b> · ' +
               (meta.carryOn ? "Goes through security with you — TSA rules apply." : "Goes in the cargo hold — screened, but not carried through security.") + '</p>' +
           '</div>' +
           '<div class="pk-bag-progress" data-progress></div>' +
-          '<div class="pk-layout">' +
-            '<div class="pk-list-col">' +
-              '<div class="pk-checklist" data-checklist></div>' +
-              '<div class="pk-add-custom">' +
-                '<input type="text" placeholder="Add a custom item…" data-custom-input>' +
-                '<button type="button" data-custom-add>Add</button>' +
-              '</div>' +
-            '</div>' +
-            '<div class="pk-suggest"><div data-suggest></div></div>' +
-          '</div>';
+          '<div class="pk-quickadd">' +
+            '<span class="pk-quickadd__icon icon">' + ICONS.search + '</span>' +
+            '<input type="text" class="pk-quickadd__input" data-quickadd-input placeholder="Search suggestions, or type an item and press Enter…" autocomplete="off">' +
+            '<div class="pk-quickadd__results" data-quickadd-results hidden></div>' +
+          '</div>' +
+          '<div class="pk-toppicks" data-toppicks></div>' +
+          '<div class="pk-checklist" data-checklist></div>' +
+          '<button type="button" class="pk-browseall-toggle" data-browseall-toggle>' +
+            '<span data-browseall-label>Browse all suggestions</span>' +
+            '<span class="icon pk-browseall-toggle__caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>' +
+          '</button>' +
+          '<div class="pk-browseall" data-browseall hidden></div>';
 
         bagPanelsEl.appendChild(panel);
 
-        panel.querySelector("[data-custom-add]").addEventListener("click", function () { addCustomToBag(bag, panel); });
-        panel.querySelector("[data-custom-input]").addEventListener("keydown", function (e) {
-          if (e.key === "Enter") addCustomToBag(bag, panel);
+        panel.querySelector("[data-print]").addEventListener("click", function () {
+          buildPrintSheet(bag);
+          window.print();
         });
 
         // Rename: update the tab live as they type, but don't re-render
@@ -1886,6 +2093,7 @@
           renderTabs();
           var sub = panel.querySelector(".pk-card__sub b");
           if (sub) sub.textContent = bag.name;
+          scheduleSave();
         });
         renameEl.addEventListener("blur", function () {
           if (!bag.customName.trim()) { bag.customName = ""; renameEl.value = bag.name; }
@@ -1894,7 +2102,9 @@
 
         renderBagProgress(bag, panel.querySelector("[data-progress]"));
         renderChecklist(bag, panel.querySelector("[data-checklist]"), panel.querySelector("[data-progress]"));
-        renderSuggestions(bag, panel.querySelector("[data-suggest]"));
+        renderTopPicks(bag, panel.querySelector("[data-toppicks]"));
+        wireQuickAdd(bag, panel);
+        wireBrowseAll(bag, panel);
       });
     }
 
@@ -1905,16 +2115,143 @@
       if (!panel) return;
       renderBagProgress(bag, panel.querySelector("[data-progress]"));
       renderChecklist(bag, panel.querySelector("[data-checklist]"), panel.querySelector("[data-progress]"));
-      renderSuggestions(bag, panel.querySelector("[data-suggest]"));
+      renderTopPicks(bag, panel.querySelector("[data-toppicks]"));
+      if (bag.browseOpen) renderBrowseAll(bag, panel.querySelector("[data-browseall]"));
     }
 
-    function addCustomToBag(bag, panel) {
-      var input = panel.querySelector("[data-custom-input]");
-      var val = input.value.trim();
-      if (!val) return;
-      bag.items.push({ id: "it" + (state.nextItemId++), title: val, icon: "flag", qty: 1, checked: false, tsa: null, isNew: true });
-      input.value = "";
+    // A single quick-add box replaces the old two-system flow (a
+    // suggestion grid plus a separate free-text field): type to filter
+    // the pool inline, tap a match to add it, or press Enter to add
+    // the top match — or your own text, if nothing matched at all.
+    function wireQuickAdd(bag, panel) {
+      var input = panel.querySelector("[data-quickadd-input]");
+      var results = panel.querySelector("[data-quickadd-results]");
+
+      function renderResults() {
+        var pool = buildSuggestionPool(state.trip.days, state.trip.climate);
+        var matches = searchSuggestions(bag, pool, input.value);
+        if (!matches.length) { results.hidden = true; results.innerHTML = ""; return; }
+        results.hidden = false;
+        results.innerHTML = "";
+        matches.forEach(function (sug) {
+          var row = document.createElement("button");
+          row.type = "button";
+          row.className = "pk-quickadd__result";
+          row.innerHTML = '<span class="icon">' + (ICONS[sug.icon] || ICONS.flag) + '</span><span>' + sug.title + '</span>' +
+            (sug.qty > 1 ? '<span class="pk-quickadd__result-qty">&times;' + sug.qty + '</span>' : '');
+          row.addEventListener("click", function () {
+            addSuggestionToBag(bag, sug);
+            input.value = "";
+          });
+          results.appendChild(row);
+        });
+      }
+
+      input.addEventListener("input", renderResults);
+      input.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        var val = input.value.trim();
+        if (!val) return;
+        var pool = buildSuggestionPool(state.trip.days, state.trip.climate);
+        var matches = searchSuggestions(bag, pool, val);
+        if (matches.length) {
+          addSuggestionToBag(bag, matches[0]);
+        } else {
+          addCustomToBag(bag, val);
+        }
+        input.value = "";
+        results.hidden = true;
+      });
+      input.addEventListener("blur", function () {
+        // small delay so a click on a result still registers before it hides
+        window.setTimeout(function () { results.hidden = true; }, 150);
+      });
+    }
+
+    function addSuggestionToBag(bag, sug) {
+      bag.items.push({ id: "it" + (nextId++), title: sug.title, icon: sug.icon, qty: sug.qty, cat: sug.cat, checked: false, tsa: sug.tsa, isNew: true });
       render();
+      scheduleSave();
+    }
+
+    function addCustomToBag(bag, val) {
+      bag.items.push({ id: "it" + (nextId++), title: val, icon: "flag", qty: 1, checked: false, tsa: null, isNew: true });
+      render();
+      scheduleSave();
+    }
+
+    // "Top picks" — a short, curated row shown by default, so a bag
+    // panel doesn't open with the whole suggestion pool at once.
+    function renderTopPicks(bag, el) {
+      var pool = buildSuggestionPool(state.trip.days, state.trip.climate);
+      var picks = topPicksFor(bag, pool);
+      if (!picks.length) { el.innerHTML = ""; return; }
+      el.innerHTML = '<p class="pk-toppicks__label">Popular for this bag</p><div class="pk-toppicks__row"></div>';
+      var row = el.querySelector(".pk-toppicks__row");
+      picks.forEach(function (sug) {
+        var card = document.createElement("button");
+        card.type = "button";
+        card.className = "pk-suggest-card";
+        card.innerHTML =
+          '<span class="pk-suggest-card__icon icon">' + (ICONS[sug.icon] || ICONS.flag) + '</span>' +
+          '<span class="pk-suggest-card__label">' + sug.title + '</span>' +
+          (sug.qty > 1 ? '<span class="pk-suggest-card__qty">&times;' + sug.qty + '</span>' : '');
+        card.addEventListener("click", function () { addSuggestionToBag(bag, sug); });
+        row.appendChild(card);
+      });
+    }
+
+    // "Browse all suggestions" — the full categorized pool, tucked
+    // behind a disclosure toggle for travelers who want to see
+    // everything rather than search for something specific.
+    function wireBrowseAll(bag, panel) {
+      var toggle = panel.querySelector("[data-browseall-toggle]");
+      var label = panel.querySelector("[data-browseall-label]");
+      var body = panel.querySelector("[data-browseall]");
+      toggle.classList.toggle("is-open", bag.browseOpen);
+      body.hidden = !bag.browseOpen;
+      if (bag.browseOpen) renderBrowseAll(bag, body);
+      toggle.addEventListener("click", function () {
+        bag.browseOpen = !bag.browseOpen;
+        toggle.classList.toggle("is-open", bag.browseOpen);
+        body.hidden = !bag.browseOpen;
+        label.textContent = bag.browseOpen ? "Hide full suggestion list" : "Browse all suggestions";
+        if (bag.browseOpen) renderBrowseAll(bag, body);
+      });
+    }
+
+    function renderBrowseAll(bag, el) {
+      var pool = buildSuggestionPool(state.trip.days, state.trip.climate);
+      el.innerHTML = '<p class="pk-suggest__hint">Sized for ' + state.trip.days + ' days in ' + CLIMATE_WORD[state.trip.climate] + ' weather. Tap what you want; skip the rest.</p>';
+
+      CAT_ORDER.forEach(function (cat) {
+        var items = pool[cat].filter(function (sug) { return sug.showIn.indexOf(bag.type) !== -1; });
+        if (!items.length) return;
+        var section = document.createElement("div");
+        section.className = "pk-suggest-section";
+        var title = document.createElement("p");
+        title.className = "pk-suggest-section__title";
+        title.textContent = cat;
+        section.appendChild(title);
+
+        var grid = document.createElement("div");
+        grid.className = "pk-suggest-grid";
+        items.forEach(function (sug) {
+          var already = bag.items.some(function (i) { return i.title === sug.title; });
+          var card = document.createElement("button");
+          card.type = "button";
+          card.className = "pk-suggest-card" + (already ? " is-added" : "");
+          card.innerHTML =
+            '<span class="pk-suggest-card__icon icon">' + (ICONS[sug.icon] || ICONS.flag) + '</span>' +
+            '<span class="pk-suggest-card__label">' + sug.title + '</span>' +
+            (sug.qty > 1 ? '<span class="pk-suggest-card__qty">&times;' + sug.qty + '</span>' : '');
+          if (!already) card.addEventListener("click", function () { addSuggestionToBag(bag, sug); });
+          grid.appendChild(card);
+        });
+        section.appendChild(grid);
+        el.appendChild(section);
+      });
     }
 
     /* Counts what's actually been packed off this bag's own list —
@@ -1937,7 +2274,7 @@
       el.innerHTML = "";
       if (!bag.items.length) {
         if (progressEl) renderBagProgress(bag, progressEl);
-        el.innerHTML = '<p class="pk-empty-note">Nothing on this list yet — tap a recommendation on the right, or add your own below.</p>';
+        el.innerHTML = '<p class="pk-empty-note">Nothing on this list yet — search above, tap a top pick, or browse all suggestions.</p>';
         return;
       }
       var groups = {};
@@ -1963,14 +2300,16 @@
               if (progressEl) renderBagProgress(bag, progressEl);
               renderTabs(); // so the "Packed" stamp appears/clears live
               updateProgress();
+              scheduleSave();
             },
-            onRemove: function () { bag.items = bag.items.filter(function (i) { return i.id !== item.id; }); render(); },
+            onRemove: function () { bag.items = bag.items.filter(function (i) { return i.id !== item.id; }); render(); scheduleSave(); },
             onQty: function (delta) {
               item.qty = Math.max(1, item.qty + delta);
               renderChecklist(bag, el, progressEl);
               updateProgress();
+              scheduleSave();
             },
-            onRename: function (val) { item.title = val; },
+            onRename: function (val) { item.title = val; scheduleSave(); },
             bagCarryOn: BAG_META[bag.type].carryOn
           }));
         });
@@ -2018,45 +2357,6 @@
       return row;
     }
 
-    function renderSuggestions(bag, el) {
-      var pool = buildSuggestionPool(state.trip.days, state.trip.climate);
-      var meta = BAG_META[bag.type];
-      el.innerHTML = '<p class="pk-suggest__title">Recommended</p><p class="pk-suggest__hint">Sized for ' + state.trip.days + ' days in ' + CLIMATE_WORD[state.trip.climate] + ' weather. Tap what you want; skip the rest.</p>';
-
-      Object.keys(pool).forEach(function (cat) {
-        var items = pool[cat].filter(function (sug) { return sug.showIn.indexOf(bag.type) !== -1; });
-        if (!items.length) return;
-        var section = document.createElement("div");
-        section.className = "pk-suggest-section";
-        var title = document.createElement("p");
-        title.className = "pk-suggest-section__title";
-        title.textContent = cat;
-        section.appendChild(title);
-
-        var grid = document.createElement("div");
-        grid.className = "pk-suggest-grid";
-        items.forEach(function (sug) {
-          var already = bag.items.some(function (i) { return i.title === sug.title; });
-          var card = document.createElement("button");
-          card.type = "button";
-          card.className = "pk-suggest-card" + (already ? " is-added" : "");
-          card.innerHTML =
-            '<span class="pk-suggest-card__icon icon">' + (ICONS[sug.icon] || ICONS.flag) + '</span>' +
-            '<span class="pk-suggest-card__label">' + sug.title + '</span>' +
-            (sug.qty > 1 ? '<span class="pk-suggest-card__qty">&times;' + sug.qty + '</span>' : '');
-          if (!already) {
-            card.addEventListener("click", function () {
-              bag.items.push({ id: "it" + (state.nextItemId++), title: sug.title, icon: sug.icon, qty: sug.qty, cat: cat, checked: false, tsa: sug.tsa, isNew: true });
-              render();
-            });
-          }
-          grid.appendChild(card);
-        });
-        section.appendChild(grid);
-        el.appendChild(section);
-      });
-    }
-
     // ---------------- progress runway ----------------
     // Tracks essentials only — that's the list where a single missed
     // item (passport, wallet) can actually derail the trip, so it's
@@ -2086,39 +2386,186 @@
       tsaPanel.classList.toggle("is-open");
     });
 
-    // ---------------- print ----------------
-    function buildPrintSheet(onlyActive) {
-      var sheet = document.getElementById("pk-printSheet");
-      var html = '<h1>Fly Easy — Packing List</h1>';
+    // ---------------- review step ----------------
+    // Each row's done/total is computed fresh from live state every call,
+    // and every row can expand into a read-only, check-off-only list of
+    // its own items — same checkbox behavior as Essentials/Bags, just
+    // without rename/qty/remove, so Review stays a walkthrough rather
+    // than another editing surface. Toggling here calls the same full
+    // render() as everywhere else, so the Essentials/Bags steps (and
+    // the runway, tabs, "Packed" stamps) are already correct the moment
+    // the traveler navigates back to them.
+    function renderReview() {
+      var el = document.getElementById("pk-reviewSummary");
+      if (!el) return;
+      el.innerHTML = "";
 
-      function bagBlock(title, items) {
-        var block = '<div class="pk-print-bag"><h2>' + title + '</h2>';
-        if (!items.length) block += '<p style="color:#666; font-size:0.85rem;">No items yet.</p>';
-        items.forEach(function (i) {
-          block += '<div class="pk-print-item"><span class="pk-print-box"></span><span>' + i.title + (i.qty > 1 ? ' &times; ' + i.qty : '') + '</span></div>';
+      el.appendChild(buildReviewRow({
+        rowClass: "pk-review-row--essentials",
+        icon: ICONS.shield,
+        name: "Essentials",
+        accentColor: "var(--phase-predeparture)",
+        items: state.essentials,
+        isOpen: state.essentialsReviewOpen,
+        onToggleOpen: function () { state.essentialsReviewOpen = !state.essentialsReviewOpen; renderReview(); },
+        onItemToggle: function (item) { item.checked = !item.checked; render(); scheduleSave(); }
+      }));
+
+      if (!state.bags.length) {
+        var p = document.createElement("p");
+        p.className = "pk-empty-note";
+        p.textContent = "No bags added yet — head to the Bags step to build one.";
+        el.appendChild(p);
+      } else {
+        state.bags.forEach(function (bag) {
+          var meta = BAG_META[bag.type];
+          el.appendChild(buildReviewRow({
+            icon: ICONS[meta.icon],
+            name: bagLabel(bag),
+            typeLabel: meta.carryOn ? "Carry-on" : "Checked",
+            typeClass: meta.carryOn ? "is-carryon" : "is-checked",
+            accentColor: TYPE_THEME[bag.type].color,
+            items: bag.items,
+            isOpen: bag.reviewOpen,
+            onToggleOpen: function () { bag.reviewOpen = !bag.reviewOpen; renderReview(); },
+            onItemToggle: function (item) { item.checked = !item.checked; render(); scheduleSave(); }
+          }));
         });
-        block += '</div>';
-        return block;
+      }
+    }
+
+    function buildReviewRow(opts) {
+      var total = opts.items.length;
+      var done = opts.items.filter(function (i) { return i.checked; }).length;
+
+      var wrap = document.createElement("div");
+      wrap.className = "pk-review-item" + (total && opts.isOpen ? " is-open" : "");
+
+      var row = document.createElement("button");
+      row.type = "button";
+      row.className = "pk-review-row" + (opts.rowClass ? " " + opts.rowClass : "");
+      row.style.setProperty("--tab-color", opts.accentColor);
+      row.disabled = !total;
+      row.innerHTML =
+        '<span class="pk-review-row__icon icon">' + opts.icon + '</span>' +
+        '<span class="pk-review-row__name">' + esc(opts.name) + '</span>' +
+        (opts.typeLabel ? '<span class="pk-review-row__type ' + opts.typeClass + '">' + opts.typeLabel + '</span>' : '') +
+        '<span class="pk-review-row__count">' + (total ? (done + ' / ' + total) : 'empty') + '</span>' +
+        (total ? '<span class="pk-review-row__caret icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>' : '');
+      if (total) row.addEventListener("click", opts.onToggleOpen);
+      wrap.appendChild(row);
+
+      if (total && opts.isOpen) {
+        var body = document.createElement("div");
+        body.className = "pk-review-item__body";
+        var groups = {}, order = [];
+        opts.items.forEach(function (item) {
+          var key = item.cat || "__flat__";
+          if (!groups[key]) { groups[key] = []; order.push(key); }
+          groups[key].push(item);
+        });
+        order.forEach(function (key) {
+          if (key !== "__flat__") {
+            var title = document.createElement("p");
+            title.className = "pk-list-section__title";
+            title.textContent = key;
+            body.appendChild(title);
+          }
+          groups[key].forEach(function (item) {
+            body.appendChild(buildReviewCheckRow(item, opts.onItemToggle));
+          });
+        });
+        wrap.appendChild(body);
       }
 
-      html += bagBlock("Essentials", state.essentials);
+      return wrap;
+    }
 
-      if (onlyActive) {
-        var bag = activeBag();
-        if (bag) html += bagBlock(bagLabel(bag), bag.items);
-      } else {
-        state.bags.forEach(function (bag) { html += bagBlock(bagLabel(bag), bag.items); });
+    function buildReviewCheckRow(item, onToggle) {
+      var row = document.createElement("div");
+      row.className = "pk-review-check-row" + (item.checked ? " is-checked" : "");
+      row.innerHTML =
+        '<button class="pk-check' + (item.checked ? ' is-on' : '') + '" type="button" aria-label="Toggle packed">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>' +
+        '</button>' +
+        '<span class="pk-item-row__icon icon">' + (ICONS[item.icon] || ICONS.flag) + '</span>' +
+        '<span class="pk-review-check-row__title">' + item.title +
+          (item.qty > 1 ? ' <span class="pk-review-check-row__qty">&times;' + item.qty + '</span>' : '') +
+        '</span>';
+      row.querySelector(".pk-check").addEventListener("click", function () { onToggle(item); });
+      return row;
+    }
+
+    // ---------------- print ----------------
+    // Called two ways: with a specific bag (the "print this bag" quick
+    // action on that bag's panel) or with no argument (the primary
+    // "Print all lists" action on the Review step).
+    function buildPrintSheet(onlyBag) {
+      var sheet = document.getElementById("pk-printSheet");
+
+      // Groups by category (matching the digital checklist) so custom,
+      // free-typed items — which carry no `cat` — land under their own
+      // "Items" heading instead of blending into a flat list. Checkboxes
+      // always print blank, regardless of what's already checked
+      // digitally: the printout is a separate, physical list.
+      function itemsHtml(items) {
+        if (!items.length) return '<p class="pk-print-empty">No items yet.</p>';
+        var groups = {}, order = [];
+        items.forEach(function (item) {
+          var cat = item.cat || "Items";
+          if (!groups[cat]) { groups[cat] = []; order.push(cat); }
+          groups[cat].push(item);
+        });
+        var html = "";
+        order.forEach(function (cat) {
+          if (order.length > 1) html += '<p class="pk-print-section-title">' + cat + '</p>';
+          groups[cat].forEach(function (i) {
+            html += '<div class="pk-print-item"><span class="pk-print-box"></span><span>' + i.title + (i.qty > 1 ? ' &times; ' + i.qty : '') + '</span></div>';
+          });
+        });
+        return html;
+      }
+
+      function bagBlock(bag) {
+        var meta = BAG_META[bag.type];
+        var pillClass = meta.carryOn ? "is-carryon" : "is-checked";
+        var pillLabel = meta.carryOn ? "Carry-on" : "Checked";
+        return '<div class="pk-print-bag">' +
+          '<div class="pk-print-bag__head">' +
+            '<span class="pk-print-bag__name">' + esc(bagLabel(bag)) +
+              // a renamed bag keeps its real type visible in parens,
+              // same as the digital tab/panel convention
+              (bag.customName.trim() ? ' <span class="pk-print-bag__meta">(' + meta.label + ')</span>' : '') +
+            '</span>' +
+            '<span class="pk-print-type-pill ' + pillClass + '">' + pillLabel + '</span>' +
+          '</div>' +
+          itemsHtml(bag.items) +
+        '</div>';
+      }
+
+      var html =
+        '<div class="pk-print-header">' +
+          '<h1>Fly Easy — Packing List</h1>' +
+          '<p class="pk-print-meta"><b>' + state.trip.days + '-day trip</b> &middot; <b>' + (CLIMATE_LABEL[state.trip.climate] || "Mild") + '</b> climate</p>' +
+        '</div>' +
+        '<div class="pk-print-essentials">' +
+          '<div class="pk-print-bag__head"><span class="pk-print-bag__name">Essentials</span></div>' +
+          '<p class="pk-print-essentials-note">Not tied to any bag — keep on you or in your personal item</p>' +
+          itemsHtml(state.essentials) +
+        '</div>';
+
+      var bagsToShow = onlyBag ? [onlyBag] : state.bags;
+      if (bagsToShow.length) {
+        html += '<div class="pk-print-columns">' + bagsToShow.map(bagBlock).join("") + '</div>';
+      } else if (!onlyBag) {
+        html += '<p class="pk-print-empty">No bags added yet.</p>';
       }
 
       sheet.innerHTML = html;
     }
 
-    document.getElementById("pk-printActive").addEventListener("click", function () {
-      buildPrintSheet(true);
-      window.print();
-    });
     document.getElementById("pk-printAll").addEventListener("click", function () {
-      buildPrintSheet(false);
+      buildPrintSheet(null);
       window.print();
     });
 
@@ -2128,11 +2575,26 @@
       renderEssentials();
       renderBagPanels();
       updateProgress();
+      renderReview();
     }
 
-    // No default bags — the picker starts empty until the traveler adds
-    // their first one, so bags only appear once added.
+    // ---------------- init ----------------
+    // Try a saved plan first; fall back to the fresh defaults already
+    // set on `state` above (no default bags — the picker starts empty
+    // until the traveler adds their first one).
+    var restored = false;
+    try { restored = restoreState(JSON.parse(localStorage.getItem(STORE_KEY))); } catch (e) {}
+
+    daysValEl.textContent = state.trip.days;
+    daysDownBtn.disabled = state.trip.days <= DAY_MIN;
+    daysUpBtn.disabled = state.trip.days >= DAY_MAX;
+    climateEl.querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("is-active", b.dataset.climate === state.trip.climate);
+    });
+
+    updateStepsUI();
     render();
+    if (!restored) savePlan();
   }
 })();
 

@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Packer — Fly Easy</title>
+<meta name="description" content="Plan what goes in every bag. Packer Assistant suggests what to pack by bag, tuned to your trip length and climate, and checked against TSA carry-on rules.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22195 118 212 224%22><path d=%22M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z%22 fill=%22%231B6FA8%22 transform=%22translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=51">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="page-transition" id="page-transition" aria-hidden="true">
+  <div class="page-transition__veil"></div>
+  <span class="page-transition__puff page-transition__puff--l"></span>
+  <span class="page-transition__puff page-transition__puff--r"></span>
+  <span class="page-transition__plane">
+    <svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg>
+  </span>
+</div>
+
+<header class="site-nav">
+  <div class="site-nav__inner">
+    <a class="site-nav__brand" href="index.html">
+      <span class="site-nav__mark"><img src="images/flyeasy-mark.svg" alt="" width="48" height="34"></span>
+      <span class="site-nav__word">Fly Easy</span>
+    </a>
+    <div class="site-nav__right">
+      <nav class="site-nav__links" id="siteNavLinks" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="global.html">Global Tips</a>
+      <a href="sfo.html">SFO Tips</a>
+      <a href="timeblocker.html">Timeblocker</a>
+      <a href="packer.html" aria-current="page">Packer</a>
+      </nav>
+      <a class="site-nav__cta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+      <button class="site-nav__toggle" id="siteNavToggle" type="button" aria-expanded="false" aria-controls="siteNavLinks" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-tabbar" aria-label="Primary">
+  <a class="mobile-tabbar__item" href="index.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M4 10.5L12 4l8 6.5"/><path d="M6 9.5V19a1 1 0 001 1h3v-6h4v6h3a1 1 0 001-1V9.5"/></svg></span>
+    <span class="mobile-tabbar__label">Home</span>
+  </a>
+  <a class="mobile-tabbar__item" href="global.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
+    <span class="mobile-tabbar__label">Global</span>
+  </a>
+  <a class="mobile-tabbar__item" href="sfo.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-5h6v5"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2"/></svg></span>
+    <span class="mobile-tabbar__label">SFO</span>
+  </a>
+  <a class="mobile-tabbar__item" href="timeblocker.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+    <span class="mobile-tabbar__label">Timeblocker</span>
+  </a>
+  <a class="mobile-tabbar__item" href="packer.html" aria-current="page">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span>
+    <span class="mobile-tabbar__label">Packer</span>
+  </a>
+</nav>
+
+<main id="main">
+
+  <div class="pk-page">
+
+  <section class="pk-hero pk-enter">
+    <span class="eyebrow">Plan what goes in every bag</span>
+    <h1>Pack smart, <em>not stressed</em>.</h1>
+    <p>Four quick steps: set your trip, check off what you carry on you, build each bag's list, then review and print. Nothing here is locked in — jump between steps any time.</p>
+  </section>
+
+  <div class="pk-wizard-shell">
+
+    <!-- STEP TRACKER -->
+    <nav class="pk-steps" id="pk-steps" aria-label="Packing steps">
+      <button type="button" class="pk-step" data-step="trip">
+        <span class="pk-step__dot"><span class="pk-step__num">1</span><svg class="pk-step__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="pk-step__label">Trip</span>
+      </button>
+      <span class="pk-step__line" aria-hidden="true"></span>
+      <button type="button" class="pk-step" data-step="essentials">
+        <span class="pk-step__dot"><span class="pk-step__num">2</span><svg class="pk-step__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="pk-step__label">Essentials</span>
+      </button>
+      <span class="pk-step__line" aria-hidden="true"></span>
+      <button type="button" class="pk-step" data-step="bags">
+        <span class="pk-step__dot"><span class="pk-step__num">3</span><svg class="pk-step__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="pk-step__label">Bags</span>
+      </button>
+      <span class="pk-step__line" aria-hidden="true"></span>
+      <button type="button" class="pk-step" data-step="review">
+        <span class="pk-step__dot"><span class="pk-step__num">4</span><svg class="pk-step__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="pk-step__label">Review</span>
+      </button>
+    </nav>
+    <p class="pk-steps-caption" id="pk-stepsCaption">Step 1 of 4 — Trip</p>
+
+    <!-- STEP 1: TRIP -->
+    <section class="pk-step-panel" data-step-panel="trip">
+      <div class="pk-card pk-step-card pk-enter">
+        <h2 class="pk-card__title">How long, and how warm?</h2>
+        <p class="pk-card__sub">This tunes every suggestion in the Bags step. Change it any time — nothing else resets.</p>
+        <div class="pk-trip-controls">
+          <div class="pk-trip-field">
+            <span class="pk-trip-field__label">Trip length</span>
+            <div class="pk-stepper pk-stepper--lg" role="group" aria-label="Trip length">
+              <button type="button" id="pk-daysDown" aria-label="One day fewer">&minus;</button>
+              <span class="pk-stepper__val"><b id="pk-daysVal">5</b> days</span>
+              <button type="button" id="pk-daysUp" aria-label="One day more">+</button>
+            </div>
+          </div>
+          <div class="pk-trip-field">
+            <span class="pk-trip-field__label">Destination climate</span>
+            <div class="pk-segment pk-segment--lg" id="pk-climate" role="group" aria-label="Destination climate">
+              <button type="button" data-climate="cold">Cold</button>
+              <button type="button" data-climate="mild" class="is-active">Mild</button>
+              <button type="button" data-climate="warm">Warm</button>
+              <button type="button" data-climate="tropical">Tropical</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pk-step-actions pk-step-actions--end">
+        <button type="button" class="pk-btn pk-btn--primary" data-goto="essentials">Continue to essentials <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+      </div>
+    </section>
+
+    <!-- STEP 2: ESSENTIALS -->
+    <section class="pk-step-panel" data-step-panel="essentials">
+
+      <div class="pk-runway pk-enter" id="pk-runway">
+        <div class="pk-runway__top">
+          <span class="pk-runway__label">Essentials Packing Progress</span>
+          <span class="pk-runway__pct" id="pk-runwayPct">0%</span>
+        </div>
+        <div class="pk-runway__track">
+          <div class="pk-runway__fill" id="pk-runwayFill"></div>
+          <span class="pk-runway__plane" id="pk-runwayPlane">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z"/></svg>
+          </span>
+        </div>
+        <div class="pk-runway__foot">
+          <p class="pk-runway__status" id="pk-runwayStatus">Add items below to start tracking what's packed.</p>
+          <span class="pk-runway__badge">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12l5 5L20 6"/></svg></span>
+            Cleared for departure
+          </span>
+        </div>
+      </div>
+
+      <div class="pk-card pk-essentials-card pk-enter" id="pk-essentialsCard">
+        <div class="pk-essentials-card__head">
+          <span class="pk-essentials-card__icon icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+          <div>
+            <h2 class="pk-card__title">The essentials</h2>
+            <p class="pk-card__sub">Not tied to any bag — keep these on you or in your personal item, not checked.</p>
+            <p class="pk-essentials-warn">
+              <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+              <span>Physically double-check each one — a missing passport or wallet ends a trip before it starts.</span>
+            </p>
+          </div>
+        </div>
+        <div class="pk-essentials-grid" id="pk-essentialsList"></div>
+        <div class="pk-add-custom">
+          <input type="text" id="pk-essentialsInput" placeholder="Add another essential…">
+          <button id="pk-essentialsAddBtn" type="button">Add</button>
+        </div>
+      </div>
+
+      <div class="pk-step-actions">
+        <button type="button" class="pk-btn pk-btn--ghost" data-goto="trip"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span> Trip</button>
+        <button type="button" class="pk-btn pk-btn--primary" data-goto="bags">Continue to bags <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+      </div>
+    </section>
+
+    <!-- STEP 3: BAGS -->
+    <section class="pk-step-panel" data-step-panel="bags">
+      <div class="pk-wrap">
+
+       <div class="pk-main-col">
+
+        <div class="pk-bags-head pk-enter">
+          <div>
+            <h2 class="pk-bags-head__title">Your bags</h2>
+            <p class="pk-bags-head__sub">Add every bag you're bringing, then tap one to build its list.</p>
+          </div>
+        </div>
+
+        <div class="pk-airline-warn pk-enter">
+          <span class="pk-airline-warn__icon icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+          <div>
+            <p class="pk-airline-warn__title">Check your airline before you pack</p>
+            <p class="pk-airline-warn__text">Every airline sets its own rules — <b>how many bags</b> you get, and the <b>weight and size limit</b> for each one. Going over costs money at the airport.</p>
+          </div>
+        </div>
+
+        <div class="pk-tabs" id="pk-tabs"></div>
+
+        <div class="pk-bag-picker" id="pk-bagPicker">
+          <div class="pk-bag-picker__group">
+            <p class="pk-bag-picker__label">Carry-on <span>— stays with you, goes through security</span></p>
+            <div class="pk-bag-picker__row">
+              <button class="pk-bag-option" data-bagtype="backpack" type="button"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 8V6a5 5 0 0110 0v2"/><rect x="5" y="8" width="14" height="13" rx="2.5"/><path d="M9 12h6"/></svg></span>Carry-on Backpack</button>
+              <button class="pk-bag-option" data-bagtype="personal" type="button"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M8 9V7a3 3 0 016 0v2"/></svg></span>Personal Item</button>
+              <button class="pk-bag-option" data-bagtype="carryon" type="button"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4V2.5h6V4M9 9v8M15 9v8"/></svg></span>Carry-on Luggage</button>
+            </div>
+          </div>
+          <div class="pk-bag-picker__group">
+            <p class="pk-bag-picker__label">Checked &amp; sports <span>— goes in the cargo hold, not with you</span></p>
+            <div class="pk-bag-picker__row">
+              <button class="pk-bag-option" data-bagtype="checked" type="button"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span>Checked Bag</button>
+              <button class="pk-bag-option" data-bagtype="sports" type="button"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="18" height="9" rx="3"/><path d="M8 9V7a1 1 0 011-1h6a1 1 0 011 1v2"/></svg></span>Sports / Ski Bag</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BAG PANELS get injected here -->
+        <div id="pk-bagPanels"></div>
+
+       </div><!-- /.pk-main-col -->
+
+       <!-- TSA TIPS — sticky side rail, only relevant while you're deciding
+            what goes in each bag -->
+       <aside class="pk-side-col">
+        <div class="pk-card pk-tsa-panel is-open pk-enter" id="pk-tsaPanel">
+          <div class="pk-tsa-head" id="pk-tsaHead">
+            <div class="pk-tsa-head__left">
+              <span class="pk-tsa-head__icon icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M12 8v5M12 16v.3"/></svg></span>
+              <div>
+                <h2>TSA basics</h2>
+                <p class="pk-tsa-head__sub">What trips people up most.</p>
+              </div>
+            </div>
+            <span class="pk-tsa-caret icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+          <div class="pk-tsa-body">
+            <div class="pk-tsa-list">
+
+              <div class="pk-rule pk-rule--limit">
+                <p class="pk-rule__head"><span class="pk-rule__emoji">🧴</span> Liquids &mdash; 3-1-1</p>
+                <ul class="pk-rule__points">
+                  <li><b>3.4 oz</b> max per container, 1 quart bag</li>
+                  <li>Bigger &rarr; checked bag</li>
+                </ul>
+              </div>
+
+              <div class="pk-rule pk-rule--no">
+                <p class="pk-rule__head"><span class="pk-rule__emoji">🔋</span> Batteries &amp; power banks</p>
+                <ul class="pk-rule__points">
+                  <li class="is-bad"><b>Never</b> checked &mdash; carry-on only</li>
+                  <li>100 Wh max each</li>
+                </ul>
+              </div>
+
+              <div class="pk-rule pk-rule--no">
+                <p class="pk-rule__head"><span class="pk-rule__emoji">🔪</span> Knives &amp; multi-tools</p>
+                <ul class="pk-rule__points">
+                  <li class="is-bad">Any blade &rarr; checked only</li>
+                </ul>
+              </div>
+
+              <div class="pk-rule pk-rule--yes">
+                <p class="pk-rule__head"><span class="pk-rule__emoji">🍪</span> Food &amp; snacks</p>
+                <ul class="pk-rule__points">
+                  <li class="is-ok">Solid food &mdash; either bag</li>
+                  <li class="is-warn">Spreads count as liquids</li>
+                </ul>
+              </div>
+
+              <div class="pk-rule pk-rule--info">
+                <p class="pk-rule__head"><span class="pk-rule__emoji">👟</span> At the checkpoint</p>
+                <ul class="pk-rule__points">
+                  <li class="is-ok"><b>Shoes stay on</b></li>
+                  <li><b>PreCheck:</b> laptop &amp; liquids stay in your bag</li>
+                </ul>
+              </div>
+
+            </div>
+            <p class="pk-tsa-foot">From TSA&rsquo;s own guidance. Rules change &mdash; check <a href="https://www.tsa.gov/travel/security-screening/whatcanibring/all" target="_blank" rel="noopener">tsa.gov/whatcanibring</a>.</p>
+          </div>
+        </div>
+       </aside>
+
+      </div><!-- /.pk-wrap -->
+
+      <div class="pk-step-actions">
+        <button type="button" class="pk-btn pk-btn--ghost" data-goto="essentials"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span> Essentials</button>
+        <button type="button" class="pk-btn pk-btn--primary" data-goto="review">Continue to review <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+      </div>
+    </section>
+
+    <!-- STEP 4: REVIEW -->
+    <section class="pk-step-panel" data-step-panel="review">
+      <div class="pk-card pk-review-card pk-enter">
+        <h2 class="pk-card__title">Review &amp; print</h2>
+        <p class="pk-card__sub">A last look before you head out.</p>
+        <div class="pk-review-summary" id="pk-reviewSummary"></div>
+        <div class="pk-review-tsa">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+          <span>Last check: liquids under 3.4oz, power banks in carry-on only, blades in checked only. Full rules on the Bags step.</span>
+        </div>
+        <div class="pk-actions">
+          <button class="pk-btn pk-btn--primary" id="pk-printAll" type="button">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a1 1 0 01-1-1v-5a2 2 0 012-2h14a2 2 0 012 2v5a1 1 0 01-1 1h-2M6 14h12v7H6z"/></svg></span>
+            Print all lists
+          </button>
+        </div>
+      </div>
+      <div class="pk-step-actions">
+        <button type="button" class="pk-btn pk-btn--ghost" data-goto="bags"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span> Bags</button>
+      </div>
+    </section>
+
+  </div><!-- /.pk-wizard-shell -->
+
+  </div><!-- /.pk-page -->
+
+</main>
+
+<!-- hidden print-only sheet, filled in by JS right before printing -->
+<div class="pk-print-sheet" id="pk-printSheet"></div>
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__brand"><img src="images/flyeasy-mark.svg" alt="" width="37" height="26">Fly Easy</p>
+    <nav class="site-footer__links" aria-label="Footer navigation">
+      <a href="index.html">Home</a>
+      <a href="global.html">Global Tips</a>
+      <a href="sfo.html">SFO Tips</a>
+      <a href="timeblocker.html">Timeblocker</a>
+      <a href="packer.html">Packer</a>
+      <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+    </nav>
+    <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
+    <p class="site-footer__credit">Photography via Unsplash &amp; Pexels.</p>
+  </div>
+</footer>
+
+<div class="survey-toast" id="surveyToast" hidden>
+  <button class="survey-toast__close" type="button" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <p class="survey-toast__title">Got a sec?</p>
+  <p class="survey-toast__text">Help shape Fly Easy — a quick survey on what's working and what's missing.</p>
+  <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
+</div>
+
+<script src="script.js?v=54"></script>
+</body>
+</html>

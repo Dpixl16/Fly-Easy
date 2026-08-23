@@ -3351,7 +3351,7 @@ body[data-tod="dusk"] .survey-toast__text, body[data-tod="night"] .survey-toast_
 body[data-tod="dusk"] .survey-toast__close, body[data-tod="night"] .survey-toast__close { background: rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.8); }
 
 /* ============================================================
-   Packer Assistant
+   Packer Assistant — 4-step wizard (Trip / Essentials / Bags / Review)
    ============================================================ */
 .pk-page { padding-top: 2.4rem; padding-bottom: 1rem; }
 
@@ -3360,28 +3360,113 @@ body[data-tod="dusk"] .survey-toast__close, body[data-tod="night"] .survey-toast
 .pk-hero .eyebrow { text-transform: uppercase; letter-spacing: 0.09em; font-size: 0.78rem; font-weight: 600; color: var(--horizon-blue); margin-bottom: 0.6rem; display: block; transition: color 0.6s ease; }
 .pk-hero h1 { font-size: clamp(1.8rem, 3.2vw, 2.6rem); color: var(--deep-navy); transition: color 0.6s ease; }
 .pk-hero h1 em { color: var(--horizon-blue); font-style: normal; transition: color 0.6s ease; }
-.pk-hero p { color: var(--text-muted); max-width: 60ch; margin-top: 0.7rem; font-size: 1.02rem; transition: color 0.6s ease; }
-
-/* page shell: main column + sticky TSA rail on the right */
-.pk-wrap { max-width: 1300px; margin: 0 auto; padding: 0 1.5rem 5rem; position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) 292px; gap: 1.5rem; align-items: start; }
-.pk-main-col { min-width: 0; }
-.pk-side-col { position: sticky; top: 1.5rem; min-width: 0; }
-@media (max-width: 1080px) {
-  .pk-wrap { grid-template-columns: 1fr; }
-  .pk-side-col { position: static; }
-}
+.pk-hero p { color: var(--text-muted); max-width: 62ch; margin-top: 0.7rem; font-size: 1.02rem; transition: color 0.6s ease; }
 
 @keyframes pkFadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 .pk-enter { animation: pkFadeUp 0.6s var(--ease) both; }
+
+body[data-tod="dusk"] .pk-hero h1, body[data-tod="night"] .pk-hero h1 { color: #fff; }
+body[data-tod="dusk"] .pk-hero p, body[data-tod="night"] .pk-hero p { color: rgba(255, 255, 255, 0.78); }
+body[data-tod="dusk"] .pk-hero .eyebrow, body[data-tod="night"] .pk-hero .eyebrow { color: #BFE3F7; }
+
+.pk-wizard-shell { max-width: 1300px; margin: 0 auto; padding: 0 1.5rem 5rem; position: relative; z-index: 1; }
 
 /* card shell */
 .pk-card { background: var(--cloud-white); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.7rem; margin-top: 1.5rem; box-shadow: 0 1px 2px rgba(15, 48, 73, 0.04); }
 .pk-card__title { font-size: 1.15rem; color: var(--deep-navy); margin-bottom: 0.2rem; }
 .pk-card__sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; }
 
-/* runway progress: a "window" onto the real sky behind it */
+/* ---------------- step tracker ---------------- */
+.pk-steps {
+  display: flex; align-items: center; justify-content: center;
+  max-width: 640px; margin: 0.4rem auto 0; padding: 0 0.5rem;
+}
+.pk-step {
+  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+  border: none; background: transparent; cursor: pointer; flex-shrink: 0;
+  color: var(--text-muted); padding: 0.2rem;
+}
+.pk-step__dot {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: var(--cloud-white); border: 2px solid var(--border-soft);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s var(--ease); position: relative;
+}
+.pk-step__num { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--text-muted); transition: opacity 0.2s var(--ease); }
+.pk-step__check { position: absolute; inset: 0; margin: auto; width: 14px; height: 14px; color: #fff; opacity: 0; transform: scale(0.6); transition: all 0.25s var(--ease); }
+.pk-step__label { font-size: 0.76rem; font-weight: 600; white-space: nowrap; transition: color 0.2s var(--ease); }
+.pk-step__line { width: clamp(20px, 6vw, 56px); height: 2px; background: var(--border-soft); margin: 0 0.1rem 1.3rem; flex-shrink: 1; transition: background 0.3s var(--ease); }
+
+.pk-step:hover .pk-step__dot { border-color: var(--horizon-blue); }
+.pk-step.is-active .pk-step__dot { border-color: var(--horizon-blue); background: var(--horizon-blue); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.32); }
+.pk-step.is-active .pk-step__num { color: #fff; }
+.pk-step.is-active .pk-step__label { color: var(--deep-navy); }
+.pk-step.is-complete .pk-step__dot { border-color: var(--phase-inflight); background: var(--phase-inflight); }
+.pk-step.is-complete .pk-step__num { opacity: 0; }
+.pk-step.is-complete .pk-step__check { opacity: 1; transform: scale(1); }
+.pk-step.is-complete + .pk-step__line { background: var(--phase-inflight); }
+
+.pk-steps-caption { display: none; text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--deep-navy); margin: 0.6rem 0 0; }
+body[data-tod="dusk"] .pk-steps-caption, body[data-tod="night"] .pk-steps-caption { color: #fff; }
+body[data-tod="dusk"] .pk-step__label, body[data-tod="night"] .pk-step__label { color: rgba(255,255,255,0.8); }
+body[data-tod="dusk"] .pk-step.is-active .pk-step__label, body[data-tod="night"] .pk-step.is-active .pk-step__label { color: #fff; }
+
+@media (max-width: 640px) {
+  .pk-step__label { display: none; }
+  .pk-step__dot { width: 26px; height: 26px; }
+  .pk-step__line { margin-bottom: 0; }
+  .pk-steps-caption { display: block; }
+}
+
+/* ---------------- step panels ---------------- */
+.pk-step-panel { display: none; }
+.pk-step-panel.is-active { display: block; animation: pkFadeUp 0.4s var(--ease) both; }
+.pk-step-card { max-width: 640px; margin-left: auto; margin-right: auto; }
+
+.pk-step-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; margin-top: 1.8rem; flex-wrap: wrap; }
+.pk-step-actions--end { justify-content: flex-end; }
+.pk-step-actions .pk-btn .icon { width: 15px; height: 15px; }
+
+/* ---------------- trip step ---------------- */
+.pk-trip-controls { display: flex; flex-wrap: wrap; gap: 1.6rem; margin-top: 1.4rem; }
+.pk-trip-field { display: flex; flex-direction: column; gap: 0.5rem; }
+.pk-trip-field__label { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+
+/* days: a stepper, so there's no free-text field to mistype */
+.pk-stepper { display: inline-flex; align-items: center; background: var(--cloud-white); border: 1px solid var(--border-soft); border-radius: var(--radius-pill); overflow: hidden; }
+.pk-stepper button {
+  border: none; background: transparent; color: var(--text-muted);
+  width: 24px; height: 28px; font-size: 0.95rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.pk-stepper button:hover { background: var(--sky-pale); color: var(--horizon-blue); }
+.pk-stepper button:disabled { opacity: 0.3; pointer-events: none; }
+.pk-stepper__val { font-size: 0.78rem; color: var(--text-muted); padding: 0 0.15rem; min-width: 4.6rem; text-align: center; white-space: nowrap; }
+.pk-stepper__val b { color: var(--deep-navy); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.pk-stepper--lg { border-radius: 16px; border-width: 1.5px; }
+.pk-stepper--lg button { width: 40px; height: 44px; font-size: 1.2rem; }
+.pk-stepper--lg .pk-stepper__val { font-size: 0.95rem; min-width: 6rem; }
+.pk-stepper--lg .pk-stepper__val b { font-size: 1.15rem; }
+
+/* climate: a segmented control — one tap, always shows the choice */
+.pk-segment { display: inline-flex; background: var(--cloud-white); border: 1px solid var(--border-soft); border-radius: var(--radius-pill); padding: 2px; }
+.pk-segment button {
+  border: none; background: transparent; color: var(--text-muted);
+  padding: 0.24rem 0.6rem; border-radius: var(--radius-pill);
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+.pk-segment button:hover { color: var(--deep-navy); }
+.pk-segment button.is-active { background: var(--horizon-blue); color: #fff; }
+
+.pk-segment--lg { border-radius: 16px; border-width: 1.5px; padding: 4px; }
+.pk-segment--lg button { padding: 0.6rem 1.1rem; font-size: 0.88rem; border-radius: 12px; }
+
+/* ---------------- runway progress (essentials step) ---------------- */
 .pk-runway {
-  margin-top: 1.5rem;
+  margin-top: 0; margin-bottom: 0;
   background: rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -3412,7 +3497,6 @@ body[data-tod="dusk"] .survey-toast__close, body[data-tod="night"] .survey-toast
 .pk-runway__plane svg { width: 100%; height: 100%; }
 .pk-runway__plane.is-taxiing { animation: pkPlaneWobble 1.6s ease-in-out infinite; }
 @keyframes pkPlaneWobble { 0%,100% { transform: translate(-50%, -60%) rotate(-90deg) translateY(0); } 50% { transform: translate(-50%, -60%) rotate(-90deg) translateY(-3px); } }
-/* status + "cleared" badge share one row so the card stays short */
 .pk-runway__foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 0.7rem; position: relative; z-index: 1; min-height: 22px; }
 .pk-runway__status { font-size: 0.82rem; color: var(--text-muted); transition: color 0.3s var(--ease); }
 .pk-runway.is-ready .pk-runway__status { color: var(--phase-inflight); font-weight: 600; }
@@ -3425,22 +3509,10 @@ body[data-tod="dusk"] .survey-toast__close, body[data-tod="night"] .survey-toast
 }
 .pk-runway.is-ready .pk-runway__badge { opacity: 1; transform: scale(1); }
 .pk-runway__badge .icon { width: 12px; height: 12px; }
-/* the runway sits on the live sky, so its badge needs a solid backing
-   once the background goes dark */
 body[data-tod="dusk"] .pk-runway__badge,
 body[data-tod="night"] .pk-runway__badge { background: rgba(169, 240, 198, 0.16); color: #A9F0C6; border-color: rgba(169, 240, 198, 0.45); }
 body[data-tod="dusk"] .pk-runway.is-ready .pk-runway__status,
 body[data-tod="night"] .pk-runway.is-ready .pk-runway__status { color: #A9F0C6; }
-
-/* the double-check caution lives inside the essentials card */
-.pk-essentials-warn { display: flex; align-items: flex-start; gap: 0.4rem; margin-top: 0.45rem; font-size: 0.765rem; color: var(--warning-red); font-weight: 600; line-height: 1.4; }
-.pk-essentials-warn .icon { width: 14px; height: 14px; flex-shrink: 0; margin-top: 0.08rem; }
-
-/* Text sitting directly on the sky needs to relegitimize itself as
-   the sky darkens through dusk/night — mirrors the rest of the site. */
-body[data-tod="dusk"] .pk-hero h1, body[data-tod="night"] .pk-hero h1 { color: #fff; }
-body[data-tod="dusk"] .pk-hero p, body[data-tod="night"] .pk-hero p { color: rgba(255, 255, 255, 0.78); }
-body[data-tod="dusk"] .pk-hero .eyebrow, body[data-tod="night"] .pk-hero .eyebrow { color: #BFE3F7; }
 body[data-tod="dusk"] .pk-runway, body[data-tod="night"] .pk-runway { background: rgba(10, 20, 40, 0.35); border-color: rgba(255, 255, 255, 0.2); }
 body[data-tod="dusk"] .pk-runway__label, body[data-tod="night"] .pk-runway__label,
 body[data-tod="dusk"] .pk-runway__pct, body[data-tod="night"] .pk-runway__pct { color: #fff; }
@@ -3449,12 +3521,13 @@ body[data-tod="dusk"] .pk-runway__track, body[data-tod="night"] .pk-runway__trac
   background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.32) 0 18px, transparent 18px 34px);
 }
 body[data-tod="dusk"] .pk-runway__plane, body[data-tod="night"] .pk-runway__plane { color: #fff; }
-body[data-tod="dusk"] .pk-bags-head__title, body[data-tod="night"] .pk-bags-head__title { color: #fff; }
-body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__sub { color: rgba(255, 255, 255, 0.75); }
 
-/* essentials: compact, purple-tinted, always visible. Carries the
-   double-check caution inline. */
-.pk-essentials-card { background: var(--phase-predeparture-tint); border-color: rgba(107, 78, 140, 0.25); margin-top: 0.75rem; padding: 1.15rem 1.3rem 1.25rem; }
+/* the double-check caution lives inside the essentials card */
+.pk-essentials-warn { display: flex; align-items: flex-start; gap: 0.4rem; margin-top: 0.45rem; font-size: 0.765rem; color: var(--warning-red); font-weight: 600; line-height: 1.4; }
+.pk-essentials-warn .icon { width: 14px; height: 14px; flex-shrink: 0; margin-top: 0.08rem; }
+
+/* essentials: compact, purple-tinted */
+.pk-essentials-card { background: var(--phase-predeparture-tint); border-color: rgba(107, 78, 140, 0.25); margin-top: 1.5rem; padding: 1.15rem 1.3rem 1.25rem; }
 .pk-essentials-card .pk-card__sub { margin-bottom: 0; }
 .pk-essentials-card__head { display: flex; align-items: flex-start; gap: 0.7rem; margin-bottom: 0.85rem; }
 .pk-essentials-card__icon {
@@ -3465,36 +3538,20 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-essentials-card .pk-card__title { color: var(--phase-predeparture); }
 .pk-essentials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.3rem 0.6rem; }
 
-/* "your bags" intro, with trip controls inline on the right */
-.pk-bags-head { margin-top: 2.2rem; padding: 0 0.2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+/* ---------------- bags step ---------------- */
+.pk-wrap { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) 292px; gap: 1.5rem; align-items: start; }
+.pk-main-col { min-width: 0; }
+.pk-side-col { position: sticky; top: 1.5rem; min-width: 0; }
+@media (max-width: 1080px) {
+  .pk-wrap { grid-template-columns: 1fr; }
+  .pk-side-col { position: static; }
+}
+
+.pk-bags-head { padding: 0 0.2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .pk-bags-head__title { font-size: 1.2rem; color: var(--deep-navy); transition: color 0.6s ease; }
 .pk-bags-head__sub { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem; transition: color 0.6s ease; }
-
-.pk-trip-bar { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-
-/* days: a stepper, so there's no free-text field to mistype */
-.pk-stepper { display: inline-flex; align-items: center; background: var(--cloud-white); border: 1px solid var(--border-soft); border-radius: var(--radius-pill); overflow: hidden; }
-.pk-stepper button {
-  border: none; background: transparent; color: var(--text-muted);
-  width: 24px; height: 28px; font-size: 0.95rem; line-height: 1;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s var(--ease), color 0.15s var(--ease);
-}
-.pk-stepper button:hover { background: var(--sky-pale); color: var(--horizon-blue); }
-.pk-stepper button:disabled { opacity: 0.3; pointer-events: none; }
-.pk-stepper__val { font-size: 0.78rem; color: var(--text-muted); padding: 0 0.15rem; min-width: 4.6rem; text-align: center; white-space: nowrap; }
-.pk-stepper__val b { color: var(--deep-navy); font-weight: 700; font-variant-numeric: tabular-nums; }
-
-/* climate: a segmented control — one tap, always shows the choice */
-.pk-segment { display: inline-flex; background: var(--cloud-white); border: 1px solid var(--border-soft); border-radius: var(--radius-pill); padding: 2px; }
-.pk-segment button {
-  border: none; background: transparent; color: var(--text-muted);
-  padding: 0.24rem 0.6rem; border-radius: var(--radius-pill);
-  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
-  transition: background 0.18s var(--ease), color 0.18s var(--ease);
-}
-.pk-segment button:hover { color: var(--deep-navy); }
-.pk-segment button.is-active { background: var(--horizon-blue); color: #fff; }
+body[data-tod="dusk"] .pk-bags-head__title, body[data-tod="night"] .pk-bags-head__title { color: #fff; }
+body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__sub { color: rgba(255, 255, 255, 0.75); }
 
 /* airline limits caution, sits directly above the bag tabs */
 .pk-airline-warn {
@@ -3511,10 +3568,7 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-airline-warn__text { font-size: 0.765rem; color: var(--deep-navy); line-height: 1.45; }
 .pk-airline-warn__text b { font-weight: 700; color: var(--warning-red); }
 
-/* bag tabs: card-style switcher, fully colored per bag type.
-   Each tab's --tab-color/--tab-tint/--tab-border custom properties
-   are set inline by renderTabs() from TYPE_THEME, so the whole card
-   — not just an icon — reads as "this one." */
+/* bag tabs: card-style switcher, fully colored per bag type. */
 .pk-tabs { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.6rem; margin-top: 0.9rem; }
 .pk-tab {
   border: 1.5px solid var(--tab-border, var(--border-soft));
@@ -3532,13 +3586,10 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-tab__close { opacity: 0.45; font-size: 1rem; line-height: 1; padding: 0 0.1rem; flex-shrink: 0; }
 .pk-tab__close:hover { opacity: 1; color: var(--warning-red); }
 .pk-tab__badges { display: flex; align-items: center; gap: 0.3rem; }
-/* solid, bold, high-contrast — this is the TSA-relevant signal */
 .pk-tab__type-badge { font-size: 0.63rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.16rem 0.55rem; border-radius: var(--radius-pill); color: #fff; }
 .pk-tab__type-badge.is-carryon { background: var(--phase-departure); }
 .pk-tab__type-badge.is-checked { background: var(--tip-highlight); }
-/* quiet running count while there's still packing to do */
 .pk-tab__count { font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.02em; }
-/* a loud green stamp the moment the bag is finished */
 .pk-tab__packed {
   display: inline-flex; align-items: center; gap: 0.22rem;
   background: var(--phase-inflight); color: #fff;
@@ -3547,11 +3598,8 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 }
 .pk-tab__packed .icon { width: 9px; height: 9px; }
 .pk-tab__packed .icon svg { stroke-width: 3.2; }
-/* only the bag that just finished animates */
 .pk-tab.is-just-packed .pk-tab__packed { animation: pkStamp 0.42s var(--ease) both; }
 @keyframes pkStamp { 0% { transform: scale(0.5); opacity: 0; } 65% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
-/* the whole tab picks up a green edge so completed bags are obvious
-   at a glance across the row, without losing their type colour */
 .pk-tab.is-complete { border-color: var(--phase-inflight); background: linear-gradient(var(--phase-inflight-tint), var(--phase-inflight-tint)) padding-box, var(--tab-tint); }
 .pk-tab.is-complete .pk-tab__name { color: var(--phase-inflight); }
 .pk-tab.is-complete.is-active { box-shadow: 0 4px 12px rgba(10, 110, 99, 0.22); }
@@ -3584,8 +3632,7 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-bag-option:hover { border-color: var(--horizon-blue); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(14,165,233,0.15); }
 .pk-bag-option .icon { width: 18px; height: 18px; color: var(--horizon-blue); }
 
-/* carry-on / checked pill on each bag panel's own header —
-   solid + bold, since this is the functional TSA distinction */
+/* carry-on / checked pill on each bag panel's own header */
 .pk-type-pill {
   display: inline-flex; align-items: center; font-size: 0.7rem; font-weight: 800;
   text-transform: uppercase; letter-spacing: 0.05em; padding: 0.24rem 0.65rem;
@@ -3595,8 +3642,7 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-type-pill.is-carryon { background: var(--phase-departure); }
 .pk-type-pill.is-checked { background: var(--tip-highlight); }
 
-/* the bag panel itself picks up the same per-type accent as its tab,
-   as a left-edge stripe, so the color story continues into the list */
+/* bag panel: same per-type accent as its tab, as a left-edge stripe */
 .pk-bag-panel { border-left: 5px solid var(--tab-color, var(--border-soft)); padding: 1.2rem 1.3rem; }
 .pk-bag-panel .pk-card__title { font-size: 1.05rem; }
 .pk-bag-panel .pk-card__sub { font-size: 0.82rem; margin-bottom: 0; }
@@ -3618,10 +3664,17 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-bag-name-wrap:hover .pk-bag-name__pencil { color: var(--horizon-blue); }
 .pk-bag-name:focus + .pk-bag-name__pencil { opacity: 0; }
 
-/* renamed tabs show the real bag type in small print underneath */
+/* quick "print this bag" action, next to the rename field */
+.pk-bag-print {
+  margin-left: auto; border: 1px solid var(--border-soft); background: #fff; color: var(--text-muted);
+  width: 30px; height: 30px; border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s var(--ease);
+}
+.pk-bag-print .icon { width: 15px; height: 15px; }
+.pk-bag-print:hover { border-color: var(--horizon-blue); color: var(--horizon-blue); }
+
 .pk-tab__type-note { font-size: 0.64rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.01em; padding-left: 1.6rem; margin-top: -0.2rem; }
 
-/* panels */
 .pk-panel { display: none; }
 .pk-panel.is-active { display: block; animation: pkPanelIn 0.35s var(--ease) both; }
 @keyframes pkPanelIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -3635,11 +3688,49 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-bag-progress__track { height: 6px; border-radius: var(--radius-pill); background: var(--sky-mist); border: 1px solid var(--border-soft); overflow: hidden; }
 .pk-bag-progress__fill { height: 100%; background: var(--tab-color, var(--horizon-blue)); border-radius: var(--radius-pill); width: 0%; transition: width 0.45s var(--ease); }
 
-/* layout: checklist + suggestions */
-.pk-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.1rem; align-items: start; }
-@media (max-width: 880px) { .pk-layout { grid-template-columns: 1fr; } }
-.pk-list-col { min-width: 0; }
+/* ---------------- quick-add search ---------------- */
+.pk-quickadd { position: relative; margin-top: 1.1rem; }
+.pk-quickadd__icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted); pointer-events: none; }
+.pk-quickadd__input {
+  width: 100%; padding: 0.7rem 0.9rem 0.7rem 2.5rem; border: 1.5px solid var(--border-soft);
+  border-radius: 14px; background: var(--sky-mist); font-size: 0.88rem; color: var(--deep-navy);
+  font-family: var(--font-body); transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.pk-quickadd__input:focus { outline: none; border-color: var(--horizon-blue); background: #fff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14); }
+.pk-quickadd__results {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 6;
+  background: #fff; border: 1px solid var(--border-soft); border-radius: 14px;
+  box-shadow: 0 16px 32px -12px rgba(15, 48, 73, 0.28); overflow: hidden;
+  max-height: 240px; overflow-y: auto; animation: pkFadeUp 0.15s var(--ease) both;
+}
+.pk-quickadd__result {
+  display: flex; align-items: center; gap: 0.55rem; width: 100%; text-align: left;
+  border: none; background: transparent; padding: 0.55rem 0.85rem; font-size: 0.84rem; color: var(--deep-navy);
+  transition: background 0.15s var(--ease);
+}
+.pk-quickadd__result:hover, .pk-quickadd__result:focus { background: var(--sky-pale); outline: none; }
+.pk-quickadd__result .icon { width: 16px; height: 16px; color: var(--horizon-blue); flex-shrink: 0; }
+.pk-quickadd__result-qty { margin-left: auto; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); }
 
+/* ---------------- top picks ---------------- */
+.pk-toppicks:not(:empty) { margin-top: 1rem; }
+.pk-toppicks__label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.4rem; }
+.pk-toppicks__row { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.pk-suggest-card {
+  border: 1px solid var(--border-soft); background: var(--cloud-white);
+  border-radius: var(--radius-pill); padding: 0.3rem 0.6rem 0.3rem 0.4rem; text-align: left;
+  display: inline-flex; align-items: center; gap: 0.32rem;
+  transition: all 0.15s var(--ease);
+}
+.pk-suggest-card:hover { border-color: var(--horizon-blue); background: var(--sky-mist); transform: translateY(-1px); }
+.pk-suggest-card.is-added { opacity: 0.35; pointer-events: none; }
+.pk-suggest-card__icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--horizon-blue); }
+.pk-suggest-card__label { font-size: 0.78rem; font-weight: 500; color: var(--deep-navy); line-height: 1.2; white-space: nowrap; }
+.pk-suggest-card__qty { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
+
+/* ---------------- checklist ---------------- */
+.pk-checklist:not(:empty) { margin-top: 1.1rem; }
 .pk-list-section { margin-bottom: 0.75rem; }
 .pk-list-section:last-child { margin-bottom: 0; }
 .pk-list-section__title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.25rem; }
@@ -3659,7 +3750,6 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-check.is-on svg { stroke-dashoffset: 0; }
 
 .pk-item-row__icon { width: 22px; height: 22px; border-radius: var(--radius-pill); background: var(--icon-bg); color: var(--horizon-blue); display: flex; align-items: center; justify-content: center; padding: 4px; flex-shrink: 0; }
-/* one single line: title, badges, qty and remove all share the row */
 .pk-item-row__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.35rem; }
 .pk-item-row__title-line { display: flex; align-items: center; gap: 0.35rem; flex: 1; min-width: 0; }
 .pk-item-row__title { border: none; background: transparent; font-size: 0.84rem; color: var(--deep-navy); font-weight: 500; padding: 0.05rem 0.15rem; border-radius: 4px; flex: 1 1 auto; min-width: 60px; width: 100%; }
@@ -3688,8 +3778,6 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 }
 .pk-item-row:hover .pk-item-remove { color: var(--text-muted); }
 .pk-item-remove:hover { background: var(--warning-red-tint); color: var(--warning-red); }
-/* essentials are a fixed default list, so the "don't need this one"
-   affordance has to be visible without hunting for it */
 .pk-essentials-card .pk-item-remove { color: #A08FC0; }
 .pk-essentials-card .pk-item-row:hover .pk-item-remove { color: var(--phase-predeparture); }
 
@@ -3700,99 +3788,165 @@ body[data-tod="dusk"] .pk-bags-head__sub, body[data-tod="night"] .pk-bags-head__
 .pk-add-custom button { border: none; background: var(--deep-navy); color: #fff; padding: 0 0.95rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; transition: background 0.2s var(--ease); }
 .pk-add-custom button:hover { background: #133A57; }
 
-/* recommendations: compact wrapping pills, capped height so the
-   page doesn't stretch as categories grow */
-.pk-suggest { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; padding-right: 0.35rem; }
-.pk-suggest::-webkit-scrollbar { width: 6px; }
-.pk-suggest::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 3px; }
-.pk-suggest__title { font-size: 0.9rem; color: var(--deep-navy); margin-bottom: 0.1rem; }
+/* ---------------- browse all suggestions (collapsed by default) ---------------- */
+.pk-browseall-toggle {
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%;
+  margin-top: 1.1rem; padding: 0.6rem; border: 1px dashed var(--border-soft); background: transparent;
+  border-radius: 12px; font-size: 0.8rem; font-weight: 600; color: var(--horizon-blue);
+  transition: all 0.2s var(--ease);
+}
+.pk-browseall-toggle:hover { background: var(--sky-pale); border-color: var(--horizon-blue); }
+.pk-browseall-toggle__caret { width: 13px; height: 13px; transition: transform 0.25s var(--ease); }
+.pk-browseall-toggle.is-open .pk-browseall-toggle__caret { transform: rotate(180deg); }
+
+.pk-browseall { margin-top: 0.9rem; animation: pkFadeUp 0.3s var(--ease) both; }
 .pk-suggest__hint { font-size: 0.76rem; color: var(--text-muted); margin-bottom: 0.6rem; }
+.pk-suggest-section { margin-top: 0.2rem; }
 .pk-suggest-section__title { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin: 0.65rem 0 0.35rem; padding-top: 0.55rem; border-top: 1px dashed var(--border-soft); }
 .pk-suggest-section:first-child .pk-suggest-section__title { border-top: none; padding-top: 0; margin-top: 0; }
-/* wrapping pills instead of a 2-column card grid */
 .pk-suggest-grid { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-.pk-suggest-card {
-  border: 1px solid var(--border-soft); background: var(--cloud-white);
-  border-radius: var(--radius-pill); padding: 0.25rem 0.55rem 0.25rem 0.35rem; text-align: left;
-  display: inline-flex; align-items: center; gap: 0.3rem;
-  transition: all 0.15s var(--ease);
-}
-.pk-suggest-card:hover { border-color: var(--horizon-blue); background: var(--sky-mist); }
-.pk-suggest-card.is-added { opacity: 0.35; pointer-events: none; }
-.pk-suggest-card__icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--horizon-blue); }
-.pk-suggest-card__label { font-size: 0.75rem; font-weight: 500; color: var(--deep-navy); line-height: 1.2; white-space: nowrap; }
-.pk-suggest-card__qty { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
 
 /* flying add animation */
 @keyframes pkFlyIn { 0% { transform: scale(0.4) translateY(10px); opacity: 0; } 60% { transform: scale(1.05) translateY(-2px); opacity: 1; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
 .pk-item-row.is-new { animation: pkFlyIn 0.4s var(--ease) both; }
 
-/* TSA tips: compact sticky rail */
-.pk-tsa-panel { margin-top: 1.5rem; padding: 1rem 1.05rem; max-height: calc(100vh - 3rem); overflow-y: auto; }
+/* ---------------- TSA tips: compact sticky rail ---------------- */
+.pk-tsa-panel { margin-top: 0; padding: 0.9rem 1rem; max-height: calc(100vh - 3rem); overflow-y: auto; }
 .pk-tsa-panel::-webkit-scrollbar { width: 6px; }
 .pk-tsa-panel::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 3px; }
 .pk-tsa-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; cursor: pointer; }
-.pk-tsa-head__left { display: flex; align-items: center; gap: 0.55rem; }
-.pk-tsa-head__icon { width: 30px; height: 30px; border-radius: var(--radius-pill); background: var(--warning-red-tint); color: var(--warning-red); display: flex; align-items: center; justify-content: center; padding: 7px; flex-shrink: 0; }
-.pk-tsa-head h2 { font-size: 0.95rem; }
-.pk-tsa-head__sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem; line-height: 1.35; }
-.pk-tsa-caret { width: 15px; height: 15px; color: var(--text-muted); transition: transform 0.3s var(--ease); flex-shrink: 0; }
+.pk-tsa-head__left { display: flex; align-items: center; gap: 0.5rem; }
+.pk-tsa-head__icon { width: 26px; height: 26px; border-radius: var(--radius-pill); background: var(--warning-red-tint); color: var(--warning-red); display: flex; align-items: center; justify-content: center; padding: 6px; flex-shrink: 0; }
+.pk-tsa-head h2 { font-size: 0.86rem; }
+.pk-tsa-head__sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.05rem; line-height: 1.3; }
+.pk-tsa-caret { width: 13px; height: 13px; color: var(--text-muted); transition: transform 0.3s var(--ease); flex-shrink: 0; }
 .pk-tsa-panel.is-open .pk-tsa-caret { transform: rotate(180deg); }
 .pk-tsa-body { max-height: 0; overflow: hidden; transition: max-height 0.45s var(--ease); }
 .pk-tsa-panel.is-open .pk-tsa-body { max-height: 3000px; }
-/* TSA rules as short colour-coded bullet blocks — each block carries a
-   left accent in the colour of its verdict, so the whole rail reads as
-   a scannable legend rather than paragraphs. */
-.pk-tsa-list { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.9rem; }
-.pk-rule { border-left: 3px solid var(--rule-color); background: var(--rule-tint); border-radius: 0 10px 10px 0; padding: 0.55rem 0.7rem 0.6rem; }
+.pk-tsa-list { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.7rem; }
+.pk-rule { border-left: 3px solid var(--rule-color); background: var(--rule-tint); border-radius: 0 8px 8px 0; padding: 0.4rem 0.6rem 0.45rem; }
 .pk-rule--limit { --rule-color: var(--tip-highlight); --rule-tint: var(--tip-highlight-tint); }
 .pk-rule--no    { --rule-color: var(--warning-red);  --rule-tint: var(--warning-red-tint); }
 .pk-rule--yes   { --rule-color: var(--phase-inflight); --rule-tint: var(--phase-inflight-tint); }
 .pk-rule--info  { --rule-color: var(--phase-departure); --rule-tint: var(--phase-departure-tint); }
 
-.pk-rule__head { display: flex; align-items: center; gap: 0.35rem; font-size: 0.79rem; font-weight: 800; color: var(--deep-navy); margin-bottom: 0.3rem; }
-.pk-rule__emoji { font-size: 0.92rem; line-height: 1; }
-.pk-rule__points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.18rem; }
-.pk-rule__points li { position: relative; padding-left: 0.85rem; font-size: 0.735rem; line-height: 1.35; color: var(--text-muted); }
+.pk-rule__head { display: flex; align-items: center; gap: 0.3rem; font-size: 0.73rem; font-weight: 800; color: var(--deep-navy); margin-bottom: 0.2rem; }
+.pk-rule__emoji { font-size: 0.85rem; line-height: 1; }
+.pk-rule__points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.12rem; }
+.pk-rule__points li { position: relative; padding-left: 0.8rem; font-size: 0.7rem; line-height: 1.3; color: var(--text-muted); }
 .pk-rule__points li b { color: var(--deep-navy); font-weight: 700; }
-/* neutral bullet, then per-status glyphs that replace it */
-.pk-rule__points li::before { content: "\2022"; position: absolute; left: 0.15rem; top: -0.02em; color: var(--rule-color); font-weight: 700; }
-.pk-rule__points li.is-ok::before   { content: "\2713"; color: var(--phase-inflight); font-size: 0.72rem; }
-.pk-rule__points li.is-bad::before  { content: "\2715"; color: var(--warning-red); font-size: 0.68rem; }
-.pk-rule__points li.is-warn::before { content: "\26A0"; color: var(--tip-highlight); font-size: 0.68rem; }
+.pk-rule__points li::before { content: "\2022"; position: absolute; left: 0.12rem; top: -0.02em; color: var(--rule-color); font-weight: 700; }
+.pk-rule__points li.is-ok::before   { content: "\2713"; color: var(--phase-inflight); font-size: 0.68rem; }
+.pk-rule__points li.is-bad::before  { content: "\2715"; color: var(--warning-red); font-size: 0.64rem; }
+.pk-rule__points li.is-warn::before { content: "\26A0"; color: var(--tip-highlight); font-size: 0.64rem; }
 .pk-rule__points li.is-ok b   { color: var(--phase-inflight); }
 .pk-rule__points li.is-bad b  { color: var(--warning-red); }
 
-.pk-tsa-foot { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.9rem; line-height: 1.45; }
+.pk-tsa-foot { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.7rem; line-height: 1.4; }
 .pk-tsa-foot a { color: var(--horizon-blue); font-weight: 600; text-decoration: none; }
 .pk-tsa-foot a:hover { text-decoration: underline; }
 
+/* ---------------- review step ---------------- */
+.pk-review-card { max-width: 640px; margin-left: auto; margin-right: auto; }
+.pk-review-summary { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.4rem; }
+
+.pk-review-item { border-radius: 0 12px 12px 0; overflow: hidden; }
+.pk-review-row {
+  display: flex; align-items: center; gap: 0.6rem; width: 100%;
+  border: 1px solid var(--border-soft); border-left: 3px solid var(--tab-color, var(--horizon-blue));
+  border-radius: 0 12px 12px 0; padding: 0.6rem 0.85rem; background: var(--sky-mist);
+  font-family: var(--font-body); text-align: left; cursor: pointer;
+  transition: background 0.18s var(--ease), border-radius 0.18s var(--ease);
+}
+.pk-review-row:hover:not(:disabled) { background: var(--sky-pale); }
+.pk-review-row:disabled { cursor: default; }
+.pk-review-item.is-open .pk-review-row { border-radius: 0 12px 0 0; }
+.pk-review-row--essentials { border-left-color: var(--phase-predeparture); }
+.pk-review-row__icon { width: 22px; height: 22px; color: var(--tab-color, var(--horizon-blue)); flex-shrink: 0; }
+.pk-review-row--essentials .pk-review-row__icon { color: var(--phase-predeparture); }
+.pk-review-row__name { font-size: 0.88rem; font-weight: 700; color: var(--deep-navy); flex: 1; }
+.pk-review-row__type { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.14rem 0.5rem; border-radius: var(--radius-pill); color: #fff; }
+.pk-review-row__type.is-carryon { background: var(--phase-departure); }
+.pk-review-row__type.is-checked { background: var(--tip-highlight); }
+.pk-review-row__count { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
+.pk-review-row__caret { width: 13px; height: 13px; color: var(--text-muted); flex-shrink: 0; transition: transform 0.25s var(--ease); }
+.pk-review-item.is-open .pk-review-row__caret { transform: rotate(180deg); }
+
+/* expanded, check-off-only item list — no rename/qty/remove here, so
+   Review stays a walkthrough rather than another editing surface */
+.pk-review-item__body {
+  border: 1px solid var(--border-soft); border-top: none; border-left: 3px solid var(--tab-color, var(--horizon-blue));
+  border-radius: 0 0 12px 0; background: #fff; padding: 0.5rem 0.7rem 0.6rem;
+  animation: pkFadeUp 0.2s var(--ease) both;
+}
+.pk-review-item__body .pk-list-section__title:first-child { margin-top: 0; }
+.pk-review-check-row { display: flex; align-items: center; gap: 0.55rem; padding: 0.3rem 0.15rem; }
+.pk-review-check-row.is-checked { opacity: 0.5; }
+.pk-review-check-row.is-checked .pk-review-check-row__title { text-decoration: line-through; color: var(--text-muted); }
+.pk-review-check-row__title { font-size: 0.83rem; color: var(--deep-navy); }
+.pk-review-check-row__qty { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); }
+
+.pk-review-tsa {
+  display: flex; align-items: flex-start; gap: 0.55rem; margin-top: 1.2rem;
+  background: var(--tip-highlight-tint); border-left: 3px solid var(--tip-highlight);
+  border-radius: 0 10px 10px 0; padding: 0.65rem 0.85rem; font-size: 0.78rem; color: var(--deep-navy); line-height: 1.45;
+}
+.pk-review-tsa .icon { width: 16px; height: 16px; color: var(--tip-highlight); flex-shrink: 0; margin-top: 0.1rem; }
+
 /* print bar */
-.pk-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
-.pk-btn { border: none; border-radius: var(--radius-pill); padding: 0.7rem 1.3rem; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s var(--ease); }
+.pk-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.4rem; }
+.pk-btn { border: none; border-radius: var(--radius-pill); padding: 0.7rem 1.3rem; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s var(--ease); cursor: pointer; }
 .pk-btn .icon { width: 16px; height: 16px; }
 .pk-btn--primary { background: var(--deep-navy); color: #fff; }
 .pk-btn--primary:hover { background: #133A57; transform: translateY(-1px); }
 .pk-btn--ghost { background: var(--sky-pale); color: var(--deep-navy); }
 .pk-btn--ghost:hover { background: var(--border-soft); }
 
-@media (max-width: 640px) {
-  .pk-suggest-grid { grid-template-columns: 1fr; }
-}
-
 /* Packer printable sheet — same technique as Timeblocker's:
-   everything hidden by the shared print rule above except this. */
+   everything hidden by the shared print rule above except this.
+   Bag blocks flow into a 2-column grid (via CSS multi-column) to cut
+   down on page count; Essentials stays a distinct, full-width block
+   above it since it's the one list worth not missing. Checkboxes
+   always print blank — this is a separate physical list, not a
+   snapshot of digital progress. */
 .pk-print-sheet { display: none; }
 @media print {
+  @page { margin: 0.45in; }
   .pk-print-sheet, .pk-print-sheet * { visibility: visible; }
   .pk-print-sheet {
     display: block; position: absolute; inset: 0 auto auto 0; width: 100%;
     background: #fff; color: #16181c; font-family: var(--font-body, Arial, sans-serif);
-    padding: 0.2in 0;
+    padding: 0;
   }
-  .pk-print-sheet h1 { font-family: var(--font-display, Georgia, serif); font-size: 21px; margin-bottom: 1.2rem; }
-  .pk-print-bag { break-inside: avoid; margin-bottom: 1.4rem; }
-  .pk-print-bag h2 { font-size: 1.1rem; margin-bottom: 0.4rem; border-bottom: 1.5px solid #16181c; padding-bottom: 0.25rem; }
-  .pk-print-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.22rem 0; font-size: 0.92rem; border-bottom: 1px solid #ccc; }
-  .pk-print-box { width: 13px; height: 13px; border: 1.4px solid #16181c; flex-shrink: 0; }
+
+  .pk-print-header { margin-bottom: 0.2in; padding-bottom: 0.1in; border-bottom: 1.5px solid #16181c; }
+  .pk-print-sheet h1 { font-family: var(--font-display, Georgia, serif); font-size: 19px; margin: 0 0 2px; }
+  .pk-print-meta { font-size: 10.5px; color: #555; margin: 0; }
+  .pk-print-meta b { color: #16181c; }
+
+  .pk-print-bag__head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; border-bottom: 1.2px solid #16181c; padding-bottom: 3px; margin-bottom: 4px; }
+  .pk-print-bag__name { font-size: 12.5px; font-weight: 700; }
+  .pk-print-bag__meta { font-size: 8.5px; font-weight: 400; color: #666; }
+  .pk-print-type-pill {
+    font-size: 7.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    border: 1px solid #16181c; border-radius: 8px; padding: 1px 6px; white-space: nowrap; flex-shrink: 0;
+  }
+  .pk-print-type-pill.is-carryon { border-color: #0972A6; color: #0972A6; }
+  .pk-print-type-pill.is-checked { border-color: #B8791F; color: #B8791F; }
+
+  .pk-print-essentials {
+    break-inside: avoid; margin-bottom: 0.2in; padding: 0.1in 0.14in;
+    background: #F5F2FA; border: 1px solid #C9B9E3; border-radius: 6px;
+  }
+  .pk-print-essentials .pk-print-bag__head { border-bottom-color: #6B4E8C; margin-bottom: 2px; }
+  .pk-print-essentials-note { font-size: 9px; font-weight: 600; color: #6B4E8C; margin: 0 0 6px; }
+
+  .pk-print-columns { columns: 2; column-gap: 0.32in; }
+  .pk-print-bag { break-inside: avoid; margin-bottom: 0.2in; }
+
+  .pk-print-section-title { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #777; margin: 5px 0 1px; }
+  .pk-print-section-title:first-child { margin-top: 0; }
+  .pk-print-item { display: flex; align-items: center; gap: 5px; padding: 1.4px 0; font-size: 9.5px; border-bottom: 0.75px solid #ddd; break-inside: avoid; }
+  .pk-print-box { width: 9px; height: 9px; border: 1.1px solid #16181c; flex-shrink: 0; }
+  .pk-print-empty { font-size: 9px; color: #888; font-style: italic; margin: 2px 0; }
 }
