@@ -273,8 +273,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .site-nav__cta:hover { background: #A34F1D; color: var(--cloud-white); }
 
-/* Hidden on desktop; becomes the entry point to the page links
-   once they no longer fit in one row (see max-width: 1024px). */
+/* Hidden by default; becomes the entry point to the page links
+   once neither the full text nav nor the icon-only nav fit in one
+   row (data-tier="menu", set by the nav-tier controller in script.js
+   based on measured content width — see .site-nav[data-tier] below). */
 .site-nav__toggle {
   display: none;
   align-items: center;
@@ -294,33 +296,125 @@ ul { margin: 0; padding: 0; list-style: none; }
 .site-nav__toggle:hover { border-color: var(--horizon-blue); color: var(--horizon-blue); }
 .site-nav__toggle[aria-expanded="true"] { background: var(--sky-pale); border-color: var(--horizon-blue); color: var(--horizon-blue); }
 
-/* Below desktop width, 5 page links no longer fit beside the CTA
-   without crowding — swap them for a hamburger-triggered dropdown.
-   "Suggest a tip" stays visible; it's a click-through CTA, not a
-   page link, so it doesn't belong behind the toggle. */
-@media (max-width: 1024px) {
-  .site-nav__toggle { display: inline-flex; }
-  .site-nav__links {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    gap: 0.15rem;
-    background: var(--cloud-white);
-    padding: 0.6rem 1.15rem 0.9rem;
-    border-top: 1px solid var(--border-soft);
-    box-shadow: 0 16px 28px rgba(15, 48, 73, 0.12);
-  }
-  .site-nav__links.is-open { display: flex; }
-  .site-nav__links a { padding: 0.75rem 0.9rem; font-size: 0.95rem; }
+/* ---- Adaptive nav tiers ----
+   .site-nav[data-tier] is set by script.js after measuring the real
+   rendered width of the nav content against the available space —
+   not a fixed viewport breakpoint. Three tiers:
+     (no attribute / "full")  — text links + CTA, one row (default)
+     "icons"                  — text links swapped for icon-only links
+     "menu"                   — icon links also don't fit; hamburger dropdown
+   "Suggest a tip" stays visible in every tier; it's a click-through
+   CTA, not a page link, so it doesn't belong behind the toggle. */
+.site-nav[data-tier="icons"] .site-nav__links { display: none; }
+.site-nav[data-tier="icons"] .site-nav__links--icons { display: flex; }
 
-  body[data-tod="dusk"] .site-nav__links,
-  body[data-tod="night"] .site-nav__links {
-    background: rgba(10, 17, 40, 0.97);
-    border-top-color: rgba(255, 255, 255, 0.14);
-  }
+.site-nav[data-tier="menu"] .site-nav__toggle { display: inline-flex; }
+.site-nav[data-tier="menu"] .site-nav__links {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  gap: 0.15rem;
+  background: var(--cloud-white);
+  padding: 0.6rem 1.15rem 0.9rem;
+  border-top: 1px solid var(--border-soft);
+  box-shadow: 0 16px 28px rgba(15, 48, 73, 0.12);
+}
+.site-nav[data-tier="menu"] .site-nav__links.is-open { display: flex; }
+.site-nav[data-tier="menu"] .site-nav__links a { padding: 0.75rem 0.9rem; font-size: 0.95rem; }
+
+body[data-tod="dusk"] .site-nav[data-tier="menu"] .site-nav__links,
+body[data-tod="night"] .site-nav[data-tier="menu"] .site-nav__links {
+  background: rgba(10, 17, 40, 0.97);
+  border-top-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Icon-only nav row (tier "icons") — reuses the same 5 destinations
+   as the bottom mobile tab bar, built at runtime in script.js so the
+   two never drift out of sync. */
+.site-nav__links--icons { display: none; gap: 0.4rem; }
+.site-nav__icon-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+/* Icons are cloned bare (no .icon wrapper), so pull in the same
+   stroke treatment .icon svg gives every other icon on the site. */
+.site-nav__icon-link svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.site-nav__icon-link:hover { background: var(--sky-pale); color: var(--deep-navy); }
+.site-nav__icon-link[aria-current="page"] { background: var(--deep-navy); color: var(--cloud-white); }
+/* CSS-only tooltip so pointer/keyboard users still get the label
+   text; aria-label already covers screen readers. */
+.site-nav__icon-link::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 6px);
+  background: var(--deep-navy);
+  color: var(--cloud-white);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.site-nav__icon-link:hover::after, .site-nav__icon-link:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 10px);
+}
+
+/* Off-screen measurement rulers the nav-tier controller uses to read
+   real content widths (fonts, current zoom, etc.) instead of relying
+   on guessed pixel breakpoints. Never visible, never interactive. */
+.site-nav__measure {
+  position: absolute;
+  visibility: hidden;
+  left: -99999px;
+  top: -99999px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: max-content;
+  pointer-events: none;
+}
+.site-nav__measure .site-nav__right { display: flex; align-items: center; gap: 0.6rem; white-space: nowrap; }
+/* Clones keep their real .site-nav__links / .site-nav__links--icons
+   classes so padding/font/icon sizing measure accurately -- these
+   just force a flat single row regardless of which tier happens to
+   be live right now (the "menu" tier turns .site-nav__links into an
+   absolute-positioned column dropdown, which would otherwise leak
+   into a clone sitting in the same .site-nav tree). */
+.site-nav__measure .site-nav__links,
+.site-nav__measure .site-nav__links--icons {
+  display: flex !important;
+  position: static !important;
+  flex-direction: row !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
 }
 
 /* ============================================================
@@ -335,7 +429,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 @media (max-width: 640px) {
   .site-nav__links { display: none !important; }
-  .site-nav__toggle { display: none; }
+  .site-nav__links--icons { display: none !important; }
+  .site-nav__toggle { display: none !important; }
 
   body { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
 
@@ -403,6 +498,7 @@ body[data-tod="night"] .mobile-tabbar__item[aria-current="page"] {
 @media (prefers-reduced-motion: reduce) {
   .mobile-tabbar { animation: none; }
   .mobile-tabbar__item, .mobile-tabbar__icon { transition: none; }
+  .site-nav__icon-link, .site-nav__icon-link::after { transition: none; }
 }
 
 /* ============================================================
@@ -1028,6 +1124,7 @@ body[data-tod="night"] .mobile-tabbar__item[aria-current="page"] {
   padding: 1.25rem 1.5rem;
   margin-bottom: 2rem;
 }
+.airline-warning[hidden] { display: none; }
 .airline-warning__icon {
   width: 26px;
   height: 26px;
@@ -1559,6 +1656,36 @@ body[data-tod="night"] .mobile-tabbar__item[aria-current="page"] {
 }
 .timing-row__text { font-size: 1rem; color: var(--text-muted); line-height: 1.5; }
 
+/* A short, bolded callout line inside a timing-row for the one
+   detail that most needs to be scanned and not skimmed past. */
+.timing-row__callout {
+  margin-top: 0.65rem;
+  background: var(--cloud-white);
+  border-radius: 10px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.92rem;
+  color: var(--deep-navy);
+  line-height: 1.4;
+}
+.timing-row__callout strong { color: var(--phase-color); }
+
+/* Featured variant — a timing-row with extra visual weight for the
+   single most-important standalone tip on a phase page (e.g. the
+   "ask airport staff nicely" tip on Departure). Same component,
+   just louder: solid-color icon badge + a matching ring border. */
+.timing-row--featured {
+  border: 2px solid var(--phase-color);
+  box-shadow: 0 16px 34px -18px rgba(15, 48, 73, 0.4);
+}
+.timing-row--featured .timing-row__icon {
+  background: var(--phase-color);
+  color: var(--cloud-white);
+}
+/* Same weight, no ring — the border read as too heavy on the
+   Check-in card, so this drops just that while keeping the
+   shadow and solid icon badge. */
+.timing-row--featured.timing-row--no-ring { border: none; }
+
 .timing-badges { display: flex; gap: 1.1rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
 .timing-badge {
   display: flex;
@@ -2056,6 +2183,10 @@ body[data-tod="dusk"] .site-nav__links a:hover, body[data-tod="night"] .site-nav
 body[data-tod="dusk"] .site-nav__links a[aria-current="page"],
 body[data-tod="night"] .site-nav__links a[aria-current="page"] { background: rgba(255, 255, 255, 0.92); color: var(--deep-navy); }
 body[data-tod="dusk"] .ws-alt, body[data-tod="night"] .ws-alt { color: #FFF; border-color: rgba(255, 255, 255, 0.35); }
+body[data-tod="dusk"] .site-nav__icon-link, body[data-tod="night"] .site-nav__icon-link { color: rgba(255, 255, 255, 0.75); }
+body[data-tod="dusk"] .site-nav__icon-link:hover, body[data-tod="night"] .site-nav__icon-link:hover { background: rgba(255, 255, 255, 0.14); color: #FFF; }
+body[data-tod="dusk"] .site-nav__icon-link[aria-current="page"],
+body[data-tod="night"] .site-nav__icon-link[aria-current="page"] { background: rgba(255, 255, 255, 0.92); color: var(--deep-navy); }
 
 /* ---- Airplane-window photo heroes ---- */
 .photo-hero {
@@ -2732,9 +2863,12 @@ body[data-tod="dusk"] .filmstrip__label, body[data-tod="night"] .filmstrip__labe
 .airline-card { transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
 .airline-card:hover { transform: translateY(-4px); box-shadow: 0 24px 44px -20px rgba(15, 48, 73, 0.45); }
 
-/* Taller AirTrain map so Terminal 2 has breathing room up top */
-.sfo-map { height: 330px; }
-@media (max-width: 700px) { .sfo-map { height: 265px; } }
+/* Taller AirTrain map so Terminal 2 has breathing room up top, and
+   so the Parking stop has room to sit directly under Transportation.
+   The Transportation-to-Parking gap matches the Terminal-2-to-
+   Transportation gap above it, so Parking lines up with Intl A/G. */
+.sfo-map { height: 315px; }
+@media (max-width: 700px) { .sfo-map { height: 254px; } }
 
 /* ============================================================
    AirTrain map on mobile — the desktop track (viewBox 1000x374,
@@ -2747,7 +2881,7 @@ body[data-tod="dusk"] .filmstrip__label, body[data-tod="night"] .filmstrip__labe
    ============================================================ */
 .sfo-map__road--mobile { display: none; }
 @media (max-width: 640px) {
-  .sfo-map { height: auto; aspect-ratio: 400 / 320; }
+  .sfo-map { height: auto; aspect-ratio: 400 / 308; }
   .sfo-map__road--desktop { display: none; }
   .sfo-map__road--mobile { display: block; }
 }

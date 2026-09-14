@@ -141,6 +141,10 @@
       eyebrow: "SFO · Getting Around",
       title: "Transportation",
       badge: "All terminals",
+      warning: {
+        title: "Double-check your travel time to SFO",
+        text: "Traffic on 101/I-380, BART schedules, and rush-hour/work commute traffic can all add real time — look up live conditions before you leave rather than trusting a flat drive-time estimate."
+      },
       col1Label: "🚦 Ways to go",
       col2Label: "🧭 Good to know",
       airlines: ["AirTrain", "BART", "Uber / Lyft", "Waymo"],
@@ -150,6 +154,25 @@
         "🚗 <strong>Picking up an Uber/Lyft?</strong> For Terminals 1–3, that's Level 5 of the domestic garage, not the curb — a short walk or elevator ride from your terminal. The International Terminal is the exception: pickup stays on the Departures Level, 2nd curb.",
         "🚗 <strong>Dropping someone off?</strong> That's the normal Departures Level curb for every terminal.",
         "🤖 <strong>Waymo pickup/drop-off is at the Rental Car Center, Level 1 curbside</strong> — a short, free AirTrain ride away. It's a newer service at SFO, so availability may still be expanding."
+      ]
+    },
+    parking: {
+      eyebrow: "SFO · Parking",
+      title: "Parking",
+      badge: "Plan ahead",
+      warning: {
+        title: "Parking can get expensive",
+        text: "Rideshare or other transportation can be cheaper for longer trips — check the Transportation tab for options."
+      },
+      col1Label: "🅿️ Parking types",
+      col2Label: "🧭 Good to know",
+      airlines: ["Long-Term Garage", "Short-Term Garages", "Valet (Grand Hyatt)", "Off-Airport Lots"],
+      notes: [
+        "🚊 <strong>Long-Term Garage</strong> — the cheapest on-airport option, connected to every terminal by a free AirTrain ride (no walking required).",
+        "🚶 <strong>Short-Term Garages</strong> — the Domestic and International garages sit right next to the terminals, so you can walk straight in without the AirTrain, though the daily rate runs higher.",
+        "🚘 <strong>Valet, Grand Hyatt at SFO</strong> — the on-airport hotel offers valet parking on-site; call ahead to confirm availability and pricing if you're not an overnight guest.",
+        "🅿️ <strong>Off-Airport Lots</strong> — independent lots outside SFO property run their own free shuttles to the terminals and are often the cheapest choice for trips of a week or more.",
+        "💲 <strong>Rates change often</strong> — always confirm the current price at flysfo.com/parking before you commit to a garage or lot."
       ]
     }
   };
@@ -162,6 +185,9 @@
   var col2LabelEl = panel.querySelector('[data-field="col2-label"]');
   var airlinesEl = panel.querySelector('[data-field="airlines"]');
   var notesEl = panel.querySelector('[data-field="notes"]');
+  var warningEl = panel.querySelector('[data-field="warning"]');
+  var warningTitleEl = panel.querySelector('[data-field="warning-title"]');
+  var warningTextEl = panel.querySelector('[data-field="warning-text"]');
 
   function renderTerminal(key) {
     var t = TERMINALS[key];
@@ -171,6 +197,14 @@
     badgeEl.textContent = t.badge;
     col1LabelEl.textContent = t.col1Label;
     col2LabelEl.textContent = t.col2Label;
+
+    if (t.warning) {
+      warningTitleEl.textContent = t.warning.title;
+      warningTextEl.textContent = t.warning.text;
+      warningEl.hidden = false;
+    } else {
+      warningEl.hidden = true;
+    }
 
     airlinesEl.innerHTML = "";
     t.airlines.forEach(function (a) {
@@ -193,7 +227,7 @@
      AirTrain. Heading east (rightward on the map) the old content
      slides out to the west and the new stop's content pulls in
      from the east — and vice versa. Inner chips/tips stagger in. */
-  var STOP_X = { intlA: 10, t1: 22, t2: 50, t3: 78, intlG: 90, transport: 50 };
+  var STOP_X = { intlA: 10, t1: 22, t2: 50, t3: 78, intlG: 90, transport: 50, parking: 50 };
   var currentTerminalKey = "t1";
   var panelSwapTimer = null;
   var panelCleanTimer = null;
@@ -2653,15 +2687,20 @@
     stars.appendChild(s);
   }
 
-  /* ---------- Altitude readout ---------- */
+  /* ---------- Altitude readout ----------
+     Lives inside .site-nav__right (grouped with the CTA/toggle),
+     not as a sibling of .site-nav__inner's two children -- a third
+     top-level flex child there would break its space-between layout
+     and strand the CTA/toggle cluster off-center. */
   var altVal = null;
-  var navInner = document.querySelector(".site-nav__inner");
-  if (navInner && !reduced) {
+  var navRight = document.querySelector(".site-nav__right");
+  if (navRight && !reduced) {
     var alt = document.createElement("span");
     alt.className = "ws-alt";
     alt.setAttribute("aria-hidden", "true");
     alt.innerHTML = 'ALT <span class="ws-alt__val">00,000</span> FT';
-    navInner.appendChild(alt);
+    var ctaEl = navRight.querySelector(".site-nav__cta");
+    if (ctaEl) navRight.insertBefore(alt, ctaEl); else navRight.appendChild(alt);
     altVal = alt.querySelector(".ws-alt__val");
   }
 
@@ -3187,47 +3226,179 @@
 })();
 
 /* ============================================================
-   Nav hamburger — below desktop width the page links collapse
-   behind a toggle button; this just opens/closes that dropdown
-   and keeps it in sync with clicks outside, link taps, and the
-   viewport growing back past the breakpoint.
+   Adaptive nav tiers — three states depending on how much room is
+   actually available, measured live rather than guessed at a fixed
+   viewport breakpoint:
+     full  — text links + CTA, one row (default, no data-tier)
+     icons — text links swapped for icon-only links (built here by
+             reusing the bottom mobile-tab-bar's icons/hrefs)
+     menu  — even icon links don't fit; hamburger dropdown
+   A ResizeObserver re-measures on layout change and sets data-tier
+   on .site-nav, with a little hysteresis so it doesn't flicker
+   right at a boundary. This also owns the hamburger's open/close
+   behavior for the "menu" tier.
    ============================================================ */
 (function () {
+  var nav = document.querySelector(".site-nav");
+  var navInner = document.querySelector(".site-nav__inner");
+  var navRight = document.querySelector(".site-nav__right");
+  var brand = document.querySelector(".site-nav__brand");
+  var textLinks = document.getElementById("siteNavLinks");
+  var cta = document.querySelector(".site-nav__cta");
   var toggle = document.getElementById("siteNavToggle");
-  var links = document.getElementById("siteNavLinks");
-  if (!toggle || !links) return;
+  if (!nav || !navInner || !navRight || !brand || !textLinks || !cta || !toggle) return;
 
+  /* ---------- Hamburger open/close (tier "menu" only) ---------- */
   function close() {
-    links.classList.remove("is-open");
+    textLinks.classList.remove("is-open");
     toggle.setAttribute("aria-expanded", "false");
   }
   function open() {
-    links.classList.add("is-open");
+    textLinks.classList.add("is-open");
     toggle.setAttribute("aria-expanded", "true");
   }
 
   toggle.addEventListener("click", function () {
-    if (links.classList.contains("is-open")) close(); else open();
+    if (textLinks.classList.contains("is-open")) close(); else open();
   });
 
-  links.querySelectorAll("a").forEach(function (a) {
+  textLinks.querySelectorAll("a").forEach(function (a) {
     a.addEventListener("click", close);
   });
 
   document.addEventListener("click", function (e) {
-    if (!links.classList.contains("is-open")) return;
-    if (links.contains(e.target) || toggle.contains(e.target)) return;
+    if (!textLinks.classList.contains("is-open")) return;
+    if (textLinks.contains(e.target) || toggle.contains(e.target)) return;
     close();
   });
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && links.classList.contains("is-open")) {
+    if (e.key === "Escape" && textLinks.classList.contains("is-open")) {
       close();
       toggle.focus();
     }
   });
 
-  window.addEventListener("resize", function () {
-    if (window.innerWidth > 1024) close();
-  });
+  /* ---------- Build the icon-only tier from the bottom tab bar ----------
+     Reuses the existing mobile-tabbar icons/hrefs, paired by index
+     with the text links, so a destination only ever needs to be
+     added in the two places it already requires today. If the two
+     lists don't line up 1:1, skip building this tier entirely
+     rather than risk pairing a link to the wrong icon — the nav
+     just falls back to choosing between "full" and "menu". */
+  var iconNav = null;
+  (function buildIconTier() {
+    var textAnchors = textLinks.querySelectorAll("a");
+    var tabItems = document.querySelectorAll(".mobile-tabbar .mobile-tabbar__item");
+    if (!textAnchors.length || textAnchors.length !== tabItems.length) return;
+
+    iconNav = document.createElement("nav");
+    iconNav.id = "siteNavIconLinks";
+    iconNav.className = "site-nav__links site-nav__links--icons";
+    iconNav.setAttribute("aria-label", "Main navigation");
+
+    textAnchors.forEach(function (a, i) {
+      var tabItem = tabItems[i];
+      var icon = tabItem.querySelector("svg");
+      var link = document.createElement("a");
+      link.className = "site-nav__icon-link";
+      link.href = tabItem.getAttribute("href");
+      link.setAttribute("aria-label", a.textContent.trim());
+      if (a.hasAttribute("aria-current")) link.setAttribute("aria-current", a.getAttribute("aria-current"));
+      if (icon) link.appendChild(icon.cloneNode(true));
+      iconNav.appendChild(link);
+    });
+
+    textLinks.insertAdjacentElement("afterend", iconNav);
+  })();
+
+  /* ---------- Off-screen measurement rulers ----------
+     Real rendered widths (fonts, zoom, locale) rather than guessed
+     pixel breakpoints. Cloning the live .ws-alt node (if present)
+     means its own @media(max-width:860px) hide rule applies to the
+     clone too, so required width auto-adjusts when it disappears. */
+  function buildRuler(linksNode) {
+    var ruler = document.createElement("div");
+    ruler.className = "site-nav__measure";
+    ruler.setAttribute("aria-hidden", "true");
+    ruler.appendChild(brand.cloneNode(true));
+
+    var right = document.createElement("div");
+    right.className = "site-nav__right";
+
+    if (linksNode) {
+      var linksClone = linksNode.cloneNode(true);
+      linksClone.removeAttribute("id");
+      linksClone.classList.remove("is-open");
+      right.appendChild(linksClone);
+    }
+
+    var liveAlt = document.querySelector(".ws-alt");
+    if (liveAlt) right.appendChild(liveAlt.cloneNode(true));
+
+    right.appendChild(cta.cloneNode(true));
+
+    ruler.appendChild(right);
+    navInner.appendChild(ruler);
+    return ruler;
+  }
+
+  var rulerFull = buildRuler(textLinks);
+  var rulerIcons = iconNav ? buildRuler(iconNav) : null;
+
+  /* ---------- Tier decision (with hysteresis to avoid flicker) ---------- */
+  var HYST = 8;
+  var currentTier = "full";
+
+  function hPad(el) {
+    var cs = getComputedStyle(el);
+    return parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  }
+
+  function applyTier(tier) {
+    currentTier = tier;
+    if (tier === "full") nav.removeAttribute("data-tier"); else nav.setAttribute("data-tier", tier);
+    if (tier !== "menu") close();
+  }
+
+  function decide() {
+    var available = navInner.clientWidth - hPad(navInner);
+    var reqFull = rulerFull.scrollWidth;
+    var reqIcons = rulerIcons ? rulerIcons.scrollWidth : reqFull;
+
+    /* Step at most one tier per pass, then loop -- a snap resize
+       (not a drag) can jump straight past an intermediate tier in
+       a single measurement, so settle fully before returning. */
+    for (var guard = 0; guard < 3; guard++) {
+      var next = currentTier;
+      if (currentTier === "full") {
+        if (available < reqFull - HYST) next = rulerIcons ? "icons" : "menu";
+      } else if (currentTier === "icons") {
+        if (available >= reqFull + HYST) next = "full";
+        else if (available < reqIcons - HYST) next = "menu";
+      } else {
+        if (rulerIcons && available >= reqIcons + HYST) next = "icons";
+        else if (available >= reqFull + HYST) next = "full";
+      }
+      if (next === currentTier) break;
+      applyTier(next);
+    }
+  }
+
+  var decideTimer = null;
+  function scheduleDecide() {
+    clearTimeout(decideTimer);
+    decideTimer = setTimeout(decide, 80);
+  }
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(scheduleDecide).observe(navInner);
+  } else {
+    window.addEventListener("resize", scheduleDecide);
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(decide);
+  }
+
+  decide();
 })();

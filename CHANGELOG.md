@@ -8,7 +8,51 @@ so a minor bump can still include larger changes as the site finds its shape.
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- **SFO Tips: Parking stop** — a new AirTrain-map stop covering Long-Term,
+  Short-Term, Valet (Grand Hyatt), and Off-Airport parking. Positioned
+  directly under Transportation and connected by the AirTrain line, so the
+  map stays symmetric, with a warning that parking can get expensive on
+  longer trips and a nudge to compare against other transportation.
+  - No prices are listed — official rates couldn't be confirmed from an
+    authoritative source, so every category points to flysfo.com/parking
+    instead of guessing.
+- **SFO Tips: Transportation warning** — a reminder at the top of the
+  Transportation stop to double-check travel time to SFO (traffic, BART
+  schedules, commute congestion) rather than trusting a flat estimate.
+- **Global Tips: name/ID check-in tip** — the "Check in 24 hours early"
+  card now also calls out double-checking that your name matches your ID,
+  since a typo can mean delays, fees, or denied boarding.
+- Terminal-explorer and phase-card tips can now show an optional
+  highlighted warning banner (title + text), reusing the existing
+  `.airline-warning` styling — powers the new SFO warnings above plus the
+  "ask airport staff nicely" Global Tips card.
+
+### Fixed
+
+- Top nav "ALT 00,000 FT" readout was injected as a third top-level flex
+  child of the nav row, breaking its `space-between` layout and stranding
+  the "Suggest a tip" button + hamburger toggle off-center. Now grouped
+  with them so the row stays a clean two-sided layout at every width.
+
+### Changed
+
+- Top nav collapse is now adaptive instead of a fixed `1024px` breakpoint:
+  it measures actual rendered content width and only shrinks when the full
+  text nav genuinely doesn't fit — recovering a ~64–200px dead zone where
+  iPads and small laptops were being force-collapsed with room to spare.
+- Added a new icon-only nav tier (reusing the bottom mobile-tab-bar icons)
+  as a mid-step between the full text nav and the hamburger dropdown, so
+  narrower screens keep one-tap access to every page instead of jumping
+  straight to a hidden menu.
+- **Global Tips: Check-in moved to Pre-Departure** — "Check in 24 hours
+  early" now leads the Pre-Departure phase instead of Departure, since
+  that's when it's actually actionable.
+- **Global Tips: Departure reordered** — with check-in moved out, the
+  2-hour/3-hour arrival-time rule is now the first thing shown on
+  Departure, and a new "ask airport staff — they're there to help, just
+  ask nicely" tip was added below it.
 
 ## [0.5.0] - 2026-08-22
 
