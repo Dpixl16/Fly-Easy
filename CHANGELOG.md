@@ -8,8 +8,80 @@ so a minor bump can still include larger changes as the site finds its shape.
 
 ## [Unreleased]
 
+### Changed
+
+- **About page reorganized into Who · What · Why · How · Contact**
+  (same order in the pinned bar and the nav's About ▾ menu):
+  - Who: Kollen's intro plus a strip of five of his photos (replaces
+    the separate Gallery section).
+  - What: the problem — airport stress (replaces "The problem").
+  - Why: favorite quote plus why Fly Easy exists (the beauty of
+    aviation; air travel as a relaxing start to a vacation).
+  - How: the four tools/guides and how every tip is checked, combined.
+  - Page is ~8% shorter on desktop (4,462 → 4,120px).
+  - Copy refresh: Who now covers Kollen's yearly flights to Hong Kong,
+    SFO as his home airport and planespotting at the SFO Marriott
+    Waterfront over runway 28L; What reframed as "best-kept secrets"
+    travelers never hear; Contact renamed "Contact me!".
+  - "How the tips are made" is now four steps (2×2 grid, one column on
+    phones) with an honest "to the best of my ability" note: Researched;
+    Reviewed by people who know (aviation professionals such as
+    Mr. Strange, who worked with Alaska Airlines at SFO); Kept current;
+    and Shaped by the community, with a "Contact me" button. The note
+    now stresses that airports change and tips can go out of date.
+  - Section "flights": clicking Who / What / Why / How / Contact me
+    (pinned bar, nav menu, or in-page links) glides to the section with
+    an eased scroll, a small plane taxis along the pinned bar to the new
+    tab, and the section "lands" with a runway-light sweep on its label.
+    Touch/wheel/keys cancel the glide instantly; reduced-motion users
+    jump straight there; a safety timer guarantees the jump completes
+    even if animation frames are paused.
+
 ### Added
 
+- **About page v3: section navigation and Kollen's own photos**
+  - "About ▾" dropdown in the top nav on every page (hover on desktop,
+    tap the caret on touch, full keyboard support, inline in the
+    hamburger menu) linking to each About section.
+  - Pinned section bar on the About page (Problem · Why · Who · What ·
+    How · Gallery · Contact) with scroll-spy highlighting; scrolls
+    sideways with an edge fade on phones.
+  - New "The problem" and "From my camera roll" gallery sections;
+    sections are now content-height instead of full-screen.
+  - `images/kollen/`: 41 of Kollen's photos renamed
+    `kollen-<place>-<subject>.jpg`, resized for the web, with camera,
+    date and location metadata stripped. Originals kept in the
+    git-ignored `images/kollen/_originals/`; index in
+    `images/kollen/README.md`.
+  - Kollen's photos replace stock on the About page, the Global Tips
+    hero, phase covers and photo band, the SFO postcards and the
+    Timeblocker card. Each carries a "Photo by Kollen · <place>" credit.
+    Footer credit now reads "Photography by Kollen, with a few from
+    Unsplash & Pexels."
+- **About page (replaces Home)**: `index.html` is now "About Fly Easy",
+  designed as a photo essay. Every section is a full-bleed photograph
+  with text set directly on it, with a gentle parallax on desktop and no
+  cards:
+  - Hero with a flight-manifest style detail row (Created by Kollen ·
+    Junipero Serra HS · Class of 2028 · Home airport SFO).
+  - "About me" written in Kollen's own voice, as a split section with a
+    photo that fades into the text side; "My favorite quote" over a night
+    takeoff; and a five-photo mosaic.
+  - "How the tips are made" (Researched / Verified / Kept current).
+  - Edge-to-edge photo panels linking all four tools, and a Contact
+    section styled as "Contact the tower", split with a control-tower photo.
+  - Nine new photos (Singapore A350 at SFO, United 777 takeoff, Starlux
+    A350 at night, Vietnam A350 on approach, Qatar A380, Southwest
+    wingtips, Istanbul tower, Alaska gates at dusk, United tails at SFO)
+    renamed descriptively and resized for the web (~300–530 KB each).
+    The full-size originals are kept in `images/_originals/`, which git
+    ignores.
+  - Contact offers the Google Form plus an "Email Kollen" button. The
+    address is assembled in `script.js` only when the button is used, so
+    it never appears as text or a plain `mailto:` in the page source.
+  - "Home" is renamed "About" in the top nav, mobile tab bar (new person
+    icon, which the icon-only nav tier picks up automatically), and
+    footer on every page.
 - **SFO Tips: Parking stop** — a new AirTrain-map stop covering Long-Term,
   Short-Term, Valet (Grand Hyatt), and Off-Airport parking. Positioned
   directly under Transportation and connected by the AirTrain line, so the
@@ -31,6 +103,34 @@ so a minor bump can still include larger changes as the site finds its shape.
 
 ### Fixed
 
+- About section navigation, found in a full desktop / iPad / phone pass:
+  - Jumping in from another page (e.g. About ▾ → How) could land ~26px
+    short because positions were measured while `<main>`'s entrance
+    slide was still running; scroll targets now use layout offsets.
+  - The pinned bar could keep the previous tab highlighted after a
+    glide, and on 320px phones the active tab could stay scrolled out
+    of view; both are re-checked when a glide lands (and update
+    directly in background tabs, where animation frames pause).
+  - Closing the About ▾ menu now also clears keyboard focus from its
+    items, so it can't linger open via :focus-within.
+- Leaving the About page for Global Tips could crash the tab on
+  memory-limited devices. Removed `background-attachment: fixed` from the
+  About photo sections (full-image repaints on every scroll, a known
+  iPad Safari crash trigger), resized Kollen's web photos from 2000px to
+  1600px (14.6 MB → 9.3 MB, ~36% less decoded memory each), and skip the
+  cross-document view-transition snapshot when leaving About.
+- About ▾ dropdown was white-on-white once the sky turned dusk/night;
+  it now switches to a dark panel.
+- Phone: survey toast covered the bottom tab bar; now sits above it.
+- Phone: Global Tips phase covers clipped long titles at a fixed 190px.
+- 320px phones: Timeblocker duration sliders pushed the page 9px wide.
+- Packer: climate picker poked past its card on narrow phones; the
+  hidden "Cleared for departure" badge squeezed the progress text.
+- Footer text was unreadable on short pages (Packer) where it landed on
+  the pale dawn sky; it now has its own dark backing.
+- Nav width-measuring clone duplicated element IDs.
+- Silenced harmless "Transition was skipped" console errors from
+  cross-page view transitions.
 - Top nav "ALT 00,000 FT" readout was injected as a third top-level flex
   child of the nav row, breaking its `space-between` layout and stranding
   the "Suggest a tip" button + hamburger toggle off-center. Now grouped

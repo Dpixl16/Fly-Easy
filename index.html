@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Fly Easy — Airport Tips That Actually Help</title>
-<meta name="description" content="Fly Easy shows travelers the beauty of airports and eases the stress of flying with real, useful tips — for any airport, and specifically for SFO.">
+<title>About Fly Easy — Who Created Fly Easy</title>
+<meta name="description" content="About Fly Easy: an independent guide to air travel created by Kollen, a high school junior and aspiring pilot, with real, verified airport tips and tools.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22195 118 212 224%22><path d=%22M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z%22 fill=%22%231B6FA8%22 transform=%22translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)%22/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=52">
+<link rel="stylesheet" href="styles.css?v=100">
 </head>
-<body>
+<body class="page-about">
 
 <a class="skip-link" href="#main">Skip to content</a>
 
@@ -32,7 +32,19 @@
     </a>
     <div class="site-nav__right">
       <nav class="site-nav__links" id="siteNavLinks" aria-label="Main navigation">
-      <a href="index.html" aria-current="page">Home</a>
+      <div class="site-nav__item site-nav__item--has-menu">
+        <a href="index.html" aria-current="page">About</a>
+        <button class="site-nav__caret" type="button" aria-expanded="false" aria-controls="aboutMenu" aria-label="Show About sections">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="site-nav__menu" id="aboutMenu" role="menu" aria-label="About sections">
+          <a href="index.html#who" role="menuitem">Who I am</a>
+          <a href="index.html#what" role="menuitem">What travelers miss</a>
+          <a href="index.html#why" role="menuitem">Why Fly Easy</a>
+          <a href="index.html#how" role="menuitem">How it works</a>
+          <a href="index.html#contact" role="menuitem">Contact me!</a>
+        </div>
+      </div>
       <a href="global.html">Global Tips</a>
       <a href="sfo.html">SFO Tips</a>
       <a href="timeblocker.html">Timeblocker</a>
@@ -48,8 +60,8 @@
 
 <nav class="mobile-tabbar" aria-label="Primary">
   <a class="mobile-tabbar__item" href="index.html" aria-current="page">
-    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M4 10.5L12 4l8 6.5"/><path d="M6 9.5V19a1 1 0 001 1h3v-6h4v6h3a1 1 0 001-1V9.5"/></svg></span>
-    <span class="mobile-tabbar__label">Home</span>
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+    <span class="mobile-tabbar__label">About</span>
   </a>
   <a class="mobile-tabbar__item" href="global.html">
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
@@ -69,171 +81,184 @@
   </a>
 </nav>
 
-<main id="main">
+<main id="main" class="about">
 
-  <section class="photo-hero" style="background-image: url('images/runway-sunset-heavies.jpg');">
-    <div class="photo-hero__scrim" aria-hidden="true"></div>
-    <div class="photo-hero__content">
-      <p class="eyebrow eyebrow--onphoto">A calmer way to fly</p>
-      <h1 class="photo-hero__title">Every airport<br>has a <em>quiet</em><br>side.</h1>
-      <p class="photo-hero__sub">Fly Easy is a small field guide to the beauty and the logistics of air travel — real tips, grouped simply, so the terminal feels a little less like a maze.</p>
-      <div class="hero__actions">
-        <a class="btn btn--primary" href="global.html">Browse global tips</a>
-        <a class="btn btn--ghost-onphoto" href="sfo.html">Browse SFO tips</a>
+  <!-- 1. Opening: golden hour over the apron at Hong Kong (Kollen's photo) -->
+  <section class="ab-hero" id="top" style="background-image: url('images/kollen/kollen-hkg-golden-hour-apron-3.jpg');">
+    <div class="ab-hero__scrim" aria-hidden="true"></div>
+    <div class="ab-hero__inner container">
+      <p class="ab-kicker">About Fly Easy</p>
+      <h1 class="ab-hero__title">A calmer way<br>to see the airport.</h1>
+      <p class="ab-hero__lede">Fly Easy is an independent guide to air travel. It gives you real, checked tips for any airport, a close look at SFO, and simple tools that take the stress out of flying.</p>
+      <dl class="ab-manifest">
+        <div><dt>Created by</dt><dd>Kollen</dd></div>
+        <div><dt>School</dt><dd>Junipero Serra HS</dd></div>
+        <div><dt>Class of</dt><dd>2028</dd></div>
+        <div><dt>Home airport</dt><dd>SFO</dd></div>
+      </dl>
+    </div>
+    <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · Hong Kong (HKG)</span>
+  </section>
+
+  <!-- Pinned section bar: always one tap from any section -->
+  <nav class="ab-sectionbar" aria-label="About sections">
+    <div class="ab-sectionbar__track">
+      <a href="#who">Who</a>
+      <a href="#what">What</a>
+      <a href="#why">Why</a>
+      <a href="#how">How</a>
+      <a href="#contact">Contact me!</a>
+    </div>
+  </nav>
+
+  <!-- 1. Who: about Kollen, plus a strip of his photos -->
+  <section class="ab-who" id="who">
+    <div class="ab-split ab-split--reverse">
+      <!-- Future portrait: swap this background for a photo of Kollen -->
+      <div class="ab-split__photo" style="background-image: url('images/kollen/kollen-sfo-hangar-united-777-tail.jpg'); background-position: 40% center;" role="img" aria-label="The tail of a United 777 under a maintenance hangar roof">
+        <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · SFO · United hangar</span>
       </div>
+      <div class="ab-split__text">
+        <div class="ab-split__inner about-reveal">
+          <p class="ab-kicker">Who · About me</p>
+          <h2 class="ab-title">Hi, I'm Kollen.</h2>
+          <p class="ab-body">I'm a junior at Junipero Serra High School (Class of 2028), an aviation enthusiast and an aspiring pilot. I've loved airplanes for as long as I can remember, and that passion is why I created Fly Easy.</p>
+          <p class="ab-body">I've flown to Hong Kong to visit family almost every year since I was little, and it's still the flight I look forward to most. Closer to home, SFO is my airport, and my favorite planespotting spot is the San Francisco Airport Marriott Waterfront, looking out over runway 28L.</p>
+        </div>
+      </div>
+    </div>
+    <div class="ab-strip" aria-label="Photos by Kollen">
+      <figure class="ab-strip__tile ab-strip__tile--a" style="background-image: url('images/kollen/kollen-hkg-cargo-apron-747s-2.jpg'); background-position: center 62%;">
+        <figcaption class="photo-credit photo-credit--tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Hong Kong (HKG)</figcaption>
+      </figure>
+      <figure class="ab-strip__tile ab-strip__tile--b" style="background-image: url('images/kollen/kollen-sfo-british-airways-a380-gate-a11.jpg'); background-position: center 55%;">
+        <figcaption class="photo-credit photo-credit--tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>SFO · Gate A11</figcaption>
+      </figure>
+      <figure class="ab-strip__tile ab-strip__tile--c" style="background-image: url('images/kollen/kollen-sfo-ana-pokemon-777-3.jpg');">
+        <figcaption class="photo-credit photo-credit--tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>SFO</figcaption>
+      </figure>
+      <figure class="ab-strip__tile ab-strip__tile--d" style="background-image: url('images/kollen/kollen-hkg-cathay-tails-dusk-wing.jpg'); background-position: center 45%;">
+        <figcaption class="photo-credit photo-credit--tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Hong Kong (HKG)</figcaption>
+      </figure>
+      <figure class="ab-strip__tile ab-strip__tile--e" style="background-image: url('images/kollen/kollen-lhr-british-airways-a380-tails-window.jpg'); background-position: center 55%;">
+        <figcaption class="photo-credit photo-credit--tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>London (LHR)</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section class="value-strip-wrap container">
-    <div class="value-strip">
-      <span class="value-item"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>Accurate</span>
-      <span class="value-item"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg></span>Uncommon</span>
-      <span class="value-item"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.35-9.5-8.5C.8 8 2 4.5 5.5 4a5 5 0 016.5 2.2A5 5 0 0118.5 4C22 4.5 23.2 8 21.5 11.5 19 15.65 12 20 12 20z"/></svg></span>Calm to read</span>
+  <!-- 2. What: the problem -->
+  <section class="ab-split" id="what">
+    <div class="ab-split__text">
+      <div class="ab-split__inner about-reveal">
+        <p class="ab-kicker">What · Best-kept secrets</p>
+        <h2 class="ab-title">Most travelers never hear the tips that make flying easier.</h2>
+        <p class="ab-body">A lot of genuinely useful airport know-how never reaches the public. Without it, timing becomes guesswork: when to leave, how long security will take, how far the gate really is.</p>
+        <p class="ab-body">And when you're rushing, you miss the best part of the trip: the sunrise over the runway, the sunset from the gate, the aircraft itself and the view from the window seat.</p>
+      </div>
+    </div>
+    <div class="ab-split__photo" style="background-image: url('images/kollen/kollen-hkg-qatar-777-dusk-window.jpg'); background-position: center 58%;" role="img" aria-label="A Qatar Airways 777 at the gate at dusk, seen past a jet engine">
+      <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · Hong Kong (HKG)</span>
     </div>
   </section>
 
-  <section class="tb-feature container">
-    <a class="tb-feature__card" href="timeblocker.html">
-      <div class="tb-feature__body">
-        <span class="tb-feature__icon"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span></span>
-        <p class="dest-card__eyebrow">A new kind of tool</p>
-        <h2>Never guess when to leave again.</h2>
-        <p class="tb-feature__desc">Timeblocker plans your whole morning backward from boarding — add the steps between home and your gate, drag them into order, and it tells you exactly when to walk out the door.</p>
-        <ul class="dest-card__list">
-          <li>Built-in defaults for check-in, security, and the walk to your gate</li>
-          <li>Drag to reorder, or add your own custom steps</li>
-          <li>Save it, share it with a link, or add it to your calendar</li>
-        </ul>
-        <span class="dest-card__cta tb-feature__cta">Try Timeblocker <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span>
-      </div>
-      <div class="tb-feature__preview" aria-hidden="true">
-        <div class="tbp-hero">
-          <div>
-            <p class="tbp-hero__label">Leave home by</p>
-            <p class="tbp-hero__time">6:42 AM</p>
-          </div>
-          <span class="tbp-hero__board">Boarding 8:15 AM</span>
-        </div>
-        <div class="tbp-rail">
-          <div class="tbp-row">
-            <span class="tbp-dot"></span>
-            <span class="tbp-row__title">Check in / Baggage Drop off</span>
-            <span class="tbp-row__time">6:57 AM</span>
-          </div>
-          <div class="tbp-row">
-            <span class="tbp-dot"></span>
-            <span class="tbp-row__title">Security</span>
-            <span class="tbp-row__time">7:17 AM</span>
-          </div>
-          <div class="tbp-row">
-            <span class="tbp-dot"></span>
-            <span class="tbp-row__title">Walk to your gate</span>
-            <span class="tbp-row__time">7:45 AM</span>
-          </div>
-        </div>
-        <p class="tbp-note">✈ At the gate by 8:15 AM</p>
-      </div>
-    </a>
+  <!-- 3. Why: favorite quote over a Hong Kong sunset -->
+  <section class="ab-statement" id="why" style="background-image: url('images/kollen/kollen-hkg-sunset-tower-4.jpg');">
+    <div class="ab-statement__wash" aria-hidden="true"></div>
+    <figure class="container ab-statement__inner about-reveal">
+      <p class="ab-kicker">Why · My favorite quote</p>
+      <blockquote class="ab-quote">&ldquo;When everything seems to be going against you, remember that the airplane takes off against the wind, not with it.&rdquo;</blockquote>
+      <figcaption class="ab-quote__cite">Henry Ford</figcaption>
+      <p class="ab-statement__note">I'm building Fly Easy to show the beauty of aviation that most people rush right past. Air travel should be a relaxing start to your vacation, not the most stressful part of it.</p>
+    </figure>
+    <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · Hong Kong (HKG)</span>
   </section>
 
-  <section class="pk-promo container">
-    <a class="dest-card dest-card--packer pk-promo__card" href="packer.html">
-      <span class="dest-card__photo" style="background-image: url('images/suitcase-teal-terminal.jpg');" aria-hidden="true"></span>
-      <div class="dest-card__body">
-        <span class="dest-card__icon"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span></span>
-        <p class="dest-card__eyebrow">A new kind of tool</p>
-        <h3>Never wonder what to pack again.</h3>
-        <p class="dest-card__desc">Packer suggests what goes in every bag — tuned to your trip length and climate, and checked against TSA carry-on rules.</p>
-        <ul class="dest-card__list">
-          <li>Organized by bag — carry-on, personal item, checked, sports</li>
-          <li>TSA rules built in, so nothing gets pulled at security</li>
-          <li>Print your list, or track it live as you pack</li>
-        </ul>
-        <span class="dest-card__cta">Try Packer <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span>
-      </div>
-    </a>
-  </section>
-
-  <section class="destinations container">
-    <div class="destinations__head">
-      <p class="eyebrow">Pick your guide</p>
-      <h2>Two ways to fly easier</h2>
-      <p>Start wherever you're headed — tips that work anywhere, or a close look at flying through SFO.</p>
+  <!-- 4. How: the tools and tips, and how every tip is checked -->
+  <section class="ab-how" id="how" aria-labelledby="ab-how-title">
+    <div class="container ab-how__head about-reveal">
+      <p class="ab-kicker">How · Tools &amp; tips</p>
+      <h2 class="ab-title" id="ab-how-title">Two guides and two tools that do the planning for you.</h2>
     </div>
-
-    <div class="dest-grid">
-
-      <a class="dest-card dest-card--global" href="global.html">
-        <span class="dest-card__photo" style="background-image: url('images/takeoff-sunset.jpg');" aria-hidden="true"></span>
-        <div class="dest-card__body">
-          <span class="dest-card__icon"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span></span>
-          <p class="dest-card__eyebrow">Works anywhere</p>
-          <h3>Global Tips</h3>
-          <p class="dest-card__desc">Follow the plane through Pre-Departure, Departure, In-Flight, and Arrival.</p>
-          <ul class="dest-card__list">
-            <li>What to pack and research beforehand</li>
-            <li>Departure timing that actually works</li>
-            <li>What changes the moment you land</li>
-          </ul>
-          <span class="dest-card__cta">Explore global tips <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span>
-        </div>
+    <div class="ab-explore">
+      <a class="ab-explore__panel" href="global.html" style="background-image: url('images/kollen/kollen-hkg-singapore-a350-sunset-window.jpg'); background-position: 70% center;">
+        <span class="ab-explore__label">Guide</span>
+        <strong>Global Tips</strong>
+        <span class="ab-explore__desc">For any airport, from pre-departure to arrival.</span>
+        <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen</span>
       </a>
-
-      <a class="dest-card dest-card--sfo" href="sfo.html">
-        <span class="dest-card__photo" style="background-image: url('images/sfo-gate-united.jpg');" aria-hidden="true"></span>
-        <div class="dest-card__body">
-          <span class="dest-card__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-5h6v5"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2"/></svg></span></span>
-          <p class="dest-card__eyebrow">San Francisco International</p>
-          <h3>SFO Tips</h3>
-          <p class="dest-card__desc">An interactive look at each terminal, plus what locals know.</p>
-          <ul class="dest-card__list">
-            <li>Explore all four terminals side by side</li>
-            <li>The free ride that beats a rideshare</li>
-            <li>A museum and a yoga room hiding in plain sight</li>
-          </ul>
-          <span class="dest-card__cta">Explore SFO tips <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span>
-        </div>
+      <a class="ab-explore__panel" href="sfo.html" style="background-image: url('images/kollen/kollen-sfo-ana-pokemon-777-2.jpg'); background-position: 62% center;">
+        <span class="ab-explore__label">Guide</span>
+        <strong>SFO Tips</strong>
+        <span class="ab-explore__desc">Every terminal and airline at San Francisco International.</span>
+        <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen</span>
       </a>
-
+      <a class="ab-explore__panel" href="timeblocker.html" style="background-image: url('images/departure-board.jpg');">
+        <span class="ab-explore__label">Tool</span>
+        <strong>Timeblocker</strong>
+        <span class="ab-explore__desc">Works backward from boarding to tell you when to leave.</span>
+      </a>
+      <a class="ab-explore__panel" href="packer.html" style="background-image: url('images/suitcase-teal-terminal.jpg');">
+        <span class="ab-explore__label">Tool</span>
+        <strong>Packer</strong>
+        <span class="ab-explore__desc">A packing list for every bag, with TSA rules built in.</span>
+      </a>
+    </div>
+    <div class="ab-panel" style="background-image: url('images/kollen/kollen-sfo-hangar-united-737max.jpg');">
+      <div class="ab-panel__scrim ab-panel__scrim--full" aria-hidden="true"></div>
+      <div class="container ab-panel__inner">
+        <div class="about-reveal">
+          <p class="ab-kicker">How the tips are made</p>
+          <h3 class="ab-title ab-title--sm">Every tip is checked, to the best of my ability.</h3>
+          <p class="ab-body ab-steps__intro">I work hard to keep every tip accurate, but airports are always changing: gates move, rules get updated and new spots open, so a tip can become outdated. Always confirm the specifics before you fly.</p>
+        </div>
+        <ol class="ab-steps ab-steps--four">
+          <li class="about-reveal">
+            <span class="ab-steps__num">01</span>
+            <h3>Researched</h3>
+            <p>Tips start with official sources: airport websites like flysfo.com, the TSA and the airlines themselves.</p>
+          </li>
+          <li class="about-reveal">
+            <span class="ab-steps__num">02</span>
+            <h3>Reviewed by people who know</h3>
+            <p>I cross-check details and ask aviation professionals to review them for accuracy, like Mr. Strange, who worked with Alaska Airlines at SFO. When something can't be confirmed, like parking prices, the tip links to the official source instead of guessing.</p>
+          </li>
+          <li class="about-reveal">
+            <span class="ab-steps__num">03</span>
+            <h3>Kept current</h3>
+            <p>Airports change all the time, so I update tips as soon as I learn something has changed.</p>
+          </li>
+          <li class="about-reveal">
+            <span class="ab-steps__num">04</span>
+            <h3>Shaped by the community</h3>
+            <p>Honest feedback from the aviation and travel community is one of the biggest ways Fly Easy keeps improving. Spot something wrong, know a better tip, or just want to comment? Please tell me.</p>
+            <p class="ab-steps__links">
+              <a href="#contact">Contact me</a>
+            </p>
+          </li>
+        </ol>
+      </div>
+      <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · SFO · United hangar</span>
     </div>
   </section>
 
-  <section class="filmstrip" aria-label="Views from the journey">
-    <div class="filmstrip__track" aria-hidden="true">
-      <span class="filmstrip__item" style="background-image: url('images/emirates-takeoff-roll.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/window-wing-citylights.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/jal-gates-goldenhour.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/virgin-climbout.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/garuda-volcano-takeoff.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/window-wing-clouds-ground.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/vietnam-takeoff-city.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/ita-blue-at-gate.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/emirates-takeoff-roll.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/window-wing-citylights.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/jal-gates-goldenhour.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/virgin-climbout.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/garuda-volcano-takeoff.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/window-wing-clouds-ground.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/vietnam-takeoff-city.jpg');"></span>
-      <span class="filmstrip__item" style="background-image: url('images/ita-blue-at-gate.jpg');"></span>
+  <!-- 5. Contact -->
+  <section class="ab-split" id="contact">
+    <div class="ab-split__text">
+      <div class="ab-split__inner about-reveal">
+        <p class="ab-kicker">Contact me!</p>
+        <h2 class="ab-title">Have a tip, a correction or a question?</h2>
+        <p class="ab-body">I'd love to hear from you. Suggest a tip, flag something that's out of date, or just say hello.</p>
+        <div class="ab-actions">
+          <a class="btn ab-btn ab-btn--solid" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+          <a class="btn ab-btn ab-btn--outline" id="aboutEmailBtn" href="#contact">
+            <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+            Email Kollen
+          </a>
+        </div>
+      </div>
     </div>
-    <p class="filmstrip__label">Views from the journey — planespotting from gates, runways &amp; window seats</p>
-  </section>
-
-  <section class="stat-band">
-    <div class="container stat-band__grid">
-      <div class="stat-item">
-        <p class="stat-item__num">4</p>
-        <p class="stat-item__label">Global Tips phases, pre-departure to arrival</p>
-      </div>
-      <div class="stat-item">
-        <p class="stat-item__num">56</p>
-        <p class="stat-item__label">Airlines mapped at SFO, gates included</p>
-      </div>
-      <div class="stat-item">
-        <p class="stat-item__num">3</p>
-        <p class="stat-item__label">Default Timeblocker steps — add as many as you need</p>
-      </div>
+    <div class="ab-split__photo" style="background-image: url('images/kollen/kollen-inflight-wing-sunrise-1.jpg'); background-position: 65% center;" role="img" aria-label="An airliner wing above the clouds at sunrise">
+      <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · In flight</span>
     </div>
   </section>
 
@@ -243,7 +268,7 @@
   <div class="container site-footer__inner">
     <p class="site-footer__brand"><img src="images/flyeasy-mark.svg" alt="" width="37" height="26">Fly Easy</p>
     <nav class="site-footer__links" aria-label="Footer navigation">
-      <a href="index.html">Home</a>
+      <a href="index.html">About</a>
       <a href="global.html">Global Tips</a>
       <a href="sfo.html">SFO Tips</a>
       <a href="timeblocker.html">Timeblocker</a>
@@ -251,7 +276,7 @@
       <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
     </nav>
     <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
-    <p class="site-footer__credit">Photography via Unsplash &amp; Pexels.</p>
+    <p class="site-footer__credit">Photography by Kollen, with a few from Unsplash &amp; Pexels.</p>
   </div>
 </footer>
 
@@ -264,6 +289,6 @@
   <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
 </div>
 
-<script src="script.js?v=55"></script>
+<script src="script.js?v=107"></script>
 </body>
 </html>

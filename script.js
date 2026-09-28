@@ -1,3 +1,25 @@
+/* Cross-document view transitions (@view-transition in styles.css):
+   when the browser skips one (fast clicks, reduced motion, a hidden
+   tab), it rejects the transition's promises and logs an uncaught
+   AbortError. Nothing is broken — just acknowledge the rejections. */
+function quietViewTransition(e) {
+  var vt = e.viewTransition;
+  if (!vt) return;
+  ["ready", "finished", "updateCallbackDone"].forEach(function (k) {
+    if (vt[k] && vt[k].catch) vt[k].catch(function () {});
+  });
+}
+window.addEventListener("pagereveal", quietViewTransition);
+window.addEventListener("pageswap", function (e) {
+  /* Leaving the photo-heavy About page: skip the cross-document
+     snapshot (the plane page-transition already covers the exit),
+     so the browser never holds both pages' images at once. */
+  if (e.viewTransition && document.body.classList.contains("page-about")) {
+    e.viewTransition.skipTransition();
+  }
+  quietViewTransition(e);
+});
+
 (function () {
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var cards = document.querySelectorAll(".tip-card");
@@ -2814,7 +2836,7 @@
   /* ---------- Reveal choreography ---------- */
   function initReveals() {
     var targets = document.querySelectorAll(
-      ".dest-card, .tb-feature__card, .value-item, .explorer__panel, .airline-warning, .tb-notice, .stat-item, .photo-band"
+      ".dest-card, .tb-feature__card, .value-item, .explorer__panel, .airline-warning, .tb-notice, .stat-item, .photo-band, .about-reveal"
     );
     if (reduced || !("IntersectionObserver" in window)) {
       targets.forEach(function (t) { t.classList.add("ws-reveal", "is-landed"); });
@@ -3252,6 +3274,43 @@
   function close() {
     textLinks.classList.remove("is-open");
     toggle.setAttribute("aria-expanded", "false");
+    closeAboutMenu();
+  }
+
+  /* ---------- About ▾ section dropdown ----------
+     Opens on hover/focus in CSS for mouse users; the caret button
+     toggles it for touch, keyboard and the hamburger tier. */
+  var aboutItem = textLinks.querySelector(".site-nav__item--has-menu");
+  var aboutCaret = aboutItem && aboutItem.querySelector(".site-nav__caret");
+  function closeAboutMenu() {
+    if (!aboutItem) return;
+    aboutItem.classList.remove("is-open");
+    aboutCaret.setAttribute("aria-expanded", "false");
+    /* focus left on a menu item would keep it open via :focus-within */
+    var menu = aboutItem.querySelector(".site-nav__menu");
+    if (menu && menu.contains(document.activeElement)) document.activeElement.blur();
+  }
+  if (aboutItem && aboutCaret) {
+    aboutCaret.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var willOpen = !aboutItem.classList.contains("is-open");
+      aboutItem.classList.toggle("is-open", willOpen);
+      aboutCaret.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      if (willOpen) {
+        var first = aboutItem.querySelector(".site-nav__menu a");
+        if (first && e.detail === 0) first.focus();
+      }
+    });
+    document.addEventListener("click", function (e) {
+      if (aboutItem.classList.contains("is-open") && !aboutItem.contains(e.target)) closeAboutMenu();
+    });
+    aboutItem.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && aboutItem.classList.contains("is-open")) {
+        e.stopPropagation();
+        closeAboutMenu();
+        aboutCaret.focus();
+      }
+    });
   }
   function open() {
     textLinks.classList.add("is-open");
@@ -3288,7 +3347,11 @@
      just falls back to choosing between "full" and "menu". */
   var iconNav = null;
   (function buildIconTier() {
-    var textAnchors = textLinks.querySelectorAll("a");
+    /* Top-level page links only — the About dropdown's section links
+       live inside #siteNavLinks too but have no tab-bar twin. */
+    var textAnchors = Array.prototype.filter.call(textLinks.querySelectorAll("a"), function (a) {
+      return !a.closest(".site-nav__menu");
+    });
     var tabItems = document.querySelectorAll(".mobile-tabbar .mobile-tabbar__item");
     if (!textAnchors.length || textAnchors.length !== tabItems.length) return;
 
@@ -3329,6 +3392,8 @@
     if (linksNode) {
       var linksClone = linksNode.cloneNode(true);
       linksClone.removeAttribute("id");
+      linksClone.querySelectorAll("[id]").forEach(function (el) { el.removeAttribute("id"); });
+      linksClone.querySelectorAll("[aria-controls]").forEach(function (el) { el.removeAttribute("aria-controls"); });
       linksClone.classList.remove("is-open");
       right.appendChild(linksClone);
     }
@@ -3401,4 +3466,275 @@
   }
 
   decide();
+})();
+
+/* ============================================================
+   About page — "Email Kollen" button. The address is assembled
+   only when the visitor reaches for the button, so it never sits
+   in the page as plain text or a scrapeable mailto: link.
+   ============================================================ */
+(function () {
+  var btn = document.getElementById("aboutEmailBtn");
+  if (!btn) return;
+  function arm() {
+    var addr = ["liukollen", "2028"].join("") + "@" + ["serra", "hs", ".com"].join("");
+    btn.href = "mai" + "lto:" + addr + "?subject=" + encodeURIComponent("Fly Easy");
+  }
+  ["pointerenter", "focus", "touchstart", "click"].forEach(function (evt) {
+    btn.addEventListener(evt, arm, { once: true, passive: true });
+  });
+})();
+
+/* Document-space top of an element, from layout offsets rather than
+   getBoundingClientRect(): <main> plays a translateY entrance animation
+   (ws-page-in), and a transform would skew the math while it runs. */
+function layoutTop(el) {
+  var y = 0;
+  for (var n = el; n; n = n.offsetParent) y += n.offsetTop;
+  return y;
+}
+
+/* ============================================================
+   About page — pinned section bar. Keeps --site-nav-h in sync with
+   the sticky site nav (so the bar tucks right under it at every
+   width) and highlights the section currently being read.
+   ============================================================ */
+(function () {
+  var bar = document.querySelector(".ab-sectionbar");
+  var siteNav = document.querySelector(".site-nav");
+  if (!bar || !siteNav) return;
+  var root = document.documentElement;
+
+  function syncNavHeight() {
+    root.style.setProperty("--site-nav-h", siteNav.offsetHeight + "px");
+  }
+  syncNavHeight();
+  if (window.ResizeObserver) new ResizeObserver(syncNavHeight).observe(siteNav);
+  else window.addEventListener("resize", syncNavHeight);
+
+  var links = Array.prototype.slice.call(bar.querySelectorAll("a[href^='#']"));
+
+  /* drop the right-edge fade once the phone-width bar is scrolled to its end */
+  var track = bar.querySelector(".ab-sectionbar__track");
+  function syncFade() {
+    if (!track) return;
+    track.classList.toggle("is-scrolled-end", track.scrollLeft + track.clientWidth >= track.scrollWidth - 4);
+  }
+  if (track) { track.addEventListener("scroll", syncFade, { passive: true }); window.addEventListener("resize", syncFade); syncFade(); }
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
+
+  var lastActive;
+  function setActive(id) {
+    if (id === lastActive) return;
+    lastActive = id;
+    links.forEach(function (a) {
+      var on = a.getAttribute("href") === "#" + id;
+      if (on) {
+        a.setAttribute("aria-current", "true");
+        /* keep the active pill visible on phones, where the bar scrolls sideways */
+        var track = a.parentElement;
+        var left = a.offsetLeft - (track.clientWidth - a.offsetWidth) / 2;
+        if (track.scrollWidth > track.clientWidth) track.scrollTo({ left: left, behavior: document.hidden ? "instant" : "smooth" });
+      } else {
+        a.removeAttribute("aria-current");
+      }
+    });
+  }
+
+  /* Active = the last section whose top has passed a line just
+     below the pinned bars. Cheap enough to run on scroll via rAF. */
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var line = siteNav.offsetHeight + bar.offsetHeight + 40;
+    var active = null;
+    sections.forEach(function (sec) {
+      if (sec && sec.getBoundingClientRect().top <= line) active = sec.id;
+    });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 12) {
+      active = sections[sections.length - 1] && sections[sections.length - 1].id;
+    }
+    setActive(active);
+  }
+  window.addEventListener("scroll", function () {
+    /* animation frames pause in hidden tabs; update directly so the
+       highlight is never left stale */
+    if (document.hidden) { update(); return; }
+    if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener("resize", update);
+  window.addEventListener("scrollend", update);
+  update();
+
+  /* Arriving from another page (e.g. the nav's About ▾ menu), the browser
+     jumps to #section before images and fonts settle the layout, which can
+     leave the heading tucked under the pinned bars. Re-align once loaded. */
+  var initialHash = location.hash; /* only realign if the page was opened with one */
+  var userMoved = false;
+  ["wheel", "touchstart", "keydown", "mousedown"].forEach(function (evt) {
+    window.addEventListener(evt, function () { userMoved = true; }, { passive: true, once: true });
+  });
+  function realign() {
+    var target = initialHash && location.hash === initialHash && document.getElementById(initialHash.slice(1));
+    if (!target || sections.indexOf(target) === -1 || userMoved) return;
+    var y = layoutTop(target) - (siteNav.offsetHeight + bar.offsetHeight) + 1;
+    if (Math.abs(window.scrollY - y) > 1) window.scrollTo({ top: y, behavior: "instant" });
+    update();
+  }
+  /* the browser's own jump-to-#fragment can land after "load", so check twice */
+  window.addEventListener("load", function () {
+    realign();
+    setTimeout(realign, 350);
+  });
+})();
+
+/* ============================================================
+   About page — section "flights". Clicking Who / What / Why / How /
+   Contact me (pinned bar, the nav's About ▾ menu, or in-page links)
+   glides the page to the section with an eased scroll, flies a small
+   plane along the pinned bar to the new tab, and "lands" the section
+   with a quick runway-light sweep on its label. Any wheel/touch/key
+   input cancels the glide instantly; reduced motion jumps straight
+   there.
+   ============================================================ */
+(function () {
+  var bar = document.querySelector(".ab-sectionbar");
+  var siteNav = document.querySelector(".site-nav");
+  if (!bar || !siteNav) return;
+  var track = bar.querySelector(".ab-sectionbar__track");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var ids = Array.prototype.map.call(bar.querySelectorAll("a[href^='#']"), function (a) {
+    return a.getAttribute("href").slice(1);
+  });
+
+  /* the little plane that taxis along the pinned bar */
+  var plane = document.createElement("span");
+  plane.className = "ab-sectionbar__plane";
+  plane.setAttribute("aria-hidden", "true");
+  plane.innerHTML = '<svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor"/></svg>';
+  track.appendChild(plane);
+
+  function targetFromLink(a) {
+    var href = a.getAttribute("href") || "";
+    var hash = href.indexOf("#") !== -1 ? href.slice(href.indexOf("#") + 1) : "";
+    if (!hash || ids.indexOf(hash) === -1) return null;
+    var path = href.split("#")[0];
+    /* same-page only: "#who", or "index.html#who" while already on the About page */
+    if (path && !/(^|\/)index\.html$/.test(path)) return null;
+    return document.getElementById(hash);
+  }
+
+  function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+
+  var anim = null;
+  function cancel() {
+    if (!anim) return;
+    cancelAnimationFrame(anim.raf);
+    clearTimeout(anim.safety);
+    anim = null;
+    plane.classList.remove("is-flying");
+  }
+  ["wheel", "touchstart", "keydown", "mousedown"].forEach(function (evt) {
+    window.addEventListener(evt, function (e) {
+      if (anim && !(evt === "mousedown" && e.target.closest && e.target.closest(".ab-sectionbar"))) cancel();
+    }, { passive: true });
+  });
+
+  function pillFor(id) { return bar.querySelector("a[href='#" + id + "']"); }
+  function pillCenter(pill) { return pill.offsetLeft + pill.offsetWidth / 2; }
+
+  function centerActivePill() {
+    var pill = bar.querySelector("a[aria-current]");
+    if (!pill || track.scrollWidth <= track.clientWidth) return;
+    var left = pill.offsetLeft - (track.clientWidth - pill.offsetWidth) / 2;
+    track.scrollTo({ left: Math.max(0, left), behavior: document.hidden ? "instant" : "smooth" });
+  }
+
+  function land(section) {
+    /* the last glide frame doesn't always emit a scroll event, so nudge
+       the section-bar highlight to re-check where we ended up */
+    window.dispatchEvent(new Event("scroll"));
+    /* the bar's own smooth sideways scroll can be cut short mid-glide on
+       narrow phones; re-center the active tab once we've landed */
+    setTimeout(centerActivePill, 60);
+    section.classList.remove("is-arriving");
+    void section.offsetWidth; /* restart the animation if it's already running */
+    section.classList.add("is-arriving");
+    setTimeout(function () { section.classList.remove("is-arriving"); }, 1100);
+  }
+
+  function fly(section) {
+    cancel();
+    var offset = siteNav.offsetHeight + bar.offsetHeight;
+    var startY = window.scrollY;
+    var endY = Math.max(0, Math.min(
+      layoutTop(section) - offset + 1,
+      document.documentElement.scrollHeight - window.innerHeight
+    ));
+    var dist = Math.abs(endY - startY);
+
+    if (reduce.matches || dist < 4) {
+      window.scrollTo({ top: endY, behavior: "instant" });
+      land(section);
+      return;
+    }
+
+    /* long hops take a little longer, but never drag */
+    var duration = Math.min(950, Math.max(450, 350 + dist * 0.12));
+
+    var fromPill = bar.querySelector("a[aria-current]") || pillFor(ids[0]);
+    var toPill = pillFor(section.id);
+    var fromX = pillCenter(fromPill), toX = pillCenter(toPill);
+    plane.style.setProperty("--dir", toX >= fromX ? "1" : "-1");
+    plane.classList.add("is-flying");
+
+    var t0 = null;
+    function step(now) {
+      if (!anim) return;
+      if (t0 === null) t0 = now;
+      var p = Math.min(1, (now - t0) / duration);
+      var k = ease(p);
+      window.scrollTo({ top: startY + (endY - startY) * k, behavior: "instant" });
+      plane.style.transform = "translateX(" + (fromX + (toX - fromX) * k) + "px) translateX(-50%) scaleX(var(--dir))";
+      if (p < 1) {
+        anim.raf = requestAnimationFrame(step);
+      } else {
+        clearTimeout(anim.safety);
+        anim = null;
+        plane.classList.remove("is-flying");
+        land(section);
+      }
+    }
+    /* Safety net: if animation frames are paused (background tab, a
+       hidden webview), finish the trip anyway so a click always lands. */
+    var safety = setTimeout(function () {
+      if (!anim) return;
+      cancelAnimationFrame(anim.raf);
+      anim = null;
+      plane.classList.remove("is-flying");
+      window.scrollTo({ top: endY, behavior: "instant" });
+      land(section);
+    }, duration + 250);
+    anim = { raf: requestAnimationFrame(step), safety: safety };
+  }
+
+  /* capture phase, so the site-wide page-transition handler (which
+     honours defaultPrevented) never turns these into a reload */
+  document.addEventListener("click", function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest && e.target.closest("a[href*='#']");
+    if (!a) return;
+    var section = targetFromLink(a);
+    if (!section) return;
+    e.preventDefault();
+    var menuItem = a.closest(".site-nav__item--has-menu");
+    if (menuItem) {
+      menuItem.classList.remove("is-open");
+      var caret = menuItem.querySelector(".site-nav__caret");
+      if (caret) caret.setAttribute("aria-expanded", "false");
+      a.blur();
+    }
+    history.replaceState(null, "", "#" + section.id);
+    fly(section);
+  }, true);
 })();

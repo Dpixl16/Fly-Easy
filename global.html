@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=52">
+<link rel="stylesheet" href="styles.css?v=100">
 </head>
 <body>
 
@@ -32,7 +32,19 @@
     </a>
     <div class="site-nav__right">
       <nav class="site-nav__links" id="siteNavLinks" aria-label="Main navigation">
-      <a href="index.html">Home</a>
+      <div class="site-nav__item site-nav__item--has-menu">
+        <a href="index.html">About</a>
+        <button class="site-nav__caret" type="button" aria-expanded="false" aria-controls="aboutMenu" aria-label="Show About sections">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="site-nav__menu" id="aboutMenu" role="menu" aria-label="About sections">
+          <a href="index.html#who" role="menuitem">Who I am</a>
+          <a href="index.html#what" role="menuitem">What travelers miss</a>
+          <a href="index.html#why" role="menuitem">Why Fly Easy</a>
+          <a href="index.html#how" role="menuitem">How it works</a>
+          <a href="index.html#contact" role="menuitem">Contact me!</a>
+        </div>
+      </div>
       <a href="global.html" aria-current="page">Global Tips</a>
       <a href="sfo.html">SFO Tips</a>
       <a href="timeblocker.html">Timeblocker</a>
@@ -48,8 +60,8 @@
 
 <nav class="mobile-tabbar" aria-label="Primary">
   <a class="mobile-tabbar__item" href="index.html">
-    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M4 10.5L12 4l8 6.5"/><path d="M6 9.5V19a1 1 0 001 1h3v-6h4v6h3a1 1 0 001-1V9.5"/></svg></span>
-    <span class="mobile-tabbar__label">Home</span>
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+    <span class="mobile-tabbar__label">About</span>
   </a>
   <a class="mobile-tabbar__item" href="global.html" aria-current="page">
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
@@ -71,8 +83,9 @@
 
 <main id="main">
 
-  <section class="photo-hero photo-hero--vista" style="background-image: url('images/twilight-gate-landscape.jpg');">
+  <section class="photo-hero photo-hero--vista" style="background-image: url('images/kollen/kollen-hkg-sunset-tower-1.jpg'); background-position: center 62%;">
     <div class="photo-hero__scrim" aria-hidden="true"></div>
+    <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · Hong Kong (HKG)</span>
     <div class="photo-hero__content">
       <p class="eyebrow eyebrow--onphoto">Global Tips</p>
       <h1 class="photo-hero__title">Pre-Departure. Departure.<br>In-flight. Arrival.</h1>
@@ -187,8 +200,9 @@
       </div>
 
       <div class="phase-panel phase-panel--departure" data-phase="departure" id="panel-departure" hidden>
-        <div class="phase-cover" style="background-image: url('images/takeoff-golden-apron.jpg');">
+        <div class="phase-cover" style="background-image: url('images/kollen/kollen-hkg-golden-hour-apron-1.jpg'); background-position: center 60%;">
           <div class="phase-cover__scrim" aria-hidden="true"></div>
+          <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · HKG</span>
           <div class="phase-cover__content">
             <p class="phase-card__eyebrow">Departure</p>
             <h2 class="phase-card__idea">Timing Matters.</h2>
@@ -266,8 +280,9 @@
       </div>
 
       <div class="phase-panel phase-panel--inflight" data-phase="inflight" id="panel-inflight" hidden>
-        <div class="phase-cover" style="background-image: url('images/united-inflight-clouds.jpg');">
+        <div class="phase-cover" style="background-image: url('images/kollen/kollen-inflight-wing-above-clouds-2.jpg'); background-position: center 52%;">
           <div class="phase-cover__scrim" aria-hidden="true"></div>
+          <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · In flight</span>
           <div class="phase-cover__content">
             <p class="phase-card__eyebrow">Cabin comfort</p>
             <h2 class="phase-card__idea">Settle into the flight.</h2>
@@ -328,8 +343,9 @@
       </div>
 
       <div class="phase-panel phase-panel--arrival" data-phase="arrival" id="panel-arrival" hidden>
-        <div class="phase-cover" style="background-image: url('images/landing-city-sunset.jpg');">
+        <div class="phase-cover" style="background-image: url('images/kollen/kollen-lhr-british-airways-a380-tails-window.jpg'); background-position: center 56%;">
           <div class="phase-cover__scrim" aria-hidden="true"></div>
+          <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · London (LHR)</span>
           <div class="phase-cover__content">
             <p class="phase-card__eyebrow">Plans change</p>
             <h2 class="phase-card__idea">Your itinerary is a plan, not a promise.</h2>
@@ -397,8 +413,9 @@
   </section>
 
   <section class="container">
-    <div class="photo-band" style="background-image: url('images/dusk-clouds-pink.jpg');">
+    <div class="photo-band" style="background-image: url('images/kollen/kollen-sfo-united-777-sunset-approach.jpg'); background-position: center 45%;">
       <div class="photo-band__scrim" aria-hidden="true"></div>
+      <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · Near SFO</span>
       <div class="photo-band__content">
         <p class="eyebrow eyebrow--onphoto">One more thing</p>
         <h2 class="photo-band__title">The sky does this every night.</h2>
@@ -413,7 +430,7 @@
   <div class="container site-footer__inner">
     <p class="site-footer__brand"><img src="images/flyeasy-mark.svg" alt="" width="37" height="26">Fly Easy</p>
     <nav class="site-footer__links" aria-label="Footer navigation">
-      <a href="index.html">Home</a>
+      <a href="index.html">About</a>
       <a href="global.html">Global Tips</a>
       <a href="sfo.html">SFO Tips</a>
       <a href="timeblocker.html">Timeblocker</a>
@@ -421,7 +438,7 @@
       <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
     </nav>
     <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
-    <p class="site-footer__credit">Photography via Unsplash &amp; Pexels.</p>
+    <p class="site-footer__credit">Photography by Kollen, with a few from Unsplash &amp; Pexels.</p>
   </div>
 </footer>
 
@@ -434,6 +451,6 @@
   <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
 </div>
 
-<script src="script.js?v=55"></script>
+<script src="script.js?v=107"></script>
 </body>
 </html>
