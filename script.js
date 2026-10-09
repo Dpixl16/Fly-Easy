@@ -569,7 +569,7 @@ window.addEventListener("pageswap", function (e) {
     });
   });
 
-  revealPanel(card.querySelector('.phase-panel[data-phase="predeparture"]'));
+  revealPanel(card.querySelector('.phase-panel[data-phase="booking"]'));
   }
 
   function runTimeblocker() {

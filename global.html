@@ -88,8 +88,8 @@
     <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · Hong Kong (HKG)</span>
     <div class="photo-hero__content">
       <p class="eyebrow eyebrow--onphoto">Global Tips</p>
-      <h1 class="photo-hero__title">Pre-Departure. Departure.<br>In-flight. Arrival.</h1>
-      <p class="photo-hero__sub">Every flight breaks down into four phases. Follow the plane to the one you need.</p>
+      <h1 class="photo-hero__title">Booking. <span class="nowrap">Pre-Departure.</span> Departure.<br>In-flight. Arrival.</h1>
+      <p class="photo-hero__sub">Every trip breaks down into five phases. Follow the plane to the one you need.</p>
     </div>
   </section>
 
@@ -101,7 +101,7 @@
         <svg class="tracker__cloud tracker__cloud--3" viewBox="0 0 64 30" fill="currentColor"><path d="M14 22a9 9 0 01-2-17.8A11 11 0 0134 6a8 8 0 0115 8 8 8 0 01-3 15H14z"/></svg>
       </div>
       <span class="tracker__path-line" aria-hidden="true"></span>
-      <span class="tracker__plane-wrap" id="tracker-plane" data-phase="predeparture" aria-hidden="true">
+      <span class="tracker__plane-wrap" id="tracker-plane" data-phase="booking" aria-hidden="true">
         <span class="tracker__plane-float">
           <span class="tracker__plane-bank" id="tracker-plane-bank">
             <span class="icon"><svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg></span>
@@ -110,7 +110,11 @@
       </span>
     </div>
     <div class="tracker__stops" role="tablist" aria-label="Flight phase">
-      <button class="tracker__stop is-active" data-phase="predeparture" role="tab" aria-selected="true" aria-controls="panel-predeparture">
+      <button class="tracker__stop is-active" data-phase="booking" role="tab" aria-selected="true" aria-controls="panel-booking">
+        <span class="tracker__stop-icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4z"/><path d="M14 6v12" stroke-dasharray="2 2.5"/></svg></span></span>
+        <span class="tracker__stop-label">Booking</span>
+      </button>
+      <button class="tracker__stop" data-phase="predeparture" role="tab" aria-selected="false" aria-controls="panel-predeparture">
         <span class="tracker__stop-icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 11v4M15 11v4"/></svg></span></span>
         <span class="tracker__stop-label">Pre-Departure</span>
       </button>
@@ -130,9 +134,118 @@
   </section>
 
   <section class="phase-wrap container">
-    <article class="phase-card" id="phase-card" data-phase="predeparture">
+    <article class="phase-card" id="phase-card" data-phase="booking">
 
-      <div class="phase-panel phase-panel--predeparture" data-phase="predeparture" id="panel-predeparture">
+      <div class="phase-panel phase-panel--booking" data-phase="booking" id="panel-booking">
+        <div class="phase-cover" style="background-image: url('images/kollen/kollen-hkg-singapore-a350-sunset-window.jpg'); background-position: 70% center;">
+          <div class="phase-cover__scrim" aria-hidden="true"></div>
+          <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · HKG</span>
+          <div class="phase-cover__content">
+            <p class="phase-card__eyebrow">Booking</p>
+            <h2 class="phase-card__idea">Book smart.</h2>
+            <p class="phase-card__sub">The easiest delays to fix are the ones you avoid when you buy the ticket.</p>
+          </div>
+        </div>
+        <div class="phase-card__body">
+
+        <!-- 01 · Book it -->
+        <div class="bk-head reveal"><span class="bk-head__num">01</span><h3 class="bk-head__title">Book it</h3><span class="bk-head__rule" aria-hidden="true"></span></div>
+
+        <div class="photo-band bk-band reveal" style="background-image: url('images/kollen/kollen-inflight-wing-sunrise-1.jpg'); background-position: 60% 55%;">
+          <div class="photo-band__scrim" aria-hidden="true"></div>
+          <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · In flight</span>
+          <div class="photo-band__content">
+            <p class="bk-band__tag">Hard deadline? Cruise, wedding, big meeting</p>
+            <h4 class="photo-band__title">Arrive a day early.</h4>
+            <ul class="bk-band__perks">
+              <li>😴 Get real rest</li>
+              <li>😌 No stress if you run late</li>
+              <li>🗺️ A free day to explore</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bk-pass reveal">
+          <div class="bk-pass__main">
+            <p class="bk-pass__eyebrow">Best way to buy</p>
+            <h4 class="bk-pass__title">Book directly with the airline</h4>
+            <p class="bk-pass__text">Booking sites often can't help when a flight is delayed or needs rebooking. The airline can.</p>
+            <div class="bk-pass__chips"><span>✈️ Easier rebooking</span><span>⭐ Miles &amp; perks</span></div>
+          </div>
+          <div class="bk-pass__stub" aria-hidden="true">
+            <span class="icon"><svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg></span>
+            <span class="bk-pass__code">DIRECT</span>
+          </div>
+        </div>
+
+        <div class="bk-routes reveal">
+          <p class="bk-routes__title">Fly nonstop if you can</p>
+          <div class="bk-routes__pair">
+            <div class="bk-route bk-route--good">
+              <svg viewBox="0 0 160 34" aria-hidden="true"><circle cx="10" cy="17" r="5"/><circle cx="150" cy="17" r="5"/><path d="M15 17h130"/></svg>
+              <span class="bk-route__label"><strong>Nonstop</strong> One flight. Nothing to miss.</span>
+            </div>
+            <div class="bk-route bk-route--risk">
+              <svg viewBox="0 0 160 34" aria-hidden="true"><circle cx="10" cy="17" r="5"/><circle cx="80" cy="17" r="5"/><circle cx="150" cy="17" r="5"/><path d="M15 17h60M85 17h60"/></svg>
+              <span class="bk-route__label"><strong>Connection</strong> More that can go wrong.</span>
+            </div>
+          </div>
+          <p class="bk-routes__sub">Stuck with a connection? Give it plenty of time. <strong>Check the chart below.</strong></p>
+
+          <div class="layover reveal" role="img" aria-label="Recommended minimum layover: 90 minutes or more for domestic, 2.5 to 3 hours for international, 4 hours or more on separate tickets.">
+            <p class="layover__title">How long should a layover be?</p>
+            <div class="layover__row">
+              <div class="layover__name">Domestic<span>Same airline, one ticket</span></div>
+              <div class="layover__track"><span class="layover__fill layover__fill--a" style="--w:30%;"><strong>90+ min</strong></span></div>
+            </div>
+            <div class="layover__row">
+              <div class="layover__name">International<span>Customs, longer walks</span></div>
+              <div class="layover__track"><span class="layover__fill layover__fill--b" style="--w:60%;"><strong>2.5–3 hrs</strong></span></div>
+            </div>
+            <div class="layover__row">
+              <div class="layover__name">Separate tickets<span>Recheck bags, no airline safety net</span></div>
+              <div class="layover__track"><span class="layover__fill layover__fill--c" style="--w:80%;"><strong>4+ hrs</strong></span></div>
+            </div>
+            <div class="layover__axis" aria-hidden="true"><span>0</span><span>1 hr</span><span>2 hrs</span><span>3 hrs</span><span>4 hrs</span><span>5 hrs</span></div>
+            <p class="layover__note">Rules of thumb. On separate tickets the airline doesn't protect your connection if the first flight runs late, so leave extra room. Airports and airlines set their own minimums.</p>
+          </div>
+        </div>
+
+        <!-- 02 · Stay covered -->
+        <div class="bk-head reveal"><span class="bk-head__num">02</span><h3 class="bk-head__title">Stay covered</h3><span class="bk-head__rule" aria-hidden="true"></span></div>
+
+        <div class="bk-duo">
+          <div class="bk-card reveal">
+            <span class="bk-card__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4M9.5 7h5"/></svg></span></span>
+            <h4 class="bk-card__title">Get the airline's app</h4>
+            <p class="bk-card__text">The fastest way to see gate changes, delays and rebooking options. Backups can track your flight even days ahead.</p>
+            <div class="bk-card__chips"><span class="is-main">Airline app</span><span>Flighty</span><span>FlightAware</span><span>Flightradar24</span></div>
+          </div>
+          <div class="bk-card bk-card--alt reveal">
+            <span class="bk-card__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span></span>
+            <h4 class="bk-card__title">Know your card's cover</h4>
+            <p class="bk-card__text">Many travel cards include trip-delay and cancellation protection. Check yours <em>before</em> you fly.</p>
+            <div class="bk-card__chips"><span>⏱️ Delays</span><span>🚫 Cancellations</span><span>🏨 Hotel</span><span>🍽️ Meals</span></div>
+          </div>
+        </div>
+
+        <div class="bk-entry reveal">
+          <div class="bk-entry__visual" aria-hidden="true">
+            <div class="bk-entry__qr"><svg viewBox="-.5 -.5 10 10" aria-hidden="true"><rect x="3" y="0" width="1" height="1" fill="currentColor"/><rect x="4" y="0" width="1" height="1" fill="currentColor"/><rect x="3" y="1" width="1" height="1" fill="currentColor"/><rect x="5" y="1" width="1" height="1" fill="currentColor"/><rect x="3" y="2" width="1" height="1" fill="currentColor"/><rect x="5" y="2" width="1" height="1" fill="currentColor"/><rect x="0" y="3" width="1" height="1" fill="currentColor"/><rect x="1" y="3" width="1" height="1" fill="currentColor"/><rect x="2" y="3" width="1" height="1" fill="currentColor"/><rect x="3" y="3" width="1" height="1" fill="currentColor"/><rect x="5" y="3" width="1" height="1" fill="currentColor"/><rect x="6" y="3" width="1" height="1" fill="currentColor"/><rect x="1" y="4" width="1" height="1" fill="currentColor"/><rect x="3" y="4" width="1" height="1" fill="currentColor"/><rect x="5" y="4" width="1" height="1" fill="currentColor"/><rect x="6" y="4" width="1" height="1" fill="currentColor"/><rect x="7" y="4" width="1" height="1" fill="currentColor"/><rect x="8" y="4" width="1" height="1" fill="currentColor"/><rect x="1" y="5" width="1" height="1" fill="currentColor"/><rect x="4" y="5" width="1" height="1" fill="currentColor"/><rect x="6" y="5" width="1" height="1" fill="currentColor"/><rect x="7" y="5" width="1" height="1" fill="currentColor"/><rect x="8" y="5" width="1" height="1" fill="currentColor"/><rect x="4" y="6" width="1" height="1" fill="currentColor"/><rect x="5" y="6" width="1" height="1" fill="currentColor"/><rect x="7" y="6" width="1" height="1" fill="currentColor"/><rect x="8" y="6" width="1" height="1" fill="currentColor"/><rect x="5" y="7" width="1" height="1" fill="currentColor"/><rect x="4" y="8" width="1" height="1" fill="currentColor"/><rect x="6" y="8" width="1" height="1" fill="currentColor"/><rect x="7" y="8" width="1" height="1" fill="currentColor"/><rect x="0" y="0" width="3" height="3" fill="none" stroke="currentColor" stroke-width=".7"/><rect x="1" y="1" width="1" height="1" fill="currentColor"/><rect x="6" y="0" width="3" height="3" fill="none" stroke="currentColor" stroke-width=".7"/><rect x="7" y="1" width="1" height="1" fill="currentColor"/><rect x="0" y="6" width="3" height="3" fill="none" stroke="currentColor" stroke-width=".7"/><rect x="1" y="7" width="1" height="1" fill="currentColor"/></svg></div>
+            <div class="bk-entry__stamp"><span>ENTRY</span><strong>READY</strong><span>✓</span></div>
+          </div>
+          <div class="bk-entry__text">
+            <p class="bk-band__tag">Heading abroad?</p>
+            <h4 class="bk-entry__title">Research entry requirements early.</h4>
+            <p class="bk-entry__sub">Japan's Visit Japan Web QR, for example, lets you do immigration and customs steps online before you land.</p>
+            <div class="bk-card__chips"><span>🛂 Visa or e-visa</span><span>📱 Pre-registration</span><span>📘 Passport validity</span></div>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+      <div class="phase-panel phase-panel--predeparture" data-phase="predeparture" id="panel-predeparture" hidden>
         <div class="phase-cover" style="background-image: url('images/suitcase-teal-terminal.jpg'); background-position: center 60%;">
           <div class="phase-cover__scrim" aria-hidden="true"></div>
           <div class="phase-cover__content">
@@ -142,60 +255,110 @@
           </div>
         </div>
         <div class="phase-card__body">
+        <div class="bk-head reveal"><span class="bk-head__num">01</span><h3 class="bk-head__title">Check in</h3><span class="bk-head__rule" aria-hidden="true"></span></div>
 
-        <p class="timing-label">Check in</p>
-        <div class="timing-row timing-row--featured timing-row--no-ring reveal">
-          <span class="timing-row__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg></span></span>
-          <div>
-            <p class="timing-row__title">Check in 24 hours early</p>
-            <p class="timing-row__text">Opens the moment your airline allows it — skip the counter, lock in your seat.</p>
-            <p class="timing-row__callout">🪪 <strong>Double-check your name matches your ID.</strong> A typo can get you denied at the gate.</p>
+        <div class="pd-checkin reveal">
+          <div class="pd-checkin__top">
+            <span class="pd-checkin__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg></span></span>
+            <div>
+              <h4 class="pd-checkin__title">Check in 24 hours early</h4>
+              <p class="pd-checkin__text">Opens as soon as your airline allows it, usually 24 hours before (some international airlines open at 48). Skip the counter, lock in your seat.</p>
+            </div>
+          </div>
+          <div class="pd-idmatch">
+            <p class="pd-idmatch__title">🪪 Double-check your name matches your ID</p>
+            <div class="pd-idmatch__pair">
+              <div class="pd-idcard pd-idcard--ok"><span class="pd-idcard__label">ID</span><span class="pd-idcard__name">ALEX TRAVELER</span><span class="pd-idcard__mark">✓</span></div>
+              <div class="pd-idcard pd-idcard--ok"><span class="pd-idcard__label">Ticket</span><span class="pd-idcard__name">ALEX TRAVELER</span><span class="pd-idcard__mark">✓</span></div>
+              <div class="pd-idcard pd-idcard--bad"><span class="pd-idcard__label">Ticket</span><span class="pd-idcard__name">ALEX TRAVLER</span><span class="pd-idcard__mark">✗</span></div>
+            </div>
+            <p class="pd-idmatch__note">A typo can get you denied at the gate.</p>
           </div>
         </div>
 
-        <div class="tip-group">
-          <p class="timing-label">Pack it</p>
-          <div class="phase-tips">
+        <div class="bk-head reveal"><span class="bk-head__num">02</span><h3 class="bk-head__title">Be prepared for the flight</h3><span class="bk-head__rule" aria-hidden="true"></span></div>
 
-            <div class="phase-tip reveal">
-              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="2"/><path d="M13 10.5h5M13 13.5h3"/></svg></span></span>
-              <span class="phase-tip__text"><strong>Bring ID, passport &amp; key documents</strong> — and double-check they're actually on you before you leave the house.</span>
-            </div>
-
-            <div class="phase-tip reveal">
-              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0116 0v1"/><rect x="3" y="13" width="4" height="6" rx="2"/><rect x="17" y="13" width="4" height="6" rx="2"/></svg></span></span>
-              <span class="phase-tip__text"><strong>Bring your own headphones</strong> — cabin jacks rarely fit newer plugs.</span>
-            </div>
-
-            <div class="phase-tip reveal">
-              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 01-1-7.9A5 5 0 0116 8a4.5 4.5 0 011 8.9"/><path d="M12 11v6M9.5 15l2.5 2.5 2.5-2.5"/></svg></span></span>
-              <span class="phase-tip__text"><strong>Download shows &amp; music offline</strong> — don't count on the plane's wifi.</span>
-            </div>
-
-            <div class="phase-tip reveal">
-              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 01-10 0V7z"/><path d="M12 16v5"/></svg></span></span>
-              <span class="phase-tip__text"><strong>Pack a charger + cable</strong> — outlets exist on many flights, but not every seat has one.</span>
-            </div>
-
+        <div class="pd-status reveal">
+          <div class="pd-status__copy">
+            <span class="pd-status__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4M9.5 7h5"/></svg></span></span>
+            <h4 class="pd-status__title">Check your flight in the airline app</h4>
+            <p class="pd-status__text">Times, gates and even whole flights can change. Look the day before and the morning of, and turn on notifications so the airline can tell you first.</p>
+          </div>
+          <div class="pd-phone" aria-hidden="true">
+            <div class="pd-phone__bar"><span>Your flight</span><span class="pd-phone__live">● Live</span></div>
+            <div class="pd-phone__flight"><strong>FE 123</strong><span>SFO → HND</span></div>
+            <div class="pd-phone__row"><span>Departure</span><b><s>10:40</s> 11:25</b><em class="pd-pill pd-pill--warn">Delayed</em></div>
+            <div class="pd-phone__row"><span>Gate</span><b><s>B12</s> B14</b><em class="pd-pill pd-pill--info">Changed</em></div>
+            <div class="pd-phone__row"><span>Status</span><b>Boarding 10:45</b><em class="pd-pill pd-pill--ok">Updated</em></div>
           </div>
         </div>
 
-        <div class="tip-group">
-          <p class="timing-label">Know it</p>
-          <div class="phase-tips">
-
-            <div class="phase-tip reveal">
-              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg></span></span>
-              <span class="phase-tip__text"><strong>Research entry requirements early</strong> — Japan's QR pre-registration, for example, cuts customs time dramatically.</span>
-            </div>
-
-            <div class="phase-tip reveal">
-              <span class="phase-tip__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="12" rx="2"/><path d="M9 8V6a3 3 0 016 0v2"/></svg></span></span>
-              <span class="phase-tip__text"><strong>Check your airline's baggage rules</strong> — a 2-minute look avoids a gate-side surprise.</span>
-            </div>
-
+        <div class="pd-ride reveal">
+          <div class="pd-ride__route" aria-hidden="true">
+            <span class="pd-ride__stop"><span class="icon"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></span>Home</span>
+            <span class="pd-ride__line"><span class="pd-ride__car"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 15v-3l2-5h12l2 5v3"/><path d="M3 15h18v3H3z"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="16.5" cy="18.5" r="1.5"/></svg></span></span></span>
+            <span class="pd-ride__stop"><span class="icon"><svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg></span>Airport</span>
+          </div>
+          <div class="pd-ride__text">
+            <h4 class="pd-ride__title">Plan your ride to the airport</h4>
+            <p>Book your parking or ride, check transit times, and leave extra room for early-morning or holiday traffic.</p>
           </div>
         </div>
+
+        <div class="pd-lock reveal">
+          <div class="pd-lock__side">
+            <h4 class="pd-lock__title">Get your phone flight-ready</h4>
+            <p class="pd-lock__sub">Four quick taps the day before, so nothing depends on airport wifi or a dying battery.</p>
+          </div>
+          <div class="pd-lock__screen" aria-hidden="false">
+            <p class="pd-lock__clock"><span>Day before</span><strong>9:41</strong></p>
+            <div class="pd-lock__stack">
+            <div class="pd-note reveal">
+              <span class="pd-note__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M15 14h3"/></svg></span></span>
+              <div class="pd-note__body">
+                <p class="pd-note__app">Wallet<span>now</span></p>
+                <p class="pd-note__title">Boarding pass added</p>
+                <p class="pd-note__text">Quick to pull up, and it works without a signal.</p>
+              </div>
+            </div>
+            <div class="pd-note reveal">
+              <span class="pd-note__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg></span></span>
+              <div class="pd-note__body">
+                <p class="pd-note__app">Arrival forms<span>1d</span></p>
+                <p class="pd-note__title">E-visa &amp; entry forms done</p>
+                <p class="pd-note__text">Fill them in ahead of time, like Japan's Visit Japan Web.</p>
+              </div>
+            </div>
+            <div class="pd-note reveal">
+              <span class="pd-note__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="15" height="9" rx="2"/><path d="M18 11h2v3h-2M7 10.5l-1.5 2h3L7 15"/></svg></span></span>
+              <div class="pd-note__body">
+                <p class="pd-note__app">Battery<span>100%</span></p>
+                <p class="pd-note__title">Phone and devices charged</p>
+                <p class="pd-note__text">Outlets exist on many flights, but not every seat has one.</p>
+              </div>
+            </div>
+            <div class="pd-note reveal">
+              <span class="pd-note__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 01-1-7.9A5 5 0 0116 8a4.5 4.5 0 011 8.9"/><path d="M12 11v6M9.5 15l2.5 2.5 2.5-2.5"/></svg></span></span>
+              <div class="pd-note__body">
+                <p class="pd-note__app">Downloads<span>done</span></p>
+                <p class="pd-note__title">Shows &amp; music saved offline</p>
+                <p class="pd-note__text">Don't count on the plane's wifi.</p>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <a class="pd-cta reveal" href="packer.html">
+          <span class="pd-cta__icon"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span></span>
+          <span class="pd-cta__body">
+            <span class="pd-cta__eyebrow">While you're packing</span>
+            <span class="pd-cta__title">Open the Packer</span>
+            <span class="pd-cta__text">Build a list for every bag, see airline baggage rules and TSA basics like power banks, then print it.</span>
+            <span class="pd-cta__chips"><span>🧳 Bag lists</span><span>🔋 Power banks &amp; TSA rules</span><span>🖨️ Print it</span></span>
+          </span>
+          <span class="pd-cta__go" aria-hidden="true"><span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span>
+        </a>
         </div>
       </div>
 
@@ -410,18 +573,6 @@
       </div>
 
     </article>
-  </section>
-
-  <section class="container">
-    <div class="photo-band" style="background-image: url('images/kollen/kollen-sfo-united-777-sunset-approach.jpg'); background-position: center 45%;">
-      <div class="photo-band__scrim" aria-hidden="true"></div>
-      <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · Near SFO</span>
-      <div class="photo-band__content">
-        <p class="eyebrow eyebrow--onphoto">One more thing</p>
-        <h2 class="photo-band__title">The sky does this every night.</h2>
-        <p class="photo-band__text">Wherever you land, grab the window seat on the way home too.</p>
-      </div>
-    </div>
   </section>
 
 </main>

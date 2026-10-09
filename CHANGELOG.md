@@ -39,6 +39,40 @@ so a minor bump can still include larger changes as the site finds its shape.
 
 ### Added
 
+- **Global Tips: accuracy and responsive pass** — check-in copy now says most
+  airlines open at 24 hours and some international ones at 48; the Japan
+  tip is worded as the Visit Japan Web QR "lets you do immigration and
+  customs steps online"; the layover chart notes the numbers are rules of
+  thumb; removed the "One more thing" photo band at the bottom; the hero's
+  "Pre-Departure." no longer splits at the hyphen on phones; fixed a
+  clipped "90+ min" bar label, overflowing name-match cards and the mock
+  phone on narrow screens.
+- **Global Tips: Pre-Departure redesigned** with the same numbered-section
+  look as Booking, and "Pack it" removed (the Packer tool covers packing):
+  "01 Check in" (check in 24 hours early, plus a
+  name-matches-your-ID comparison), "02 Be prepared for the flight" (check your flight
+  in the airline app, shown as a mock phone screen with delay / gate-change
+  tags; plan your ride to the airport; "Get your phone flight-ready" as a
+  lock-screen of notification cards for boarding pass, arrival forms,
+  charging and downloads). The section is titled "Be prepared for the
+  flight". Baggage-rules and power-bank tips were removed because the
+  Packer already covers them; the tab now ends with an "Open the Packer"
+  card linking to packer.html.
+- **Global Tips: new "Booking" phase** — a fifth tab (now the first stop on
+  the plane tracker, berry accent) for what happens before the airport,
+  with Kollen's Singapore A350 sunset photo as the cover and the headline
+  "Book smart."
+  - Two numbered sections, each with its own format instead of a repeating
+    tip list. "01 Book it": a photo band ("Arrive a day early"), a
+    boarding-pass callout ("Book directly with the airline"), and a
+    nonstop-vs-connection route comparison leading into an animated
+    "How long should a layover be?" meter (90+ min domestic, 2.5–3 hrs
+    international, 4+ hrs on separate tickets). "02 Stay covered": two
+    tiles (airline app + Flighty / FlightAware / Flightradar24; credit
+    card travel protections) and a photo band for entry requirements.
+  - "Research entry requirements early" moved here from Pre-Departure.
+  - Hero now reads "five phases"; plane positions re-spaced for five stops.
+
 - **About page v3: section navigation and Kollen's own photos**
   - "About ▾" dropdown in the top nav on every page (hover on desktop,
     tap the caret on touch, full keyboard support, inline in the
