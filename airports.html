@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Airport Guides — Fly Easy</title>
+<meta name="description" content="Spin the globe or search to find a Fly Easy airport guide: SFO, SJC and more on the way.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22195 118 212 224%22><path d=%22M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z%22 fill=%22%231B6FA8%22 transform=%22translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)%22/></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="images/app/apple-touch-icon.png">
+<meta name="theme-color" content="#F0F9FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fly Easy">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="images/globe/earth-day-512.jpg" crossorigin="anonymous">
+<link rel="preload" as="image" href="images/globe/earth-night-512.jpg" crossorigin="anonymous">
+<link rel="stylesheet" href="styles.css?v=105">
+<link rel="stylesheet" href="airports.css?v=3">
+<script>
+  /* returning from a guide (?rise=sfo): skip the cloud-wipe entrance; the globe does the arrival */
+  if (/[?&]rise=/.test(location.search)) document.documentElement.classList.add("ap-rise");
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body class="page-airports" data-tod="night" data-tod-lock="night">
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="page-transition" id="page-transition" aria-hidden="true">
+  <div class="page-transition__veil"></div>
+  <span class="page-transition__puff page-transition__puff--l"></span>
+  <span class="page-transition__puff page-transition__puff--r"></span>
+  <span class="page-transition__plane">
+    <svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg>
+  </span>
+</div>
+
+<header class="site-nav">
+  <div class="site-nav__inner">
+    <a class="site-nav__brand" href="index.html">
+      <span class="site-nav__mark"><img src="images/flyeasy-mark.svg" alt="" width="48" height="34"></span>
+      <span class="site-nav__word">Fly Easy</span>
+    </a>
+    <div class="site-nav__right">
+      <nav class="site-nav__links" id="siteNavLinks" aria-label="Main navigation">
+      <div class="site-nav__item site-nav__item--has-menu">
+        <a href="index.html">About</a>
+        <button class="site-nav__caret" type="button" aria-expanded="false" aria-controls="aboutMenu" aria-label="Show About sections">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="site-nav__menu" id="aboutMenu" role="menu" aria-label="About sections">
+          <a href="index.html#who" role="menuitem">Who I am</a>
+          <a href="index.html#what" role="menuitem">What travelers miss</a>
+          <a href="index.html#why" role="menuitem">Why Fly Easy</a>
+          <a href="index.html#how" role="menuitem">How it works</a>
+          <a href="index.html#contact" role="menuitem">Contact me!</a>
+        </div>
+      </div>
+      <a href="global.html">Global Tips</a>
+      <a href="airports.html" aria-current="page">Airports</a>
+      <a href="timeblocker.html">Timeblocker</a>
+      <a href="packer.html">Packer</a>
+      </nav>
+      <a class="site-nav__cta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+      <button class="site-nav__toggle" id="siteNavToggle" type="button" aria-expanded="false" aria-controls="siteNavLinks" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-tabbar" aria-label="Primary">
+  <a class="mobile-tabbar__item" href="index.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+    <span class="mobile-tabbar__label">About</span>
+  </a>
+  <a class="mobile-tabbar__item" href="global.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
+    <span class="mobile-tabbar__label">Global</span>
+  </a>
+  <a class="mobile-tabbar__item" href="airports.html" aria-current="page">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+    <span class="mobile-tabbar__label">Airports</span>
+  </a>
+  <a class="mobile-tabbar__item" href="timeblocker.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+    <span class="mobile-tabbar__label">Timeblocker</span>
+  </a>
+  <a class="mobile-tabbar__item" href="packer.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span>
+    <span class="mobile-tabbar__label">Packer</span>
+  </a>
+</nav>
+
+<main id="main">
+
+  <section class="ap-stage" id="ap-stage" aria-label="Airport globe">
+    <div class="ap-stage__canvas" id="ap-canvas" aria-hidden="true"></div>
+    <div class="ap-pins" id="ap-pins"></div>
+
+    <div class="ap-loading" id="ap-loading" aria-hidden="true">
+      <span class="ap-loading__ring"></span>
+      <span class="ap-loading__text">Loading Earth…</span>
+    </div>
+
+    <div class="ap-top">
+      <p class="eyebrow ap-eyebrow">Airport guides</p>
+      <h1 class="ap-title">Where are you flying from?</h1>
+
+      <div class="ap-search" id="ap-search">
+        <svg class="ap-search__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input class="ap-search__input" id="ap-search-input" type="search"
+          role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ap-search-list"
+          aria-label="Search airports by name, city or code" placeholder="Search airport, city or code"
+          autocomplete="off" spellcheck="false">
+        <kbd class="ap-search__kbd" aria-hidden="true">/</kbd>
+        <ul class="ap-search__list" id="ap-search-list" role="listbox" aria-label="Matching airports" hidden></ul>
+      </div>
+      <p class="ap-status" id="ap-status" role="status" aria-live="polite"></p>
+      <button class="ap-space" id="ap-space" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+        Back to space
+      </button>
+    </div>
+
+    <article class="ap-card" id="ap-card" aria-live="polite" title="Open this airport's guide" hidden>
+      <button class="ap-card__close" id="ap-card-close" type="button" aria-label="Close airport card">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="ap-card__photo" id="ap-card-photo"></div>
+      <div class="ap-card__body">
+        <p class="ap-card__codes" id="ap-card-codes"></p>
+        <h2 class="ap-card__name" id="ap-card-name"></h2>
+        <p class="ap-card__blurb" id="ap-card-blurb"></p>
+        <ul class="ap-card__facts" id="ap-card-facts"></ul>
+        <a class="btn ap-card__go" id="ap-card-go" href="#">Open guide
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </article>
+
+    <div class="ap-controls" id="ap-controls" hidden>
+      <button type="button" class="ap-ctrl" data-zoom="in" aria-label="Zoom in">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button type="button" class="ap-ctrl" data-zoom="out" aria-label="Zoom out">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>
+      </button>
+      <button type="button" class="ap-ctrl" data-zoom="home" aria-label="Show whole globe">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.4 3.5 5.2 3.5 8.5s-1.2 6.1-3.5 8.5c-2.3-2.4-3.5-5.2-3.5-8.5s1.2-6.1 3.5-8.5z"/></svg>
+      </button>
+    </div>
+
+    <a class="ap-peek" href="#ap-all">
+      All guides
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </a>
+  </section>
+
+  <section class="ap-all container" id="ap-all" aria-labelledby="ap-all-title">
+    <h2 class="ap-all__title" id="ap-all-title">All airport guides</h2>
+    <p class="ap-all__sub">More airports are on the way. Want yours next? <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest it</a>.</p>
+    <ul class="ap-list" id="ap-list"></ul>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__brand"><img src="images/flyeasy-mark.svg" alt="" width="37" height="26">Fly Easy</p>
+    <nav class="site-footer__links" aria-label="Footer navigation">
+      <a href="index.html">About</a>
+      <a href="global.html">Global Tips</a>
+      <a href="airports.html">Airports</a>
+      <a href="timeblocker.html">Timeblocker</a>
+      <a href="packer.html">Packer</a>
+      <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+    </nav>
+    <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
+    <p class="site-footer__credit">Photography by Kollen, with a few from Unsplash &amp; Pexels. Earth imagery: NASA Blue Marble &amp; Black Marble (NASA Earth Observatory).</p>
+  </div>
+</footer>
+
+<div class="survey-toast" id="surveyToast" hidden>
+  <button class="survey-toast__close" type="button" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <p class="survey-toast__title">Got a sec?</p>
+  <p class="survey-toast__text">Help shape Fly Easy — a quick survey on what's working and what's missing.</p>
+  <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
+</div>
+
+<script src="script.js?v=112"></script>
+<script src="airports-data.js?v=2"></script>
+<script type="module" src="airports.js?v=3"></script>
+</body>
+</html>

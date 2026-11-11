@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SJC Airport Tips — Fly Easy</title>
+<meta name="description" content="An interactive circuit-board guide to San José Mineta International Airport (SJC): terminals, parking, transit and calm-travel programs.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22195 118 212 224%22><path d=%22M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z%22 fill=%22%231B6FA8%22 transform=%22translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)%22/></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="images/app/apple-touch-icon.png">
+<meta name="theme-color" content="#F0F9FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fly Easy">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=105">
+<link rel="stylesheet" href="sjc.css?v=13">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="page-transition" id="page-transition" aria-hidden="true">
+  <div class="page-transition__veil"></div>
+  <span class="page-transition__puff page-transition__puff--l"></span>
+  <span class="page-transition__puff page-transition__puff--r"></span>
+  <span class="page-transition__plane">
+    <svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg>
+  </span>
+</div>
+
+<header class="site-nav">
+  <div class="site-nav__inner">
+    <a class="site-nav__brand" href="index.html">
+      <span class="site-nav__mark"><img src="images/flyeasy-mark.svg" alt="" width="48" height="34"></span>
+      <span class="site-nav__word">Fly Easy</span>
+    </a>
+    <div class="site-nav__right">
+      <nav class="site-nav__links" id="siteNavLinks" aria-label="Main navigation">
+      <div class="site-nav__item site-nav__item--has-menu">
+        <a href="index.html">About</a>
+        <button class="site-nav__caret" type="button" aria-expanded="false" aria-controls="aboutMenu" aria-label="Show About sections">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="site-nav__menu" id="aboutMenu" role="menu" aria-label="About sections">
+          <a href="index.html#who" role="menuitem">Who I am</a>
+          <a href="index.html#what" role="menuitem">What travelers miss</a>
+          <a href="index.html#why" role="menuitem">Why Fly Easy</a>
+          <a href="index.html#how" role="menuitem">How it works</a>
+          <a href="index.html#contact" role="menuitem">Contact me!</a>
+        </div>
+      </div>
+      <a href="global.html">Global Tips</a>
+      <a href="airports.html" aria-current="page">Airports</a>
+      <a href="timeblocker.html">Timeblocker</a>
+      <a href="packer.html">Packer</a>
+      </nav>
+      <a class="site-nav__cta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+      <button class="site-nav__toggle" id="siteNavToggle" type="button" aria-expanded="false" aria-controls="siteNavLinks" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-tabbar" aria-label="Primary">
+  <a class="mobile-tabbar__item" href="index.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+    <span class="mobile-tabbar__label">About</span>
+  </a>
+  <a class="mobile-tabbar__item" href="global.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
+    <span class="mobile-tabbar__label">Global</span>
+  </a>
+  <a class="mobile-tabbar__item" href="airports.html" aria-current="page">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+    <span class="mobile-tabbar__label">Airports</span>
+  </a>
+  <a class="mobile-tabbar__item" href="timeblocker.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+    <span class="mobile-tabbar__label">Timeblocker</span>
+  </a>
+  <a class="mobile-tabbar__item" href="packer.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span>
+    <span class="mobile-tabbar__label">Packer</span>
+  </a>
+</nav>
+
+<main id="main">
+
+  <section class="vista-head container">
+    <div class="vista-head__text">
+      <a class="back-to-globe" href="airports.html?rise=sjc" data-globe-return><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>All airports</a>
+      <p class="eyebrow">San José Mineta International</p>
+      <h1>Know before you fly SJC</h1>
+      <p class="vista-head__sub">Silicon Valley's airport is one connected building: 36 gates, under a mile end to end, no tram. Pick your stop on the board, then open the Calm Core for the programs that make SJC one of the gentler airports to fly from.</p>
+      <ul class="spec-chips" aria-label="SJC at a glance">
+        <li><span>Gates</span>1–36</li>
+        <li><span>Terminals</span>A + B, 1 building</li>
+        <li><span>Tram</span>Not needed</li>
+      </ul>
+    </div>
+    <div class="postcards" aria-hidden="true">
+      <figure class="postcard postcard--back" style="background-image: url('images/alaska-gates-dusk-aerial.jpg'); background-position: center 55%;"></figure>
+      <figure class="postcard postcard--mid" style="background-image: url('images/gate-sunrise-united.jpg');"></figure>
+      <figure class="postcard postcard--front" style="background-image: url('images/southwest-wingtips-ramp.jpg'); background-position: center 45%;"><figcaption>SJC &middot; SAN JOSÉ</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="explorer container" id="view-terminals">
+    <div class="explorer__intro">
+      <h2>Trace your route through SJC</h2>
+      <p>The airport as a circuit board. Tap a chip and a signal runs the traces to it, and that stop's tips load below: who flies there, where the calm corners are, and what locals know.</p>
+    </div>
+
+    <div class="sjc-board" id="sjc-board" role="tablist" aria-label="SJC airport map">
+      <svg class="sjc-board__svg" id="sjc-board-svg" aria-hidden="true"></svg>
+      <button class="sjc-chip is-active" type="button" role="tab" aria-selected="true" aria-controls="sjc-panel" data-stop="termA">
+        <span class="sjc-chip__ref">U1 · Gates 1–16</span>
+        <span class="sjc-chip__name">Terminal A</span>
+      </button>
+      <button class="sjc-chip sjc-chip--calm" type="button" role="tab" aria-selected="false" aria-controls="sjc-panel" data-stop="core">
+        <span class="sjc-chip__ref">U3 · All of SJC</span>
+        <span class="sjc-chip__name">Calm Core</span>
+      </button>
+      <button class="sjc-chip" type="button" role="tab" aria-selected="false" aria-controls="sjc-panel" data-stop="termB">
+        <span class="sjc-chip__ref">U2 · Gates 17–36</span>
+        <span class="sjc-chip__name">Terminal B</span>
+      </button>
+      <button class="sjc-chip sjc-chip--port" type="button" role="tab" aria-selected="false" aria-controls="sjc-panel" data-stop="intl">
+        <span class="sjc-chip__ref">J3 · Customs</span>
+        <span class="sjc-chip__name">Intl Arrivals</span>
+      </button>
+      <button class="sjc-chip sjc-chip--port" type="button" role="tab" aria-selected="false" aria-controls="sjc-panel" data-stop="transit">
+        <span class="sjc-chip__ref">J2 · Rides</span>
+        <span class="sjc-chip__name">Getting Around</span>
+      </button>
+      <button class="sjc-chip sjc-chip--port" type="button" role="tab" aria-selected="false" aria-controls="sjc-panel" data-stop="parking">
+        <span class="sjc-chip__ref">J1 · Lots 1–5</span>
+        <span class="sjc-chip__name">Parking</span>
+      </button>
+      <p class="sjc-board__legend" aria-hidden="true">SJC · Silicon Valley's Airport · not to scale</p>
+    </div>
+
+    <div class="explorer__panel" id="sjc-panel" aria-live="polite">
+      <div class="explorer__head">
+        <div>
+          <p class="eyebrow" data-field="eyebrow"></p>
+          <h3 class="explorer__title" data-field="title"></h3>
+        </div>
+        <span class="badge" data-field="badge"></span>
+      </div>
+      <div class="airline-warning" data-field="warning" role="alert" hidden>
+        <span class="icon airline-warning__icon"><svg viewBox="0 0 24 24"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+        <div>
+          <p class="airline-warning__title" data-field="warning-title"></p>
+          <p class="airline-warning__text" data-field="warning-text"></p>
+        </div>
+      </div>
+      <div class="explorer__body">
+        <div class="explorer__col">
+          <p class="explorer__label" data-field="col1-label"></p>
+          <div class="chip-list" data-field="chips"></div>
+        </div>
+        <div class="explorer__col">
+          <p class="explorer__label" data-field="col2-label"></p>
+          <ul class="tip-list" data-field="notes"></ul>
+        </div>
+      </div>
+      <div class="concourse" data-field="concourse" hidden></div>
+    </div>
+
+    <div class="explorer__panel calm-core" id="calm-core" data-active="tails" hidden>
+      <div class="explorer__head">
+        <div>
+          <p class="eyebrow">SJC · All terminals</p>
+          <h3 class="explorer__title">The Calm Core</h3>
+        </div>
+        <span class="badge">Scroll ↓</span>
+      </div>
+      <p class="calm-core__intro">Not one room but the programs SJC runs on purpose to make the whole airport gentler. Scroll slowly and watch the window.</p>
+      <div class="calm-core__body">
+        <div class="calm-window" id="calm-window" data-active="tails">
+          <div class="calm-window__frame">
+            <div class="calm-window__glass">
+              <div class="calm-window__view is-active" data-view="tails" style="background-image: url('images/kollen/kollen-hkg-golden-hour-apron-2.jpg');"></div>
+              <div class="calm-window__view" data-view="lanyard" style="background-image: url('images/sun-sky-gold-portrait.jpg');"></div>
+              <div class="calm-window__view" data-view="nest" style="background-image: url('images/dusk-clouds-pink.jpg');"></div>
+              <div class="calm-window__shade" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="calm-medallion" aria-hidden="true">
+            <svg class="calm-art is-active" data-art="tails" viewBox="0 0 120 120">
+              <g class="art-hearts">
+                <path class="art-heart" d="M88 30c-2-4-8-3-8 1 0 4 8 8 8 8s8-4 8-8c0-4-6-5-8-1z"/>
+                <path class="art-heart art-heart--2" d="M28 36c-1.5-3-6-2.3-6 .8 0 3 6 6 6 6s6-3 6-6c0-3.1-4.5-3.8-6-.8z"/>
+              </g>
+              <path class="art-ear" d="M38 46c-10 2-14 18-8 28 3 4 9 2 10-3l4-20z"/>
+              <path class="art-ear art-ear--r" d="M82 46c10 2 14 18 8 28-3 4-9 2-10-3l-4-20z"/>
+              <path class="art-face" d="M40 50c4-10 36-10 40 0 4 10 3 26-4 34-8 8-24 8-32 0-7-8-8-24-4-34z"/>
+              <circle class="art-ink-fill" cx="51" cy="63" r="3"/>
+              <circle class="art-ink-fill" cx="69" cy="63" r="3"/>
+              <ellipse class="art-ink-fill" cx="60" cy="74" rx="5" ry="3.6"/>
+              <path class="art-line" d="M60 77v4M53 81c3 4 11 4 14 0"/>
+              <path class="art-vest" d="M43 89c10 7 24 7 34 0l-4 12c-8 4-18 4-26 0z"/>
+            </svg>
+            <svg class="calm-art" data-art="lanyard" viewBox="0 0 120 120">
+              <path class="art-strap" d="M30 6c0 40 14 58 30 64M90 6c0 40-14 58-30 64"/>
+              <path class="art-strap-dots" d="M30 6c0 40 14 58 30 64M90 6c0 40-14 58-30 64"/>
+              <g class="art-flower">
+                <g class="art-petals">
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(0 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(30 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(60 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(90 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(120 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(150 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(180 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(210 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(240 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(270 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(300 60 88)"/>
+                  <ellipse cx="60" cy="74" rx="6" ry="15" transform="rotate(330 60 88)"/>
+                </g>
+                <circle class="art-seed" cx="60" cy="88" r="11"/>
+                <path class="art-seed-dots" d="M55 84h.1M60 82h.1M65 84h.1M57 89h.1M63 89h.1M60 94h.1"/>
+              </g>
+            </svg>
+            <svg class="calm-art" data-art="nest" viewBox="0 0 120 120">
+              <circle class="art-ring" cx="60" cy="62" r="40"/>
+              <circle class="art-ring art-ring--2" cx="60" cy="62" r="40"/>
+              <ellipse class="art-egg" cx="48" cy="66" rx="9" ry="12"/>
+              <ellipse class="art-egg art-egg--b" cx="64" cy="62" rx="9.5" ry="13"/>
+              <ellipse class="art-egg" cx="76" cy="68" rx="8" ry="11"/>
+              <path class="art-nest" d="M26 70c4 22 64 22 68 0"/>
+              <path class="art-twig" d="M28 74c14 6 50 6 64 0M32 82c12 5 44 5 56 0M24 70l10 6M96 70l-10 6M40 90c8 2 32 2 40 0"/>
+            </svg>
+          </div>
+
+          <nav class="calm-window__dots" aria-label="Jump to a program">
+            <button type="button" class="is-active" data-go="tails"><span class="visually-hidden">SJC Happy Tails</span></button>
+            <button type="button" data-go="lanyard"><span class="visually-hidden">Sunflower Lanyard</span></button>
+            <button type="button" data-go="nest"><span class="visually-hidden">The Nest sensory room</span></button>
+          </nav>
+        </div>
+
+        <div class="calm-core__side">
+          <div class="calm-chapters">
+            <article class="calm-chapter" id="calm-tails" data-chapter="tails">
+              <p class="calm-chapter__num">01 · Therapy animals</p>
+              <h3>SJC Happy Tails <span class="status status--live">Active</span></h3>
+              <p class="calm-chapter__lede">The first airport therapy-animal program in the US, started after 9/11. Today more than 50 certified volunteer dogs and cats wander the terminals with their handlers, just to say hello.</p>
+              <ol class="calm-steps">
+                <li><strong>Keep an eye out</strong> for a volunteer handler with a dog or cat, anywhere in either terminal.</li>
+                <li><strong>Ask before you pet.</strong> Saying hi is the whole point, and a minute with a calm animal can lower a racing pulse.</li>
+                <li><strong>Evenings and weekends</strong> are your best bet. There's no fixed schedule.</li>
+              </ol>
+              <a class="calm-chapter__src" href="https://www.flysanjose.com/services-amenities/therapy-animals-sjc-happy-tails" target="_blank" rel="noopener">Checked Oct 2026 · flysanjose.com ↗</a>
+            </article>
+
+            <article class="calm-chapter" id="calm-lanyard" data-chapter="lanyard">
+              <p class="calm-chapter__num">02 · Hidden disabilities</p>
+              <h3>Sunflower Lanyard <span class="status status--live">Free</span></h3>
+              <p class="calm-chapter__lede">A green lanyard covered in sunflowers quietly tells trained staff you may need a little extra: more time, clearer directions or a quieter moment. No explanation, no proof needed.</p>
+              <ol class="calm-steps">
+                <li><strong>Pick one up</strong> at your airline's check-in counter or an info booth, or email <a href="mailto:info@sjc.org">info@sjc.org</a> before you fly.</li>
+                <li><strong>Wear it</strong> from the curb to the gate, including through security.</li>
+                <li><strong>Know what it does</strong>: it gets you patience and help, not a skip to the front of the line.</li>
+              </ol>
+              <a class="calm-chapter__src" href="https://www.flysanjose.com/sunflower-lanyard" target="_blank" rel="noopener">Checked Oct 2026 · flysanjose.com ↗</a>
+            </article>
+
+            <article class="calm-chapter" id="calm-nest" data-chapter="nest">
+              <p class="calm-chapter__num">03 · Sensory room</p>
+              <h3>The Nest by Nutanix <span class="status status--soon">Expected Winter 2026</span></h3>
+              <p class="calm-chapter__lede">An 800+ sq ft sensory-friendly room for kids with autism or sensory sensitivities, designed with the Children's Discovery Museum of San Jose: calming textures, soft visuals and gentle sounds.</p>
+              <ol class="calm-steps">
+                <li><strong>Find it</strong> after security, between Terminals A and B, across from Gate 17.</li>
+                <li><strong>Check it's open</strong> on flysanjose.com before you count on it. It's still on the way.</li>
+                <li><strong>Until then</strong>, slow down on the A–B walkway under <em>Invisible Skies</em>, or in Terminal B's skylit halls.</li>
+              </ol>
+              <div class="breathe" aria-hidden="true">
+                <span class="breathe__ring"></span>
+                <span class="breathe__text"><span class="breathe__in">Breathe in…</span><span class="breathe__out">and out.</span></span>
+              </div>
+              <a class="calm-chapter__src" href="https://www.flysanjose.com/news-release/sensory-room" target="_blank" rel="noopener">Checked Oct 2026 · flysanjose.com ↗</a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="explorer__note">Gates, hours and rates can change. Always confirm on the airport monitors or flysanjose.com.</p>
+
+    <div class="help-strip" aria-label="Help that's always on">
+      <p class="help-strip__label">Always on · anywhere in SJC</p>
+      <ul class="help-strip__list">
+        <li class="help-tile">
+          <span class="help-tile__icon" aria-hidden="true">🗺️</span>
+          <div><p class="help-tile__title">Live map</p><p class="help-tile__text">Gates, restrooms, food &amp; charging at <a href="https://maps.flysanjose.com" target="_blank" rel="noopener">maps.flysanjose.com</a></p></div>
+        </li>
+        <li class="help-tile">
+          <span class="help-tile__icon" aria-hidden="true">📶</span>
+          <div><p class="help-tile__title">Free Wi-Fi</p><p class="help-tile__text">Join <strong>sjcfreewifi</strong>, no password. Stuck? Toggle Wi-Fi off and on.</p></div>
+        </li>
+        <li class="help-tile">
+          <span class="help-tile__icon" aria-hidden="true">🙋</span>
+          <div><p class="help-tile__title">Info booths</p><p class="help-tile__text">Volunteers in both baggage claims for any "where do I…" question.</p></div>
+        </li>
+        <li class="help-tile">
+          <span class="help-tile__icon" aria-hidden="true">♿</span>
+          <div><p class="help-tile__title">Wheelchair &amp; TSA Cares</p><p class="help-tile__text">Book a wheelchair with your airline. <a href="https://www.tsa.gov/travel/passenger-support" target="_blank" rel="noopener">TSA Cares</a> arranges screening help ahead.</p></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="container sources-wrap">
+    <details class="sources">
+      <summary>Sources &amp; last checked (Oct 29, 2026)</summary>
+      <p>Every tip on this page was checked against the airport's own pages first, with VTA for transit. The Terminal A and Terminal B tips were re-checked on Nov 10, 2026.</p>
+      <ul>
+        <li><a href="https://www.flysanjose.com/traveltips" target="_blank" rel="noopener">flysanjose.com/traveltips</a></li>
+        <li><a href="https://www.flysanjose.com/airlines" target="_blank" rel="noopener">Airlines by terminal</a></li>
+        <li><a href="https://www.flysanjose.com/security" target="_blank" rel="noopener">Security &amp; checkpoints</a></li>
+        <li><a href="https://www.flysanjose.com/parking" target="_blank" rel="noopener">Parking &amp; rates</a></li>
+        <li><a href="https://www.flysanjose.com/app-based-rideshares" target="_blank" rel="noopener">Rideshare stops</a></li>
+        <li><a href="https://www.flysanjose.com/public-transit-bike-pedestrian-access" target="_blank" rel="noopener">Public transit (VTA 60)</a></li>
+        <li><a href="https://www.vta.org/go/service-alerts/route-60-vta-terminal-stop-relocation" target="_blank" rel="noopener">VTA Route 60 Terminal A stop alert</a></li>
+        <li><a href="https://www.flysanjose.com/sjc-shuttle-buses" target="_blank" rel="noopener">Airport shuttles</a></li>
+        <li><a href="https://www.flysanjose.com/international-arrivals" target="_blank" rel="noopener">International arrivals</a></li>
+        <li><a href="https://www.flysanjose.com/kid-friendly" target="_blank" rel="noopener">Kid-friendly SJC</a></li>
+        <li><a href="https://www.flysanjose.com/news-release/egates-at-sjc" target="_blank" rel="noopener">CLEAR eGates (Mar 2026)</a></li>
+        <li><a href="https://www.flysanjose.com/news-release/premium-reserved-parking" target="_blank" rel="noopener">Premium Reserved Parking (Jul 2026)</a></li>
+        <li><a href="https://www.flysanjose.com/services-amenities/therapy-animals-sjc-happy-tails" target="_blank" rel="noopener">SJC Happy Tails</a></li>
+        <li><a href="https://www.flysanjose.com/sunflower-lanyard" target="_blank" rel="noopener">Sunflower Lanyard</a></li>
+        <li><a href="https://www.flysanjose.com/news-release/sensory-room" target="_blank" rel="noopener">The Nest sensory room</a></li>
+        <li><a href="https://www.flysanjose.com/services-amenities/nursing-room" target="_blank" rel="noopener">Nursing rooms</a></li>
+        <li><a href="https://www.flysanjose.com/services-amenities" target="_blank" rel="noopener">Services &amp; amenities by gate</a></li>
+        <li><a href="https://www.flysanjose.com/security/security-checkpoints" target="_blank" rel="noopener">Checkpoint hours &amp; rules</a></li>
+        <li><a href="https://www.flysanjose.com/Services-Amenities/clear" target="_blank" rel="noopener">CLEAR hours</a></li>
+        <li><a href="https://www.flysanjose.com/services/tsa-precheck" target="_blank" rel="noopener">TSA PreCheck &amp; Touchless ID</a></li>
+        <li><a href="https://www.flysanjose.com/Services-Amenities/airport-lounge-club-sjc" target="_blank" rel="noopener">The Club SJC lounge</a></li>
+        <li><a href="https://www.flysanjose.com/things-do/power-suite" target="_blank" rel="noopener">Power Suites</a></li>
+        <li><a href="https://www.flysanjose.com/Services-Amenities/zoom-zone" target="_blank" rel="noopener">Zoom Zone</a></li>
+        <li><a href="https://flysanjose.com/pet-relief" target="_blank" rel="noopener">Pet relief areas</a></li>
+        <li><a href="https://www.flysanjose.com/art" target="_blank" rel="noopener">Public art</a></li>
+        <li><a href="https://www.flysanjose.com/accessible" target="_blank" rel="noopener">Accessibility</a></li>
+        <li><a href="https://maps.flysanjose.com" target="_blank" rel="noopener">Interactive map</a></li>
+      </ul>
+    </details>
+  </section>
+
+</main>
+
+<a class="globe-return" href="airports.html?rise=sjc" data-globe-return aria-label="Back to the airport globe">
+  <span class="globe-return__earth" aria-hidden="true"></span>
+  <span class="globe-return__label">Back to globe</span>
+</a>
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__brand"><img src="images/flyeasy-mark.svg" alt="" width="37" height="26">Fly Easy</p>
+    <nav class="site-footer__links" aria-label="Footer navigation">
+      <a href="index.html">About</a>
+      <a href="global.html">Global Tips</a>
+      <a href="airports.html">Airports</a>
+      <a href="timeblocker.html">Timeblocker</a>
+      <a href="packer.html">Packer</a>
+      <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+    </nav>
+    <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
+    <p class="site-footer__credit">Photography by Kollen, with a few from Unsplash &amp; Pexels.</p>
+  </div>
+</footer>
+
+<div class="survey-toast" id="surveyToast" hidden>
+  <button class="survey-toast__close" type="button" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <p class="survey-toast__title">Got a sec?</p>
+  <p class="survey-toast__text">Help shape Fly Easy — a quick survey on what's working and what's missing.</p>
+  <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
+</div>
+
+<script src="script.js?v=112"></script>
+<script src="sjc-terminal.js?v=3"></script>
+<script src="sjc.js?v=9"></script>
+</body>
+</html>

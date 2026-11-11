@@ -53,7 +53,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-padding-top: 90px; }
+html { scroll-padding-top: calc(90px + env(safe-area-inset-top, 0px)); }
 
 body {
   margin: 0;
@@ -2223,7 +2223,11 @@ body[data-tod="night"] .mobile-tabbar__item[aria-current="page"] {
   .explorer__head { flex-direction: column; }
   .tracker__stop-icon { width: 38px; height: 38px; }
   .tracker__stop-icon .icon { width: 18px; height: 18px; }
-  .tracker__stop-label { font-size: 0.78rem; text-align: center; }
+  .tracker__stop-label { font-size: 0.74rem; text-align: center; line-height: 1.2; }
+  /* five stops must share 375px: let them shrink (labels wrap at the
+     hyphen in "Pre-Departure") instead of pushing the page sideways */
+  .tracker__stops { gap: 0.2rem; }
+  .tracker__stop { flex: 1 1 0; min-width: 0; padding: 0.5rem 0.15rem; }
   .tracker__plane-wrap { width: 26px; height: 26px; }
   .phase-card { border-radius: 22px; }
   .phase-card__body { padding: 1.5rem; }
@@ -2540,7 +2544,9 @@ main > * { position: relative; z-index: 1; }
 
 body[data-tod="dusk"] .site-nav,
 body[data-tod="night"] .site-nav {
-  background: rgba(10, 17, 40, 0.5);
+  /* solid enough that the white nav text stays readable when a
+     white card scrolls underneath */
+  background: rgba(10, 17, 40, 0.8);
   border-bottom-color: rgba(255, 255, 255, 0.14);
 }
 body[data-tod="dusk"] .site-nav__word, body[data-tod="night"] .site-nav__word { color: #FFF; }
@@ -2677,6 +2683,9 @@ body[data-tod="dusk"] .tb-board-marker__text, body[data-tod="night"] .tb-board-m
 body[data-tod="dusk"] .tracker__stop-label, body[data-tod="night"] .tracker__stop-label,
 body[data-tod="dusk"] .value-item, body[data-tod="night"] .value-item {
   color: #FFF;
+  /* a soft halo so white text stays readable when a drifting cloud
+     passes behind it */
+  text-shadow: 0 1px 2px rgba(10, 17, 40, 0.35), 0 0 12px rgba(10, 17, 40, 0.45);
   transition: color 0.6s ease;
 }
 body[data-tod="dusk"] .value-item, body[data-tod="night"] .value-item {
@@ -2938,6 +2947,15 @@ main {
 }
 @keyframes vt-out { to { opacity: 0; transform: translateY(-14px); } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(14px); } }
+/* The top nav and the phone tab bar are captured on their own, so
+   during a page change they stay put (and just cross-fade colors)
+   while only the page content slides, like a native app. */
+.site-nav { view-transition-name: site-nav; }
+.mobile-tabbar { view-transition-name: tabbar; }
+::view-transition-group(site-nav),
+::view-transition-group(tabbar) { animation-duration: 0.35s; z-index: 2; }
+/* after the first page of a visit, the tab bar is already "there" */
+html.is-returning .mobile-tabbar { animation: none; }
 
 /* ---- Night garnish: shooting stars ---- */
 .ws-shoot {
@@ -5132,3 +5150,175 @@ body[data-tod="night"] .ab-sectionbar__plane { color: #7FC8F2; }
   .pd-pill { font-size: 0.6rem; padding: 0.12rem 0.4rem; white-space: nowrap; }
   .pd-phone { padding: 0.8rem; }
 }
+
+/* "← All airports" link at the top of each airport guide (back to airports.html globe) */
+.back-to-globe {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.9rem;
+  padding: 0.35rem 0.8rem 0.35rem 0.6rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--deep-navy);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.back-to-globe svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s var(--ease); }
+.back-to-globe:hover { background: #fff; }
+.back-to-globe:hover svg { transform: translateX(-2px); }
+
+/* ============================================================
+   "Back to globe" — floating mini-Earth on airport guide pages.
+   A tiny NASA Earth slowly turns inside the button; hover grows
+   the label. Clicking (script.js) pulls the page away into space,
+   then airports.html?rise=xxx climbs back up from that airport.
+   ============================================================ */
+.globe-return {
+  position: fixed;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 450;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  height: 52px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(10, 17, 40, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 16px 34px -14px rgba(10, 17, 40, 0.65);
+  color: #fff;
+  text-decoration: none;
+  /* fill "backwards" (not "both") so the entrance stops owning
+     transform/opacity once it ends, letting the tuck transition run */
+  animation: globe-return-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s backwards;
+  transition: gap 0.45s var(--ease), padding 0.45s var(--ease), transform 0.2s var(--ease), box-shadow 0.3s ease,
+    translate 0.5s cubic-bezier(0.16, 1, 0.3, 1), scale 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+/* phones: tucked away while you scroll down (so it never sits on the
+   text you're reading), back as soon as you scroll up or reach the end */
+.globe-return.is-tucked {
+  translate: 0 18px;
+  scale: 0.7;
+  opacity: 0;
+  pointer-events: none;
+}
+.globe-return__earth {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #0b2a4a url("images/globe/earth-day-512.jpg") 0 50% / 80px 40px repeat-x;  /* 2:1 map, one loop = 80px */
+  filter: saturate(1.25) brightness(1.2);
+  box-shadow:
+    inset -7px -5px 12px rgba(0, 0, 0, 0.42),   /* night side */
+    inset 3px 3px 8px rgba(255, 255, 255, 0.18),
+    0 0 0 1px rgba(120, 190, 255, 0.35),
+    0 0 14px 2px rgba(56, 189, 248, 0.45);       /* atmosphere */
+  animation: globe-return-spin 24s linear infinite;
+}
+.globe-return__label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: max-width 0.45s var(--ease), opacity 0.3s ease, padding 0.45s var(--ease);
+}
+.globe-return:hover,
+.globe-return:focus-visible { gap: 0.6rem; padding-right: 1.05rem; box-shadow: 0 18px 38px -14px rgba(10, 17, 40, 0.75), 0 0 0 4px rgba(56, 189, 248, 0.15); }
+.globe-return:hover .globe-return__label,
+.globe-return:focus-visible .globe-return__label { max-width: 140px; opacity: 1; }
+.globe-return:hover .globe-return__earth { animation-duration: 8s; }
+.globe-return:active { transform: scale(0.96); }
+@keyframes globe-return-spin { to { background-position: 80px 50%; } }  /* west → east, like the real Earth */
+@keyframes globe-return-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+@media (max-width: 640px) {
+  .globe-return { left: max(0.85rem, env(safe-area-inset-left, 0px)); bottom: calc(68px + env(safe-area-inset-bottom) + 0.85rem); }
+  /* room under the footer text so the button rests on empty sky */
+  body:has(.globe-return) .site-footer { padding-bottom: 76px; }
+}
+
+/* The exit: the page shrinks back and a field of space opens from the button */
+.globe-exit {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  background:
+    radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,0.9), transparent 60%),
+    radial-gradient(1px 1px at 68% 14%, rgba(255,255,255,0.8), transparent 60%),
+    radial-gradient(1.5px 1.5px at 82% 62%, rgba(255,255,255,0.85), transparent 60%),
+    radial-gradient(1px 1px at 34% 78%, rgba(255,255,255,0.7), transparent 60%),
+    radial-gradient(1px 1px at 52% 44%, rgba(255,255,255,0.6), transparent 60%),
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(30, 64, 120, 0.35), transparent 70%),
+    #02050D;
+  clip-path: circle(0px at var(--gx, 40px) var(--gy, 90%));
+  transition: clip-path 0.62s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.globe-exit.is-open { clip-path: circle(150vmax at var(--gx, 40px) var(--gy, 90%)); }
+html.is-globe-leaving main,
+html.is-globe-leaving .site-footer {
+  transition: transform 0.62s cubic-bezier(0.65, 0, 0.35, 1), filter 0.62s ease, opacity 0.62s ease;
+  transform: scale(0.94);
+  filter: blur(3px);
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: reduce) {
+  .globe-return, .globe-return__earth { animation: none; }
+}
+
+/* ============================================================
+   Home-screen app (Add to Home Screen)
+   The pages use viewport-fit=cover and a translucent status bar,
+   so on a notched iPhone they draw edge to edge. The nav grows by
+   the status-bar height so nothing hides under the clock/notch,
+   and side insets keep landscape content clear of the notch.
+   (Bottom inset is already handled by .mobile-tabbar.)
+   ============================================================ */
+.site-nav { padding-top: env(safe-area-inset-top, 0px); }
+.site-nav__inner {
+  padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+}
+@media (max-width: 640px) {
+  .site-nav__inner {
+    padding-left: max(1.15rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.15rem, env(safe-area-inset-right, 0px));
+  }
+}
+@supports (padding: max(0px)) {
+  main, .site-footer {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
+/* In the installed app the status bar text is white: give it a soft
+   navy wash that melts into the nav, so the clock stays readable
+   over the light daytime sky. */
+@media (display-mode: standalone) {
+  .site-nav::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: env(safe-area-inset-top, 0px);
+    background: linear-gradient(rgba(15, 48, 73, 0.78), rgba(15, 48, 73, 0.5));
+    pointer-events: none;
+  }
+  body[data-tod="dusk"] .site-nav::before,
+  body[data-tod="night"] .site-nav::before { background: rgba(10, 17, 40, 0.35); }
+}
+

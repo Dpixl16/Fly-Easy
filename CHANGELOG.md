@@ -39,6 +39,94 @@ so a minor bump can still include larger changes as the site finds its shape.
 
 ### Added
 
+- **Home-screen web app + offline.** Fly Easy can be added to an iPhone or
+  Android home screen (Safari: Share → Add to Home Screen) and opens full
+  screen like an app.
+  - `manifest.webmanifest` (name, colors, standalone display, Android
+    long-press shortcuts to Airports / Global Tips / Time Blocker / Packer).
+  - App icon: the Fly Easy mark on a soft sky gradient with the logo's
+    clouds (`tools/app-icon.svg`, rebuilt into `images/app/` with
+    `sh tools/make_app_icons.sh`). Fits Android's "maskable" safe zone.
+  - Head tags on all 7 pages: manifest, apple-touch-icon, theme color,
+    app title, translucent status bar.
+  - Notch / home-bar spacing: the nav grows by the status-bar height and
+    gets a soft navy wash in app mode so the clock stays readable; side
+    insets keep landscape content clear of the notch; the sticky offsets
+    (scroll padding, globe stage, SJC board) include the inset.
+  - `sw.js` service worker: all 7 pages plus their CSS/JS are saved on
+    the first visit, so the tips open with no signal. Pages load fresh
+    when online; CSS/JS/photos show the saved copy and refresh behind it;
+    photos are saved as they're viewed (big globe textures are skipped).
+    Off on localhost unless a page is opened with `?sw=1` (`?sw=0` turns
+    it off and clears it), so it never serves stale files while editing.
+
+- **Airports globe (`airports.html`)**: one page that leads to every airport
+  guide. It shows a 3D Earth (Three.js 0.160 from jsDelivr) with NASA Blue
+  Marble / Black Marble imagery, lit by the real current position of the sun,
+  so city lights glow on the night side. Pick an airport from the search bar
+  (IATA, ICAO, name or city; arrow keys, Enter, `/` to focus) or from a pin.
+  The camera then arcs over the planet to a region view, and an airport card
+  opens. "Open guide" dives in and hands off to the plane page-transition.
+  - Airports live in one file, `airports-data.js`; pins, search and the
+    "All airport guides" list are all built from it.
+  - Pins that are close together (SFO and SJC) flip their labels left and
+    right, and merge into one "SFO · SJC" cluster pin only when they'd
+    overlap. Tapping the cluster zooms in until they split.
+  - Deep links: `airports.html#sfo` and `#sjc`.
+  - Frames are only drawn while something moves, and drawing pauses while the
+    globe is off-screen. Textures load as a tiny 512px preview first, then 4K
+    (2K on low-memory devices).
+  - Reduced motion: no idle spin, and fly-to jumps instantly. Without WebGL
+    (or if Three.js fails to load) the page shows a search bar plus the guide
+    list.
+  - Textures are in `images/globe/` (NASA imagery, public domain, credited in
+    the page footer).
+- **SJC Tips: Terminal A and Terminal B cards rebuilt** (`sjc-terminal.js`).
+  Each terminal is now an illustrated, zoomable schematic: planes at their
+  gates, the concourse, and the curb → ticketing → security path, drawn in
+  the same circuit-board style as the board above.
+  - **The walk**: seven stops per terminal. The camera glides to each one
+    while a signal runs the copper trace; swipe, arrow keys or the numbered
+    pins move between stops.
+  - **What's near my gate?**: pick a gate (or tap a plane) to see the nearest
+    water refill, restrooms, Power Suite, nursing room, ATM and the lounge,
+    counted in gates.
+  - **Show me**: light up one kind of amenity across the map.
+  - Drag to pan, +/− to zoom; phones get a closer camera rather than a
+    different layout. Reduced motion skips the camera glides.
+  - Facts re-checked against flysanjose.com on Nov 10, 2026. Added: either
+    checkpoint works with carry-on only, CLEAR hours, PreCheck Touchless ID,
+    Power Suites (Gates 9, 18, 28), The Club's hours and $60 day pass,
+    Terminal B water refills (Gates 17, 24, 32), Uber/Lyft stop numbers.
+    Removed the Asian Box / Bad Egg note (couldn't be confirmed).
+- **Airports globe, round 2**
+  - **Sharp regional imagery**: a Bay Area "detail patch" cut from NASA's
+    500 m Blue Marble and Black Marble 2016 tiles, about 18× sharper than the
+    base globe. It's blended in with feathered edges, downloaded only when you
+    zoom near it, and fades out again as you pull back to space. Picked
+    airports inside a patch arrive a little lower (and can zoom closer).
+    `tools/make_globe_patch.py` cuts patches for new airports (uses macOS
+    `sips`; the big NASA source tiles stay out of the repo).
+  - **Opening a guide is obvious**: the selected pin grows a glowing
+    "Open guide →" segment, and clicking it (or anywhere on the card) dives
+    into the guide. On phones and near screen edges the pin stays compact so
+    labels never run off-screen.
+  - **"Back to space"** pill under the search whenever you're zoomed in (Esc
+    works too).
+  - **Scrolling**: the wheel zooms the globe; once it's fully zoomed out,
+    scrolling down continues the page to "All airport guides". "All guides"
+    glides there with an eased scroll. The globe parallaxes and fades as you
+    leave, and the guide cards drift in.
+  - **Back to globe from a guide**: SFO and SJC get a floating mini Earth
+    (a tiny NASA Earth turning inside the button; hover shows "Back to
+    globe"). Clicking it opens a field of space from the button while the
+    page sinks back, then `airports.html?rise=sfo` starts just above that
+    airport and climbs to the whole Earth. The "← All airports" pill uses the
+    same return.
+- **Nav: "SFO Tips" and "SJC Tips" replaced by a single "Airports" link** in
+  the top nav, the mobile tab bar (new pin icon) and the footer on every page.
+  Airport guides mark Airports as current and get an "← All airports" link
+  back to the globe.
 - **Global Tips: accuracy and responsive pass** — check-in copy now says most
   airlines open at 24 hours and some international ones at 48; the Japan
   tip is worded as the Visit Japan Web QR "lets you do immigration and
@@ -136,6 +224,28 @@ so a minor bump can still include larger changes as the site finds its shape.
   "ask airport staff nicely" Global Tips card.
 
 ### Fixed
+
+- Phone pass over every page (320 / 375 / 390 / 430 / 768 wide):
+  - Global Tips: the five-stop phase tracker was 4px wider than a 375px
+    phone, so the whole page could be dragged sideways. Stops now share
+    the width and "Pre-Departure" wraps at its hyphen.
+  - Dusk/night nav was only 50% opaque, so its white text washed out
+    over white cards; now 80%.
+  - White text on the evening sky (Timeblocker's "Add an activity" hint,
+    tracker labels, etc.) gets a soft halo so passing clouds can't hide it.
+  - iPhone Safari zoomed the page in when tapping a text field under
+    16px (Packer's item names) and stayed zoomed; iOS now skips that
+    automatic zoom (pinch-zoom still works).
+  - The floating "Back to globe" Earth on SFO/SJC sat on top of text
+    while reading; on phones it tucks away while scrolling down and
+    returns on scroll-up or at the end of the page, where the footer
+    now leaves room for it.
+  - SJC terminal map label wrapped to three lines and crowded the zoom
+    buttons; it's one line ("Terminal A · 1–16") on phones.
+  - The phone tab bar replayed its rise-in and slid with the page on
+    every navigation. The nav and tab bar now stay put during page
+    changes (own view-transition layers) and only animate on the first
+    page of a visit.
 
 - About section navigation, found in a full desktop / iPad / phone pass:
   - Jumping in from another page (e.g. About ▾ → How) could land ~26px

@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "Fly Easy",
+  "short_name": "Fly Easy",
+  "description": "Verified airport tips, a 3D airport globe, a day planner and a packing assistant for smoother flying.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F0F9FF",
+  "theme_color": "#F0F9FF",
+  "lang": "en",
+  "categories": ["travel"],
+  "icons": [
+    { "src": "images/app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "images/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "images/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Airports", "url": "./airports.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Global Tips", "url": "./global.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Time Blocker", "url": "./timeblocker.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Packer Assistant", "url": "./packer.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

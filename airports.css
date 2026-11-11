@@ -1,0 +1,677 @@
+/* ============================================================
+   Airports — globe navigation page (airports.html)
+   Sits on top of the shared styles.css. The page lives "in space",
+   so the nav/footer are locked to their night look
+   (body[data-tod-lock="night"], honored by script.js).
+   ============================================================ */
+
+.page-airports {
+  --ap-space: #02050D;
+  --ap-glass: rgba(10, 17, 40, 0.62);
+  --ap-glass-strong: rgba(10, 17, 40, 0.86);
+  --ap-line: rgba(255, 255, 255, 0.14);
+  --ap-text: #FFFFFF;
+  --ap-muted: rgba(255, 255, 255, 0.66);
+  --ap-accent: #38BDF8;
+  --ap-nav-h: calc(72px + env(safe-area-inset-top, 0px));
+  background: var(--ap-space);
+}
+.page-airports .ws-sky,
+.page-airports .ws-route { display: none; }
+
+/* Nav floats over the globe */
+.page-airports .site-nav {
+  background: rgba(2, 5, 13, 0.55);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------------- Stage ---------------- */
+.ap-stage {
+  position: relative;
+  height: calc(100svh - var(--ap-nav-h));
+  min-height: 540px;
+  max-height: 1100px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(30, 64, 120, 0.22), transparent 70%),
+    var(--ap-space);
+  color: var(--ap-text);
+  isolation: isolate;
+}
+.ap-stage__canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.1s var(--ease);
+  cursor: grab;
+}
+.ap-stage__canvas:active { cursor: grabbing; }
+.ap-stage.is-ready .ap-stage__canvas { opacity: 1; }
+.ap-stage__canvas canvas { display: block; width: 100% !important; height: 100% !important; outline: none; }
+
+/* Fade the bottom edge into the list below */
+.ap-stage::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 90px;
+  background: linear-gradient(180deg, transparent, var(--ap-space));
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* "Diving in" fade on the way to a guide */
+.ap-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.0) 0%, rgba(227, 242, 251, 0.0) 60%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.ap-stage.is-diving::before {
+  background: radial-gradient(circle at 50% 50%, rgba(240, 249, 255, 0.55) 0%, rgba(240, 249, 255, 0.0) 70%);
+  opacity: 1;
+}
+
+/* ---------------- Loading ---------------- */
+.ap-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+.ap-stage.is-ready .ap-loading,
+.ap-stage.is-fallback .ap-loading { opacity: 0; }
+.ap-loading__ring {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--ap-accent);
+  animation: ap-spin 0.9s linear infinite;
+}
+.ap-loading__text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ap-muted);
+}
+@keyframes ap-spin { to { transform: rotate(360deg); } }
+
+/* ---------------- Top: title + search ---------------- */
+.ap-top {
+  position: absolute;
+  top: clamp(1.25rem, 4vh, 2.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 2rem));
+  z-index: 5;
+  text-align: center;
+  pointer-events: none;
+}
+.ap-top > * { pointer-events: auto; }
+.ap-eyebrow { color: var(--ap-accent); margin-bottom: 0.35rem; }
+.ap-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.7rem, 3.6vw, 2.6rem);
+  color: var(--ap-text);
+  margin: 0 0 1.1rem;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.ap-search {
+  position: relative;
+  text-align: left;
+}
+.ap-search__icon {
+  position: absolute;
+  left: 1.05rem; top: 50%;
+  width: 18px; height: 18px;
+  transform: translateY(-50%);
+  fill: none; stroke: var(--ap-muted); stroke-width: 2; stroke-linecap: round;
+  pointer-events: none;
+  z-index: 1;
+}
+.ap-search__input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 52px;
+  padding: 0 3rem 0 2.9rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(10, 17, 40, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  color: var(--ap-text);
+  font: 500 1rem/1 var(--font-body);
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.ap-search__input::placeholder { color: rgba(255, 255, 255, 0.5); }
+.ap-search__input::-webkit-search-cancel-button { display: none; }
+.ap-search__input:focus {
+  outline: none;
+  border-color: rgba(56, 189, 248, 0.75);
+  background: rgba(10, 17, 40, 0.75);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18), 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+}
+.ap-search__kbd {
+  position: absolute;
+  right: 1rem; top: 50%;
+  transform: translateY(-50%);
+  min-width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font: 600 0.72rem/1 var(--font-mono);
+  color: var(--ap-muted);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.2s ease;
+}
+.ap-search__input:focus ~ .ap-search__kbd,
+.ap-search__input:not(:placeholder-shown) ~ .ap-search__kbd { opacity: 0; }
+
+.ap-search__list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  margin: 0;
+  padding: 0.4rem;
+  list-style: none;
+  border-radius: 20px;
+  background: var(--ap-glass-strong);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--ap-line);
+  box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.9);
+  max-height: 320px;
+  overflow-y: auto;
+  animation: ap-drop 0.22s var(--ease) both;
+}
+@keyframes ap-drop { from { opacity: 0; transform: translateY(-6px); } }
+.ap-search__opt {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 14px;
+  cursor: pointer;
+  color: var(--ap-text);
+}
+.ap-search__opt[aria-selected="true"],
+.ap-search__opt:hover { background: rgba(255, 255, 255, 0.1); }
+.ap-search__code {
+  flex: none;
+  font: 600 0.82rem/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  color: var(--ap-accent);
+  background: rgba(56, 189, 248, 0.12);
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+}
+.ap-search__text { min-width: 0; display: flex; flex-direction: column; }
+.ap-search__name { font-weight: 600; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap-search__meta { font-size: 0.78rem; color: var(--ap-muted); }
+.ap-search__empty { padding: 0.85rem 0.9rem; color: var(--ap-muted); font-size: 0.9rem; }
+.ap-search__empty a { color: var(--ap-accent); }
+
+.ap-status {
+  margin: 0.7rem 0 0;
+  min-height: 1.2em;
+  font: 500 0.72rem/1.2 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ap-muted);
+  pointer-events: none;
+}
+
+/* ---------------- Pins ---------------- */
+.ap-pins {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.ap-pin {
+  position: absolute;
+  left: 0; top: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ap-text);
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform, opacity;
+  transition: opacity 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.ap-pin[data-hidden="true"] { opacity: 0; pointer-events: none; }
+.ap-pin__dot {
+  position: relative;
+  width: 12px; height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--ap-accent);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.92), 0 0 18px 4px rgba(56, 189, 248, 0.75);
+  flex: none;
+}
+.ap-pin__dot::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(56, 189, 248, 0.7);
+  animation: ap-pulse 2.4s ease-out infinite;
+}
+@keyframes ap-pulse {
+  0% { transform: scale(0.4); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.ap-pin__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.65rem 0.32rem 0.5rem;
+  border-radius: var(--radius-pill);
+  background: rgba(10, 17, 40, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease);
+}
+.ap-pin__code { font-family: var(--font-mono); letter-spacing: 0.05em; color: var(--ap-accent); }
+.ap-pin__city { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
+.ap-pin:hover .ap-pin__label,
+.ap-pin:focus-visible .ap-pin__label,
+.ap-pin.is-active .ap-pin__label {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #fff;
+  transform: translateX(2px);
+}
+.ap-pin:hover .ap-pin__city,
+.ap-pin:focus-visible .ap-pin__city,
+.ap-pin.is-active .ap-pin__city { color: var(--deep-navy); }
+.ap-pin:hover .ap-pin__code,
+.ap-pin:focus-visible .ap-pin__code,
+.ap-pin.is-active .ap-pin__code { color: #0972A6; }
+.ap-pin:focus-visible { outline: none; }
+.ap-pin.is-left { flex-direction: row-reverse; }
+.ap-pin.is-left .ap-pin__dot { margin-left: 0; margin-right: -6px; }
+.ap-pin.is-left:hover .ap-pin__label,
+.ap-pin.is-left:focus-visible .ap-pin__label,
+.ap-pin.is-left.is-active .ap-pin__label { transform: translateX(-2px); }
+.ap-pin.is-cluster .ap-pin__dot { width: 16px; height: 16px; margin-left: -8px; }
+.ap-pin__count {
+  font: 600 0.68rem/1 var(--font-mono);
+  color: var(--deep-navy);
+  background: var(--ap-accent);
+  border-radius: 999px;
+  padding: 0.2rem 0.4rem;
+}
+
+/* ---------------- Airport card ---------------- */
+.ap-card {
+  position: absolute;
+  left: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 4vh, 2.25rem);
+  z-index: 5;
+  width: min(360px, calc(100% - 2rem));
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--ap-glass-strong);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  border: 1px solid var(--ap-line);
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.95);
+  color: var(--ap-text);
+  transform: translateY(16px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.5s var(--ease), opacity 0.35s ease;
+}
+.ap-card[hidden] { display: block; visibility: hidden; pointer-events: none; }
+.ap-card.is-open { transform: none; opacity: 1; visibility: visible; }
+.ap-card__photo {
+  height: 150px;
+  background: #0F3049 center / cover no-repeat;
+  position: relative;
+}
+.ap-card__photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(10, 17, 40, 0.86));
+}
+.ap-card__close {
+  position: absolute;
+  top: 10px; right: 10px;
+  z-index: 2;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(10, 17, 40, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  color: #fff;
+}
+.ap-card__close svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.ap-card__close:hover { background: rgba(255, 255, 255, 0.18); }
+.ap-card__body { padding: 0.25rem 1.35rem 1.35rem; margin-top: -1.4rem; position: relative; }
+.ap-card__codes {
+  margin: 0 0 0.3rem;
+  font: 600 0.72rem/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  color: var(--ap-accent);
+}
+.ap-card__name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.45rem;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+  color: #fff;
+}
+.ap-card__blurb { margin: 0 0 0.9rem; font-size: 0.9rem; line-height: 1.5; color: rgba(255, 255, 255, 0.78); }
+.ap-card__facts {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+  margin: 0 0 1.1rem; padding: 0; list-style: none;
+}
+.ap-card__facts li {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.ap-card__facts span { color: var(--ap-muted); font-weight: 500; margin-right: 0.3rem; }
+.ap-card__go {
+  width: 100%;
+  justify-content: center;
+  background: #fff;
+  color: var(--deep-navy);
+  box-shadow: 0 12px 26px -12px rgba(56, 189, 248, 0.7);
+}
+.ap-card__go svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s var(--ease); }
+.ap-card__go:hover { transform: translateY(-2px); }
+.ap-card__go:hover svg { transform: translateX(3px); }
+
+/* ---------------- Zoom controls ---------------- */
+.ap-controls {
+  position: absolute;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 4vh, 2.25rem);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.ap-controls[hidden] { display: none; }
+.ap-ctrl {
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  border-radius: 14px;
+  border: 1px solid var(--ap-line);
+  background: var(--ap-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s var(--ease);
+}
+.ap-ctrl:hover { background: rgba(255, 255, 255, 0.16); }
+.ap-ctrl:active { transform: scale(0.94); }
+.ap-ctrl svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+/* ---------------- "All guides" peek ---------------- */
+.ap-peek {
+  position: absolute;
+  left: 50%;
+  bottom: 0.9rem;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-pill);
+  font: 600 0.72rem/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ap-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.ap-peek svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; animation: ap-bob 2.2s ease-in-out infinite; }
+.ap-peek:hover { color: #fff; }
+@keyframes ap-bob { 50% { transform: translateY(3px); } }
+
+/* ---------------- All guides list (also the no-WebGL fallback) ---------------- */
+.ap-all {
+  position: relative;
+  /* tall enough that "All guides" can glide it right under the nav */
+  min-height: calc(100svh - var(--ap-nav-h) - 240px);
+  padding-top: 3rem;
+  padding-bottom: 4.5rem;
+  color: var(--ap-text);
+}
+.ap-all__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  color: #fff;
+  margin: 0 0 0.4rem;
+}
+.ap-all__sub { margin: 0 0 1.75rem; color: var(--ap-muted); }
+.ap-all__sub a { color: var(--ap-accent); }
+.ap-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 0; padding: 0; list-style: none;
+}
+.ap-list__item a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--ap-line);
+  transition: transform 0.25s var(--ease), border-color 0.25s ease, background 0.25s ease;
+}
+.ap-list__item a:hover { transform: translateY(-3px); border-color: rgba(56, 189, 248, 0.6); background: rgba(255, 255, 255, 0.08); }
+.ap-list__photo { height: 130px; background: #0F3049 center / cover no-repeat; }
+.ap-list__body { padding: 1rem 1.15rem 1.15rem; }
+.ap-list__codes { margin: 0 0 0.25rem; font: 600 0.7rem/1 var(--font-mono); letter-spacing: 0.16em; color: var(--ap-accent); }
+.ap-list__name { margin: 0 0 0.25rem; color: #fff; font-family: var(--font-display); font-size: 1.2rem; font-weight: 500; line-height: 1.2; }
+.ap-list__city { margin: 0; font-size: 0.85rem; color: var(--ap-muted); }
+
+/* No WebGL / textures failed: the stage shrinks to a title + search header */
+.ap-stage.is-fallback {
+  height: auto;
+  min-height: 0;
+  padding: 3rem 0 0.5rem;
+}
+.ap-stage.is-fallback .ap-top { position: relative; top: 0; left: auto; transform: none; margin: 0 auto; }
+.ap-stage.is-fallback .ap-stage__canvas,
+.ap-stage.is-fallback .ap-pins,
+.ap-stage.is-fallback .ap-card,
+.ap-stage.is-fallback .ap-controls,
+.ap-stage.is-fallback .ap-peek,
+.ap-stage.is-fallback::after { display: none; }
+
+/* ---------------- Small screens ---------------- */
+@media (max-width: 760px) {
+  .page-airports { --ap-nav-h: calc(64px + env(safe-area-inset-top, 0px)); }
+  .ap-stage {
+    /* leave room for the fixed bottom tab bar */
+    height: calc(100svh - var(--ap-nav-h) - 68px - env(safe-area-inset-bottom));
+    min-height: 480px;
+  }
+  .ap-title { font-size: 1.55rem; margin-bottom: 0.85rem; }
+  .ap-eyebrow { display: none; }
+  .ap-search__input { height: 48px; font-size: 16px; }
+  .ap-search__kbd { display: none; }
+  .ap-card {
+    left: 0.75rem; right: 0.75rem;
+    bottom: 0.75rem;
+    width: auto;
+    display: grid;
+    grid-template-columns: 104px 1fr;
+  }
+  .ap-card[hidden] { display: grid; }
+  .ap-card__photo { height: auto; min-height: 100%; }
+  .ap-card__photo::after { background: linear-gradient(90deg, transparent 50%, rgba(10, 17, 40, 0.6)); }
+  .ap-card__body { margin-top: 0; padding: 0.9rem 1rem 1rem; }
+  .ap-card__name { font-size: 1.15rem; padding-right: 2rem; }
+  .ap-card__blurb { display: none; }
+  .ap-card__facts { margin-bottom: 0.8rem; }
+  .ap-card__facts li { font-size: 0.72rem; padding: 0.3rem 0.55rem; }
+  .ap-card__go { padding: 0.65rem 1rem; }
+  .ap-controls { display: none; }
+  .ap-peek { display: none; }
+  .ap-stage.has-card .ap-status { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-pin__dot::after, .ap-peek svg, .ap-loading__ring { animation: none; }
+  .ap-card { transition: opacity 0.2s ease; transform: none; }
+  .ap-stage__canvas { transition: none; }
+}
+
+/* stop the spinner once it's hidden */
+.ap-stage.is-ready .ap-loading__ring,
+.ap-stage.is-fallback .ap-loading__ring { animation: none; }
+
+/* ============================================================
+   v2 — open-by-pin, Back to space, scroll-to-list, rise return
+   ============================================================ */
+
+/* Selected pin grows an "Open guide →" segment, so the pin itself is the door */
+.ap-pin__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-left: -0.45rem;          /* cancel the label gap while collapsed */
+  color: #fff;
+  font-weight: 700;
+  transition: max-width 0.45s var(--ease), opacity 0.3s ease, margin 0.45s var(--ease), padding 0.45s var(--ease);
+}
+.ap-pin__go svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.ap-pin.is-active .ap-pin__go {
+  max-width: 120px;
+  opacity: 1;
+  margin-left: 0.1rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: #0972A6;
+  box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.6);
+  animation: ap-go-glow 2.2s ease-out 0.5s infinite;
+}
+.ap-pin.is-active .ap-pin__label { padding-right: 0.3rem; }
+.ap-pin.is-active.is-left .ap-pin__label { padding-right: 0.3rem; }
+.ap-pin.is-active:hover .ap-pin__go svg { transform: translateX(2px); }
+.ap-pin__go svg { transition: transform 0.2s var(--ease); }
+@keyframes ap-go-glow {
+  0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.55); }
+  70% { box-shadow: 0 0 0 9px rgba(56, 189, 248, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+}
+
+/* The whole card opens the guide */
+.ap-card { cursor: pointer; }
+.ap-card.is-open:hover { transform: translateY(-3px); border-color: rgba(56, 189, 248, 0.45); }
+.ap-card__photo { transition: transform 0.6s var(--ease); transform-origin: center; }
+.ap-card:hover .ap-card__photo { transform: scale(1.04); }
+.ap-card__close { cursor: pointer; }
+
+/* Back to space: appears under the search whenever you're zoomed in */
+.ap-space {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: -1.2em auto 0;           /* sits where the status line is */
+  padding: 0.5rem 1rem 0.5rem 0.8rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 17, 40, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #fff;
+  font: 600 0.8rem/1 var(--font-body);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.96);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.35s ease, transform 0.45s var(--ease), background 0.2s ease, visibility 0s linear 0.45s;
+}
+.ap-space svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.25s var(--ease); }
+.ap-space:hover { background: rgba(255, 255, 255, 0.16); }
+.ap-space:hover svg { transform: translateY(-2px); }
+.ap-stage.is-zoomed .ap-space {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.35s ease, transform 0.45s var(--ease), background 0.2s ease, visibility 0s;
+}
+.ap-status { transition: opacity 0.25s ease; }
+.ap-stage.is-zoomed .ap-status { opacity: 0; }
+.ap-peek { transition: color 0.2s ease, opacity 0.35s ease; }
+.ap-stage.is-zoomed .ap-peek { opacity: 0; pointer-events: none; }
+
+/* Scroll-away parallax is driven by airports.js; keep it on the compositor */
+.ap-stage__canvas, .ap-pins { will-change: transform, opacity; transform-origin: 50% 40%; }
+
+/* Guide cards drift up as they arrive */
+.ap-reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.7s var(--ease); }
+.ap-reveal.is-in { opacity: 1; transform: none; }
+
+/* Returning from a guide: no cloud wipe; the globe fades in quicker and climbs */
+.ap-rise .page-transition { display: none; }
+.ap-rise .ap-stage__canvas { transition-duration: 0.45s; }
+.ap-rise .ap-loading { display: none; }
+
+@media (max-width: 760px) {
+  .ap-peek { display: inline-flex; bottom: 0.6rem; }
+  .ap-stage.has-card .ap-peek { opacity: 0; pointer-events: none; }
+  .ap-pin.is-active .ap-pin__go { max-width: 110px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ap-pin.is-active .ap-pin__go { animation: none; }
+  .ap-reveal { opacity: 1; transform: none; }
+}
+
+/* selected pin with no room for its "Open guide" segment (phones, screen edges) */
+.ap-pin.is-active.is-compact .ap-pin__go { max-width: 0; opacity: 0; padding: 0; margin-left: -0.45rem; animation: none; }

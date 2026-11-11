@@ -1,3 +1,10 @@
+/* Arriving from another Fly Easy page in this visit: skip the phone
+   tab bar's entrance so it stays put like a native app's. */
+try {
+  if (sessionStorage.getItem("fe-seen")) document.documentElement.classList.add("is-returning");
+  sessionStorage.setItem("fe-seen", "1");
+} catch (e) {}
+
 /* Cross-document view transitions (@view-transition in styles.css):
    when the browser skips one (fast clicks, reduced motion, a hidden
    tab), it rejects the transition's promises and logs an uncaught
@@ -14,10 +21,79 @@ window.addEventListener("pageswap", function (e) {
   /* Leaving the photo-heavy About page: skip the cross-document
      snapshot (the plane page-transition already covers the exit),
      so the browser never holds both pages' images at once. */
-  if (e.viewTransition && document.body.classList.contains("page-about")) {
+  if (e.viewTransition && (document.body.classList.contains("page-about") ||
+      document.documentElement.classList.contains("is-globe-leaving"))) {
     e.viewTransition.skipTransition();
   }
   quietViewTransition(e);
+});
+/* Arriving back on the globe (?rise=): the globe's climb is the transition */
+window.addEventListener("pagereveal", function (e) {
+  if (e.viewTransition && document.documentElement.classList.contains("ap-rise")) {
+    quietViewTransition(e);
+    e.viewTransition.skipTransition();
+  }
+});
+
+/* "Back to globe" (airport guide pages): space opens from the button,
+   the page sinks back, then airports.html?rise=xxx climbs from that
+   airport up to the whole Earth. Capture phase + preventDefault, so the
+   site-wide plane transition stays out of the way. */
+document.addEventListener("click", function (e) {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  var link = e.target.closest && e.target.closest("a[data-globe-return]");
+  if (!link) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  e.preventDefault();
+  var r = link.getBoundingClientRect();
+  var veil = document.createElement("div");
+  veil.className = "globe-exit";
+  veil.style.setProperty("--gx", (r.left + r.width / 2) + "px");
+  veil.style.setProperty("--gy", (r.top + r.height / 2) + "px");
+  document.body.appendChild(veil);
+  document.documentElement.classList.add("is-globe-leaving");
+  veil.getBoundingClientRect();              /* commit the start state */
+  veil.classList.add("is-open");
+  setTimeout(function () { window.location.href = link.href; }, 640);
+}, true);
+/* iPhone/iPad Safari zooms the whole page in when you tap a text field
+   whose text is under 16px (Packer's item names, for example) and
+   leaves it zoomed. maximum-scale=1 stops only that automatic zoom:
+   iOS still lets people pinch-zoom. Applied on iOS only, because on
+   Android it would block pinch-zoom. */
+(function () {
+  var ios = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var vp = document.querySelector('meta[name="viewport"]');
+  if (ios && vp && !/maximum-scale/.test(vp.content)) vp.content += ", maximum-scale=1";
+})();
+/* Phones: tuck the floating globe button away while scrolling down,
+   bring it back on the way up or at the end of the page. */
+(function () {
+  var btn = document.querySelector(".globe-return");
+  if (!btn) return;
+  var phone = window.matchMedia("(max-width: 640px)");
+  var lastY = window.scrollY, ticking = false;
+  function update() {
+    ticking = false;
+    var y = window.scrollY;
+    var atEnd = y + window.innerHeight >= document.documentElement.scrollHeight - 24;
+    if (!phone.matches || y < 140 || atEnd) btn.classList.remove("is-tucked");
+    else if (y > lastY + 6) btn.classList.add("is-tucked");
+    else if (y < lastY - 6) btn.classList.remove("is-tucked");
+    else return;                           /* tiny jitter: keep lastY */
+    lastY = y;
+  }
+  window.addEventListener("scroll", function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+})();
+/* back-button return to a guide page (bfcache): clear the exit */
+window.addEventListener("pageshow", function (e) {
+  if (!e.persisted) return;
+  document.documentElement.classList.remove("is-globe-leaving");
+  var v = document.querySelector(".globe-exit");
+  if (v) v.remove();
 });
 
 (function () {
@@ -2799,7 +2875,10 @@ window.addEventListener("pageswap", function (e) {
     near.style.transform = "translateY(" + (-(yPos * 0.11)).toFixed(1) + "px)";
     stars.style.opacity = f > 0.66 ? Math.min(1, (f - 0.66) / 0.22).toFixed(2) : 0;
 
-    var tod = f < 0.3 ? "dawn" : f < 0.52 ? "day" : f < 0.78 ? "dusk" : "night";
+    /* a page can pin its sky with <body data-tod-lock="night"> (the
+       Airports globe page sits in space, so it stays night) */
+    var tod = document.body.getAttribute("data-tod-lock") ||
+      (f < 0.3 ? "dawn" : f < 0.52 ? "day" : f < 0.78 ? "dusk" : "night");
     if (document.body.getAttribute("data-tod") !== tod) {
       document.body.setAttribute("data-tod", tod);
     }
@@ -2859,7 +2938,7 @@ window.addEventListener("pageswap", function (e) {
 
   /* ---------- Boot ---------- */
   if (reduced) {
-    document.body.setAttribute("data-tod", "day");
+    document.body.setAttribute("data-tod", document.body.getAttribute("data-tod-lock") || "day");
     initReveals();
     return;
   }
@@ -3737,4 +3816,36 @@ function layoutTop(el) {
     history.replaceState(null, "", "#" + section.id);
     fly(section);
   }, true);
+})();
+
+/* ============================================================
+   Offline + home-screen app: register the service worker (sw.js).
+   On a local dev server it stays off unless you open a page with
+   ?sw=1 (it would otherwise serve saved copies while you edit);
+   ?sw=0 turns it back off and clears its saved files.
+   ============================================================ */
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  var dev = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  var q = location.search;
+  var flag = null;
+  try {
+    if (/[?&]sw=1\b/.test(q)) localStorage.setItem("fe-sw", "1");
+    if (/[?&]sw=0\b/.test(q)) localStorage.removeItem("fe-sw");
+    flag = localStorage.getItem("fe-sw");
+  } catch (e) {}
+  if (dev && !flag) {
+    if (/[?&]sw=0\b/.test(q)) {
+      navigator.serviceWorker.getRegistrations().then(function (regs) {
+        regs.forEach(function (r) { r.unregister(); });
+      });
+      if (window.caches) caches.keys().then(function (keys) {
+        keys.forEach(function (k) { if (k.indexOf("fly-easy-") === 0) caches.delete(k); });
+      });
+    }
+    return;
+  }
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
 })();
