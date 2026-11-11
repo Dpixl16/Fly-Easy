@@ -1,0 +1,362 @@
+{
+  ".claude/launch.json": {
+    "mtime": 1786856111.3449278,
+    "seen": 1787441790.301974,
+    "ast_hash": "b6801c835134120822b23e35072a57eb",
+    "semantic_hash": "b6801c835134120822b23e35072a57eb"
+  },
+  "devserver.py": {
+    "mtime": 1786856103.289094,
+    "seen": 1787441790.3019772,
+    "ast_hash": "955860420fed1a6cbef2da6f8c427c0e",
+    "semantic_hash": "955860420fed1a6cbef2da6f8c427c0e"
+  },
+  "script.js": {
+    "mtime": 1787289269.029298,
+    "seen": 1787441790.301978,
+    "ast_hash": "e3c0096776921cba46e3844c68da214a",
+    "semantic_hash": "e3c0096776921cba46e3844c68da214a"
+  },
+  ".claude/skills/frontend-design/LICENSE.txt": {
+    "mtime": 1783916241.8388195,
+    "seen": 1787441790.3019788,
+    "ast_hash": "2ee41112a44fe7014dce33e26468ba93",
+    "semantic_hash": "2ee41112a44fe7014dce33e26468ba93"
+  },
+  ".claude/skills/frontend-design/SKILL.md": {
+    "mtime": 1783916241.8383527,
+    "seen": 1787441790.3019788,
+    "ast_hash": "31c633612585bf2dd4e6d1103afc9f33",
+    "semantic_hash": "31c633612585bf2dd4e6d1103afc9f33"
+  },
+  "global.html": {
+    "mtime": 1787290045.5050368,
+    "seen": 1787441790.30198,
+    "ast_hash": "acff3853005216e4742528e8b7b09c1d",
+    "semantic_hash": "acff3853005216e4742528e8b7b09c1d"
+  },
+  "index.html": {
+    "mtime": 1787290045.5042553,
+    "seen": 1787441790.301981,
+    "ast_hash": "e9df21773ef28f0d60ecadc5874a8214",
+    "semantic_hash": "e9df21773ef28f0d60ecadc5874a8214"
+  },
+  "packer.html": {
+    "mtime": 1786855383.0494213,
+    "seen": 1787441790.301981,
+    "ast_hash": "235269f066bc810185a9b82f62fd1a0b",
+    "semantic_hash": "235269f066bc810185a9b82f62fd1a0b"
+  },
+  "sfo.html": {
+    "mtime": 1787290045.5066054,
+    "seen": 1787441790.301982,
+    "ast_hash": "d9f2865ab9f4b6d6ecf76e98032d0a69",
+    "semantic_hash": "d9f2865ab9f4b6d6ecf76e98032d0a69"
+  },
+  "timeblocker.html": {
+    "mtime": 1787290045.507315,
+    "seen": 1787441790.301982,
+    "ast_hash": "d07b5b6ad9f70e8ff5fe22fb93483d67",
+    "semantic_hash": "d07b5b6ad9f70e8ff5fe22fb93483d67"
+  },
+  "Claude.pdf": {
+    "mtime": 1784523276.0812507,
+    "seen": 1787441790.3019829,
+    "ast_hash": "a4ba88cd89d680ef2ba5f016d078f0b1",
+    "semantic_hash": "a4ba88cd89d680ef2ba5f016d078f0b1"
+  },
+  "images/above-the-clouds.jpg": {
+    "mtime": 1783973718.3315575,
+    "seen": 1787441790.3019829,
+    "ast_hash": "bb8ec7d8d9593409c7637c2153aa5fd1",
+    "semantic_hash": "bb8ec7d8d9593409c7637c2153aa5fd1"
+  },
+  "images/boarding-golden-hour.jpg": {
+    "mtime": 1783973718.4506896,
+    "seen": 1787441790.301984,
+    "ast_hash": "0aec43d16fbbadb170e5512abc83b154",
+    "semantic_hash": "0aec43d16fbbadb170e5512abc83b154"
+  },
+  "images/departure-board.jpg": {
+    "mtime": 1783975548.445649,
+    "seen": 1787441790.301984,
+    "ast_hash": "80b75f6c26c3ba97c98ef959daef3eca",
+    "semantic_hash": "80b75f6c26c3ba97c98ef959daef3eca"
+  },
+  "images/dont-be-late-tiles.jpg": {
+    "mtime": 1784329425.9324389,
+    "seen": 1787441790.301985,
+    "ast_hash": "4485901c1b5f56b33ebe9ef9d3c80554",
+    "semantic_hash": "4485901c1b5f56b33ebe9ef9d3c80554"
+  },
+  "images/dusk-clouds-pink.jpg": {
+    "mtime": 1784329427.6224678,
+    "seen": 1787441790.301985,
+    "ast_hash": "8c7c32187854ca548b0af1cf85bce3dd",
+    "semantic_hash": "8c7c32187854ca548b0af1cf85bce3dd"
+  },
+  "images/emirates-takeoff-roll.jpg": {
+    "mtime": 1784329427.1098213,
+    "seen": 1787441790.301986,
+    "ast_hash": "439957525c397756addf6894594222a0",
+    "semantic_hash": "439957525c397756addf6894594222a0"
+  },
+  "images/flyeasy-logo-7-ascending-jet-orbit.svg": {
+    "mtime": 1783992826.6822443,
+    "seen": 1787441790.301986,
+    "ast_hash": "c3700de3cfca7de1c960cffc2846d836",
+    "semantic_hash": "c3700de3cfca7de1c960cffc2846d836"
+  },
+  "images/flyeasy-mark.svg": {
+    "mtime": 1783993078.2492588,
+    "seen": 1787441790.3019872,
+    "ast_hash": "8ae49053343e1dbaf0a94fc08e245f4e",
+    "semantic_hash": "8ae49053343e1dbaf0a94fc08e245f4e"
+  },
+  "images/garuda-volcano-takeoff.jpg": {
+    "mtime": 1784329427.4204504,
+    "seen": 1787441790.3019872,
+    "ast_hash": "fba8f6d8d4a0240c1716e1cfd386a38c",
+    "semantic_hash": "fba8f6d8d4a0240c1716e1cfd386a38c"
+  },
+  "images/gate-overcast.jpg": {
+    "mtime": 1783975548.5714502,
+    "seen": 1787441790.3019881,
+    "ast_hash": "5cff059d815ab5a85892b1c4a8ecb856",
+    "semantic_hash": "5cff059d815ab5a85892b1c4a8ecb856"
+  },
+  "images/gate-sunrise-united.jpg": {
+    "mtime": 1783975548.6858563,
+    "seen": 1787441790.3019881,
+    "ast_hash": "679d48b2a2a30794ac8438ff5499c466",
+    "semantic_hash": "679d48b2a2a30794ac8438ff5499c466"
+  },
+  "images/hero-boarding-sunset.jpg": {
+    "mtime": 1783973718.5927901,
+    "seen": 1787441790.301989,
+    "ast_hash": "9e3c366766643afe6c78ceac4079f3e3",
+    "semantic_hash": "9e3c366766643afe6c78ceac4079f3e3"
+  },
+  "images/ita-blue-at-gate.jpg": {
+    "mtime": 1784329426.4489233,
+    "seen": 1787441790.3019898,
+    "ast_hash": "1fd52a40d8208a0ff24d073653b28e84",
+    "semantic_hash": "1fd52a40d8208a0ff24d073653b28e84"
+  },
+  "images/jal-gates-goldenhour.jpg": {
+    "mtime": 1784329426.157133,
+    "seen": 1787441790.3019898,
+    "ast_hash": "023f4402da99d595c3f61440db40ae0f",
+    "semantic_hash": "023f4402da99d595c3f61440db40ae0f"
+  },
+  "images/landing-city-day.jpg": {
+    "mtime": 1783975548.8005433,
+    "seen": 1787441790.301991,
+    "ast_hash": "c60853e9aa9a3cdfa0a6400369860dd5",
+    "semantic_hash": "c60853e9aa9a3cdfa0a6400369860dd5"
+  },
+  "images/landing-city-dusk-blue.jpg": {
+    "mtime": 1783975548.9144142,
+    "seen": 1787441790.301991,
+    "ast_hash": "02c4c890bdfcd0015dced5fb7ab75dbb",
+    "semantic_hash": "02c4c890bdfcd0015dced5fb7ab75dbb"
+  },
+  "images/landing-city-sunset.jpg": {
+    "mtime": 1783975549.0514154,
+    "seen": 1787441790.301991,
+    "ast_hash": "0620cf3c46be3f10db2f8cdf8ce7e0c7",
+    "semantic_hash": "0620cf3c46be3f10db2f8cdf8ce7e0c7"
+  },
+  "images/narita-jal.jpg": {
+    "mtime": 1783973718.8396451,
+    "seen": 1787441790.301992,
+    "ast_hash": "a691a1ea58b04ace8b4d39aac9f5e4b9",
+    "semantic_hash": "a691a1ea58b04ace8b4d39aac9f5e4b9"
+  },
+  "images/ocean-horizon-day.jpg": {
+    "mtime": 1784329427.8132184,
+    "seen": 1787441790.301992,
+    "ast_hash": "26cf5362fa2de7b73ff99b204e2f3ead",
+    "semantic_hash": "26cf5362fa2de7b73ff99b204e2f3ead"
+  },
+  "images/passports-hand.jpg": {
+    "mtime": 1783975549.1820326,
+    "seen": 1787441790.301993,
+    "ast_hash": "4273c753793990214dcbbeaa16ed9a41",
+    "semantic_hash": "4273c753793990214dcbbeaa16ed9a41"
+  },
+  "images/plane-overhead-blue.jpg": {
+    "mtime": 1784329427.2155907,
+    "seen": 1787441790.301993,
+    "ast_hash": "d56ab7d9b85342a55ff8211fe60a5de1",
+    "semantic_hash": "d56ab7d9b85342a55ff8211fe60a5de1"
+  },
+  "images/runway-sunset-heavies.jpg": {
+    "mtime": 1784329425.5879774,
+    "seen": 1787441790.301994,
+    "ast_hash": "a9170ac3d71ee305081fdc0690d59f8b",
+    "semantic_hash": "a9170ac3d71ee305081fdc0690d59f8b"
+  },
+  "images/sf-golden-gate.jpg": {
+    "mtime": 1784329425.8184323,
+    "seen": 1787441790.301994,
+    "ast_hash": "9bd2dbb53f77f54895bb466fd81e9845",
+    "semantic_hash": "9bd2dbb53f77f54895bb466fd81e9845"
+  },
+  "images/sfo-gate-united.jpg": {
+    "mtime": 1783973718.9829743,
+    "seen": 1787441790.301995,
+    "ast_hash": "eb8d8e7a122367c4003620c94a713c4e",
+    "semantic_hash": "eb8d8e7a122367c4003620c94a713c4e"
+  },
+  "images/sfo-terminal-sign-night.jpg": {
+    "mtime": 1784329427.925384,
+    "seen": 1787441790.301995,
+    "ast_hash": "91c87d4a6bb377de569f2f06c3b2076d",
+    "semantic_hash": "91c87d4a6bb377de569f2f06c3b2076d"
+  },
+  "images/sfo-united-skyline.jpg": {
+    "mtime": 1784329425.6958966,
+    "seen": 1787441790.301996,
+    "ast_hash": "daf2fcf6b38a4f3a747b4fbcd8c2ad4f",
+    "semantic_hash": "daf2fcf6b38a4f3a747b4fbcd8c2ad4f"
+  },
+  "images/sky-clouds-landscape.jpg": {
+    "mtime": 1783973719.1127508,
+    "seen": 1787441790.301996,
+    "ast_hash": "0da8bbc1891ff5bbe26919352211a916",
+    "semantic_hash": "0da8bbc1891ff5bbe26919352211a916"
+  },
+  "images/sky-clouds-vertical.jpg": {
+    "mtime": 1783973719.2439187,
+    "seen": 1787441790.301997,
+    "ast_hash": "ea6b64354bfa1ad6fba5bab0b4134783",
+    "semantic_hash": "ea6b64354bfa1ad6fba5bab0b4134783"
+  },
+  "images/suitcase-teal-terminal.jpg": {
+    "mtime": 1784329426.0357928,
+    "seen": 1787441790.301997,
+    "ast_hash": "5d58f292ad55abae70018f37d13e0a12",
+    "semantic_hash": "5d58f292ad55abae70018f37d13e0a12"
+  },
+  "images/sun-sky-gold-portrait.jpg": {
+    "mtime": 1784329427.7140481,
+    "seen": 1787441790.301997,
+    "ast_hash": "a93aa4d5fd52edc0332caa8b8e4fee37",
+    "semantic_hash": "a93aa4d5fd52edc0332caa8b8e4fee37"
+  },
+  "images/takeoff-cloudy-sky.jpg": {
+    "mtime": 1783975549.3136535,
+    "seen": 1787441790.3019981,
+    "ast_hash": "bf1c7da45e60a9667460351351c8e649",
+    "semantic_hash": "bf1c7da45e60a9667460351351c8e649"
+  },
+  "images/takeoff-golden-apron.jpg": {
+    "mtime": 1784329427.5315535,
+    "seen": 1787441790.3019981,
+    "ast_hash": "b8024a87486b0fa9d3efc569f4b24f91",
+    "semantic_hash": "b8024a87486b0fa9d3efc569f4b24f91"
+  },
+  "images/takeoff-overcast.jpg": {
+    "mtime": 1783975549.4007225,
+    "seen": 1787441790.301999,
+    "ast_hash": "4eab13cabd720f26113ff131300183ee",
+    "semantic_hash": "4eab13cabd720f26113ff131300183ee"
+  },
+  "images/takeoff-sunset.jpg": {
+    "mtime": 1783973719.3671708,
+    "seen": 1787441790.302,
+    "ast_hash": "6030d8fb25316edf0cf65670f66576c6",
+    "semantic_hash": "6030d8fb25316edf0cf65670f66576c6"
+  },
+  "images/takeoff-tropical-day.jpg": {
+    "mtime": 1783975549.5140939,
+    "seen": 1787441790.302,
+    "ast_hash": "fe777d31a170a85e0c65f22e674e13d1",
+    "semantic_hash": "fe777d31a170a85e0c65f22e674e13d1"
+  },
+  "images/terminal-night-wide.jpg": {
+    "mtime": 1783975549.799025,
+    "seen": 1787441790.302001,
+    "ast_hash": "a21a64bb0eb29845024b669b14518b5b",
+    "semantic_hash": "a21a64bb0eb29845024b669b14518b5b"
+  },
+  "images/tower-sunset-silhouette.jpg": {
+    "mtime": 1784329426.2490423,
+    "seen": 1787441790.302001,
+    "ast_hash": "eb4c7cda6afa76c2eeb6137f34706fde",
+    "semantic_hash": "eb4c7cda6afa76c2eeb6137f34706fde"
+  },
+  "images/twilight-gate-landscape.jpg": {
+    "mtime": 1783973719.4523995,
+    "seen": 1787441790.302002,
+    "ast_hash": "627aa261b8b4b33d3bd2d6b050a3424b",
+    "semantic_hash": "627aa261b8b4b33d3bd2d6b050a3424b"
+  },
+  "images/twilight-gate-portrait.jpg": {
+    "mtime": 1783973719.5355814,
+    "seen": 1787441790.302002,
+    "ast_hash": "a1ea9befa99e697c5bf75628bfa92f97",
+    "semantic_hash": "a1ea9befa99e697c5bf75628bfa92f97"
+  },
+  "images/united-inflight-clouds.jpg": {
+    "mtime": 1784329426.6875901,
+    "seen": 1787441790.302003,
+    "ast_hash": "d86fc6ae2da3288d09b0508f7a5ca423",
+    "semantic_hash": "d86fc6ae2da3288d09b0508f7a5ca423"
+  },
+  "images/united-pushback-day.jpg": {
+    "mtime": 1784329426.5722353,
+    "seen": 1787441790.302003,
+    "ast_hash": "0169c60414b2b62f1c77c1f622574121",
+    "semantic_hash": "0169c60414b2b62f1c77c1f622574121"
+  },
+  "images/vietnam-takeoff-city.jpg": {
+    "mtime": 1784329427.3188496,
+    "seen": 1787441790.3020039,
+    "ast_hash": "04f506db904504fe0ec10c0d4177ad04",
+    "semantic_hash": "04f506db904504fe0ec10c0d4177ad04"
+  },
+  "images/virgin-climbout.jpg": {
+    "mtime": 1784329426.8932924,
+    "seen": 1787441790.3020039,
+    "ast_hash": "853cc21d30b54f21d80dc8d3a1eac8e7",
+    "semantic_hash": "853cc21d30b54f21d80dc8d3a1eac8e7"
+  },
+  "images/window-oval-clouds.jpg": {
+    "mtime": 1783975549.9768636,
+    "seen": 1787441790.302005,
+    "ast_hash": "e3f7ac899a89d72b73aa333c2e7285d1",
+    "semantic_hash": "e3f7ac899a89d72b73aa333c2e7285d1"
+  },
+  "images/window-sunset.jpg": {
+    "mtime": 1783975550.17546,
+    "seen": 1787441790.302005,
+    "ast_hash": "eb571004c861a3ebc4b97769127a432b",
+    "semantic_hash": "eb571004c861a3ebc4b97769127a432b"
+  },
+  "images/window-wing-citylights.jpg": {
+    "mtime": 1784329426.3622847,
+    "seen": 1787441790.3020082,
+    "ast_hash": "8416dd0877b9ae09a99038b51c61b376",
+    "semantic_hash": "8416dd0877b9ae09a99038b51c61b376"
+  },
+  "images/window-wing-clouds-ground.jpg": {
+    "mtime": 1784329426.9837127,
+    "seen": 1787441790.3020082,
+    "ast_hash": "efc61f7f4bcddac03d3e716e2de94e8b",
+    "semantic_hash": "efc61f7f4bcddac03d3e716e2de94e8b"
+  },
+  "images/window-wing-ocean.jpg": {
+    "mtime": 1783975550.3170776,
+    "seen": 1787441790.302009,
+    "ast_hash": "85fadb3965f16eb660b6d20b8328a4b4",
+    "semantic_hash": "85fadb3965f16eb660b6d20b8328a4b4"
+  },
+  "images/wing-dawn-dark.jpg": {
+    "mtime": 1784329426.7896757,
+    "seen": 1787441790.302009,
+    "ast_hash": "e878e282336f9cc24f4b821bf90c6cd4",
+    "semantic_hash": "e878e282336f9cc24f4b821bf90c6cd4"
+  }
+}

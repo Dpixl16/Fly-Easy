@@ -1,0 +1,680 @@
+<title>Fly Easy Idea Backlog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F5F7FA;
+    --surface: #FFFFFF;
+    --surface-alt: #EAEFF5;
+    --ink: #182636;
+    --ink-muted: #55697D;
+    --border: #DCE4EC;
+    --accent: #2E6C9E;
+    --accent-soft: #E4EEF6;
+    --accent-warm: #B87C2E;
+    --accent-warm-soft: #F5E9D6;
+    --feas-now: #3F7350;
+    --feas-now-soft: #E4EFE8;
+    --feas-med: #A6752E;
+    --feas-med-soft: #F5E9D6;
+    --feas-partner: #8C5A78;
+    --feas-partner-soft: #F1E3EC;
+    --shadow: 0 1px 2px rgba(24,38,54,0.04), 0 6px 20px rgba(24,38,54,0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0C1420;
+      --surface: #121E2E;
+      --surface-alt: #182839;
+      --ink: #E7EEF5;
+      --ink-muted: #93A7BB;
+      --border: #24374C;
+      --accent: #74ABDA;
+      --accent-soft: #1B3247;
+      --accent-warm: #E3B36A;
+      --accent-warm-soft: #33291A;
+      --feas-now: #82B491;
+      --feas-now-soft: #1B2E22;
+      --feas-med: #D3A05C;
+      --feas-med-soft: #332818;
+      --feas-partner: #C793B7;
+      --feas-partner-soft: #2C1F29;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0C1420;
+    --surface: #121E2E;
+    --surface-alt: #182839;
+    --ink: #E7EEF5;
+    --ink-muted: #93A7BB;
+    --border: #24374C;
+    --accent: #74ABDA;
+    --accent-soft: #1B3247;
+    --accent-warm: #E3B36A;
+    --accent-warm-soft: #33291A;
+    --feas-now: #82B491;
+    --feas-now-soft: #1B2E22;
+    --feas-med: #D3A05C;
+    --feas-med-soft: #332818;
+    --feas-partner: #C793B7;
+    --feas-partner-soft: #2C1F29;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.55;
+  }
+
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 0.98;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin: 10px 0 18px;
+    text-wrap: balance;
+  }
+
+  .lede {
+    font-size: 17px;
+    color: var(--ink-muted);
+    max-width: 62ch;
+    margin: 0 0 28px;
+  }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+
+  .pillar .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .pillar p { margin: 0; font-size: 14.5px; color: var(--ink-muted); }
+
+  nav.toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding: 14px 18px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+  }
+
+  nav.toc a {
+    color: var(--ink-muted);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); text-decoration: underline; }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 48px;
+  }
+
+  .filters span.label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .filter-btn {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--ink); }
+  .filter-btn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--surface);
+  }
+  section.category {
+    margin-bottom: 52px;
+    scroll-margin-top: 20px;
+  }
+
+  .cat-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+
+  .cat-head .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    color: var(--accent-warm);
+  }
+
+  .cat-head h2 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .cat-desc {
+    color: var(--ink-muted);
+    font-size: 14px;
+    margin: 0 0 20px;
+    max-width: 68ch;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 18px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: opacity 0.15s ease;
+  }
+
+  .card.is-hidden { display: none; }
+
+  .card h3 {
+    font-family: "Public Sans", sans-serif;
+    font-size: 16.5px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  .card p.pitch { margin: 0; font-size: 14px; color: var(--ink); }
+
+  .card p.note { margin: 0; font-size: 13px; color: var(--ink-muted); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  .chip.mission { background: var(--accent-soft); color: var(--accent); }
+  .chip.feas-now { background: var(--feas-now-soft); color: var(--feas-now); }
+  .chip.feas-med { background: var(--feas-med-soft); color: var(--feas-med); }
+  .chip.feas-partner { background: var(--feas-partner-soft); color: var(--feas-partner); }
+
+  .callout {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-warm);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 18px 0;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+  .callout strong { color: var(--ink); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  footer h2 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+
+  footer ul {
+    margin: 0 0 24px;
+    padding-left: 20px;
+    color: var(--ink-muted);
+    font-size: 14px;
+  }
+  footer li { margin-bottom: 8px; }
+  footer li strong { color: var(--ink); }
+
+  .cut-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .cut-item {
+    font-size: 14px;
+    color: var(--ink-muted);
+    padding-left: 14px;
+    border-left: 2px solid var(--border);
+  }
+  .cut-item strong { color: var(--ink); font-weight: 600; }
+
+  .closing {
+    font-size: 14.5px;
+    color: var(--ink-muted);
+    margin-top: 20px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <span class="eyebrow">Fly Easy — Feature &amp; Idea Backlog</span>
+  <h1>Ideas worth boarding</h1>
+  <p class="lede">A running list of features, content, and partnerships for Fly Easy, sorted by category and checked against the two things the project exists to do. Checked directly against the live codebase on 2026-08-23 — every idea below is adjusted so nothing duplicates what's already shipped.</p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <span class="tag">Pillar one</span>
+      <p>Show the beauty of aviation — the parts of flying worth slowing down for, not just enduring.</p>
+    </div>
+    <div class="pillar">
+      <span class="tag">Pillar two</span>
+      <p>Reduce airport stress — practical, specific help for the moments that make travelers anxious.</p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:0;">
+    <strong>What's already live, as of v0.5.0 (2026-08-22):</strong> Home, Global Tips (4-phase guide), SFO Tips (AirTrain-style terminal explorer for all 6 terminals + a 56-airline gate search), Timeblocker (backward-planning with share link, .ics export, printable PDF), and <strong>Packer</strong> — its 4-step wizard (Trip → Essentials → Bags → Review) with TSA-checked suggestions and its own printable list shipped just last week, so it's dropped from this backlog as an open item. The whole site is static HTML/CSS/JS with no backend or accounts — state lives in the URL or localStorage — and already carries a consistent "golden hour" aviation-photography identity (a scroll-based sky theme, a plane-and-clouds page transition, a planespotting filmstrip on the home page). Several terminal panels already surprised me with content worth building on — see the revised cards below, flagged <span class="chip mission" style="display:inline">already partly live</span>.
+  </div>
+
+  <nav class="toc">
+    <a href="#content">Content &amp; tips</a>
+    <a href="#tools">Tools &amp; features</a>
+    <a href="#partnerships">Partnerships &amp; integrations</a>
+    <a href="#beyond">Beyond the website</a>
+    <a href="#notes">Assumptions &amp; open items</a>
+  </nav>
+
+  <div class="filters" role="group" aria-label="Filter by feasibility">
+    <span class="label">Filter by feasibility:</span>
+    <button class="filter-btn" data-filter="all" aria-pressed="true">All</button>
+    <button class="filter-btn" data-filter="now" aria-pressed="false">Buildable now</button>
+    <button class="filter-btn" data-filter="medium" aria-pressed="false">Needs more build</button>
+    <button class="filter-btn" data-filter="partner" aria-pressed="false">Needs a partner</button>
+  </div>
+
+  <!-- CONTENT & TIPS -->
+  <section class="category" id="content">
+    <div class="cat-head"><span class="num">01</span><h2>Content &amp; tips</h2></div>
+    <p class="cat-desc">Mostly writing, photography, and static assets — the lowest-friction way to lean into "beauty of aviation" and give anxious travelers something to read or look at instead of a countdown clock.</p>
+    <div class="grid">
+
+      <div class="card" data-feas="now">
+        <h3>Golden Hour Gallery <span class="chip mission" style="background:var(--accent-warm-soft);color:var(--accent-warm);">already partly live</span></h3>
+        <p class="pitch">Turn the home page's auto-scrolling filmstrip (already 8 real photos on loop) into a pausable, clickable gallery — same images, but explorable instead of just decorative.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Zero new assets needed — the ~40-photo library already sits in /images. This is a lightbox/interaction upgrade on content that exists today.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Plane-Spotting Field Guide <span class="chip mission" style="background:var(--accent-warm-soft);color:var(--accent-warm);">already partly live</span></h3>
+        <p class="pitch">SFO Tips already has one line about the SkyTerrace deck (free, landside, on the Terminal 2 roof) — buried inside the Terminal 2 panel. Pull it out into a real guide, and add the well-known off-airport spots (Bayfront Park, the In-N-Out on the flight path) that aren't mentioned at all.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty + stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Gives early or anxious arrivers something calming to do instead of just waiting — and gives the SkyTerrace tip the visibility it deserves.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Window-Seat Almanac</h3>
+        <p class="pitch">Which side of the plane gets the view on popular SFO routes — e.g. sit left SFO→JFK for the Sierras at sunset.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Complements, doesn't duplicate — Global Tips already has a generic "sit behind the wing" seat tip; this would be route-specific. Content only to start; could grow into a small route-lookup tool later.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Turbulence, Demystified</h3>
+        <p class="pitch">A plain-language explainer on why turbulence happens and why it isn't dangerous.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">One of the most common sources of in-flight anxiety — directly addressable with content.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Calm Corners, Surfaced <span class="chip mission" style="background:var(--accent-warm-soft);color:var(--accent-warm);">already partly live</span></h3>
+        <p class="pitch">SFO Tips already documents a free meditation room (Berman Reflection Room, phone-free, International Terminal), two yoga rooms, the SkyTerrace, and rotating SFO Museum art galleries — but each one is buried inside its own terminal's panel in the AirTrain explorer, so a stressed traveler has to already know which terminal to click. Pull all four into one visible "quiet spaces" view.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty + stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">No new research needed — this reorganizes data that already exists in the SFO Tips terminal objects into a second, easier-to-scan view. Probably the strongest "reduce stress" idea here, precisely because the content is already accurate and already written.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Kids' Sky Corner</h3>
+        <p class="pitch">Printable coloring pages and simple "how planes fly" explainers for family travelers.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty + stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Static PDFs/images — reduces stress for the family-traveler segment you already target. Could cross-link to SFO's existing kid spots (the climbable "Tree Town" structure at Gate B18, the motion-activated "Spirogyrate" floor at Gate E7) already documented in SFO Tips.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Sounds of the Tower</h3>
+        <p class="pitch">Embedded live air traffic control audio (e.g. via LiveATC.net) as an ambient "listen to the airport" experience.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty</span>
+          <span class="chip feas-now">Buildable now*</span>
+        </div>
+        <p class="note">*Check LiveATC's embed/usage terms first — feasible, but confirm before shipping.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TOOLS & FEATURES -->
+  <section class="category" id="tools">
+    <div class="cat-head"><span class="num">02</span><h2>Tools &amp; features</h2></div>
+    <p class="cat-desc">Interactive pieces in the same family as Timeblocker — most can reuse its client-side pattern (no accounts, state kept in the URL or browser storage).</p>
+    <div class="grid">
+
+      <div class="card" data-feas="now">
+        <h3>Calm Countdown</h3>
+        <p class="pitch">A 60-second guided breathing animation to use at security or the gate.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Pure CSS/JS animation — no backend, no new data needed.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Interactive 4-Phase Checklist</h3>
+        <p class="pitch">Turn the existing Global Tips 4-phase guide into a tickable checklist that remembers your progress.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Same share-link / local-state pattern Timeblocker already uses.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Stress-Level Triage</h3>
+        <p class="pitch">A 3-question check-in — first flight? traveling with kids? tight connection? — that routes travelers to the most relevant tips instead of the full site.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Client-side branching logic only, no accounts required.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Timeblocker × Packer Tie-In <span class="chip mission" style="background:var(--accent-warm-soft);color:var(--accent-warm);">builds on shipped</span></h3>
+        <p class="pitch">Packer shipped v0.5.0 last week — it's done, not a backlog item anymore. What's still open: the two tools don't talk to each other. Add a one-tap link from Timeblocker's security step straight into Packer's TSA-badge view, right when "what's in your bag" actually matters.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Just a cross-link plus maybe a shared TSA-badge component — both tools already do their own thing well, this just connects them at the moment it's useful.</p>
+      </div>
+
+      <div class="card" data-feas="medium">
+        <h3>Connection-Time Reality Check</h3>
+        <p class="pitch">Enter your layover airport and terminals, get an honest read on whether the connection is actually tight — built on the terminal-distance data SFO Tips already has.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-med">Needs more build</span>
+        </div>
+        <p class="note">Cheaper than I first thought — the AirTrain map already has each terminal's stop position as map coordinates in script.js, so a rough distance/walk-time estimate for SFO layovers could reuse that instead of new research. Still needs its own data per additional airport.</p>
+      </div>
+
+      <div class="card" data-feas="medium">
+        <h3>Terminal Explorer, more airports</h3>
+        <p class="pitch">The same interactive terminal map and gate search from SFO Tips, templated for 2–3 more major airports.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-med">Needs more build</span>
+        </div>
+        <p class="note">Now scoped concretely: each new airport means a new terminal-data object (carriers, notes) plus a redrawn SVG loop and stop coordinates — the same two pieces SFO's map is built from. Real work, but a known shape, not a rebuild. See notes below on candidates.</p>
+      </div>
+
+      <div class="card" data-feas="medium">
+        <h3>Live Wait-Time Estimator</h3>
+        <p class="pitch">Rough "expect X minutes at security" guidance by time of day, using TSA's published throughput data.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-med">Needs more build</span>
+        </div>
+        <p class="note">Realistic, but a step up from static content — needs a data source and periodic updates.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PARTNERSHIPS -->
+  <section class="category" id="partnerships">
+    <div class="cat-head"><span class="num">03</span><h2>Partnerships &amp; integrations</h2></div>
+    <p class="cat-desc">Anything here that needs another party's cooperation is labeled — some are a five-minute email, others are a real ask.</p>
+    <div class="grid">
+
+      <div class="card" data-feas="partner">
+        <h3>Live Flight/Gate Tracker Embed</h3>
+        <p class="pitch">Embed a FlightAware or FlightRadar24 widget so travelers can watch their own plane and gate live.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty + stress</span>
+          <span class="chip feas-partner">Needs integration</span>
+        </div>
+        <p class="note">No relationship required to start — just their public embeddable widget, but check each provider's terms.</p>
+      </div>
+
+      <div class="card" data-feas="partner">
+        <h3>SFO Museum Cross-Promotion <span class="chip mission" style="background:var(--accent-warm-soft);color:var(--accent-warm);">already partly live</span></h3>
+        <p class="pitch">SFO Tips already namechecks the SFO Museum's rotating galleries (including the current "Women of Afrofuturism" exhibit) — for free, with no relationship behind it. That's actually a warmer opening for outreach than starting cold: you're already sending them attention.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty + stress</span>
+          <span class="chip feas-partner">Needs outreach</span>
+        </div>
+        <p class="note">A real, free, existing institution built around the same mission — low-stakes email, and you can point to the shoutout you're already giving them.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Fear-of-Flying Course Referral</h3>
+        <p class="pitch">Link out to established, legitimate calm-flying programs for travelers who want more than a tip page.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Usually just a vetted link, not a formal deal — confirm legitimacy before linking.</p>
+      </div>
+
+      <div class="card" data-feas="partner">
+        <h3>Local Plane-Spotter Photo Collabs</h3>
+        <p class="pitch">Invite Bay Area aviation photographers to contribute credited photos to the Golden Hour Gallery instead of stock imagery.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty</span>
+          <span class="chip feas-partner">Needs outreach</span>
+        </div>
+        <p class="note">Confirmed worth doing — the footer credits "Photography via Unsplash &amp; Pexels," so every photo on the site today is stock. Original, credited local photography would be a real authenticity upgrade, not just a nice-to-have. Grassroots, not corporate — genuinely achievable.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Accessibility Program Directory</h3>
+        <p class="pitch">Clear, accurate info on existing programs like TSA Cares and the Hidden Disabilities Sunflower lanyard.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Content only — points to programs that already exist, for a currently underserved audience.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BEYOND THE WEBSITE -->
+  <section class="category" id="beyond">
+    <div class="cat-head"><span class="num">04</span><h2>Beyond the website</h2></div>
+    <p class="cat-desc">Fly Easy doesn't have to stay a website — a few of these also support the social-promotion and feedback-gathering push already underway.</p>
+    <div class="grid">
+
+      <div class="card" data-feas="now">
+        <h3>"Beauty of Aviation" Social Clips</h3>
+        <p class="pitch">Short clips repurposed from the Golden Hour Gallery and tower-audio ambience for Instagram/TikTok.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Doubles as the social promotion you're already planning for gathering feedback.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Printable Airport Calm Kit <span class="chip mission" style="background:var(--accent-warm-soft);color:var(--accent-warm);">builds on shipped</span></h3>
+        <p class="pitch">A one-page PDF — breathing exercise, quick checklist, one fun fact — as a standalone download, not tied to a specific trip.</p>
+        <div class="chips">
+          <span class="chip mission">Stress</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Genuinely trivial at this point — Timeblocker and Packer each already have their own working print-sheet pattern (hidden print-only markup, filled in by JS, triggered by a Print button). This would be a third, simpler instance of something already built twice.</p>
+      </div>
+
+      <div class="card" data-feas="now">
+        <h3>Monthly Aviation Beauty Newsletter</h3>
+        <p class="pitch">A short email — one photo pick, one tip — sent monthly via a free tier of Mailchimp or Buttondown.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty</span>
+          <span class="chip feas-now">Buildable now</span>
+        </div>
+        <p class="note">Low-effort recurring touchpoint that also builds a feedback-ready audience.</p>
+      </div>
+
+      <div class="card" data-feas="partner">
+        <h3>SFO Plane-Spotting Meetup</h3>
+        <p class="pitch">An occasional grassroots meetup at a known SFO viewing spot, cross-promoted with the field guide above.</p>
+        <div class="chips">
+          <span class="chip mission">Beauty</span>
+          <span class="chip feas-partner">Needs coordination</span>
+        </div>
+        <p class="note">Turns "waiting" into something social — low-cost and realistic to run solo.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="callout">
+    <strong>Considered and cut:</strong> a generic aviation merch shop and a full airline-points/rewards calculator both came up while brainstorming, but neither advances "beauty of aviation" or "reduced airport stress" — they're monetization and rewards-optimization ideas, not traveler-facing ones. Left off the list above; flag if you actually want a monetization track and I'll brainstorm that separately.
+  </div>
+
+  <footer id="notes">
+    <h2>Assumptions &amp; open items</h2>
+    <ul>
+      <li><strong>Tech stack — confirmed, not assumed:</strong> reviewed the live code directly on 2026-08-23. It's static HTML/CSS/JS (index/global/sfo/timeblocker/packer.html + one shared styles.css and script.js), no backend, no accounts — Timeblocker's share link, .ics export, and print/PDF, plus Packer's localStorage persistence, all confirm the client-side assumption from the first draft of this backlog was right. Every "buildable now" tag above should be trustworthy.</li>
+      <li><strong>Packer has shipped</strong> (v0.5.0, 2026-08-22) — it's no longer an open item; the earlier version of this backlog and the video-tutorial plan both had it as "later." Worth revisiting the tutorial plan now that it's live.</li>
+      <li><strong>Airport expansion:</strong> you're open to 2–3 more major airports. Worth picking based on where your audience actually flies — common candidates would be a big West Coast hub, a big East Coast hub, and a major connecting hub, but the right picks depend on your traffic/feedback data, not a generic list.</li>
+      <li><strong>LiveATC audio:</strong> check their embed/usage terms before shipping "Sounds of the Tower."</li>
+      <li><strong>TSA wait-time data:</strong> confirm what TSA actually publishes at the airport level before committing to the estimator's accuracy.</li>
+    </ul>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var buttons = document.querySelectorAll('.filter-btn');
+    var cards = document.querySelectorAll('.card');
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        buttons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+        btn.setAttribute('aria-pressed', 'true');
+        var filter = btn.getAttribute('data-filter');
+
+        cards.forEach(function (card) {
+          if (filter === 'all' || card.getAttribute('data-feas') === filter) {
+            card.classList.remove('is-hidden');
+          } else {
+            card.classList.add('is-hidden');
+          }
+        });
+      });
+    });
+  })();
+</script>

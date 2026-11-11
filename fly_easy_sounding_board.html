@@ -1,0 +1,469 @@
+<title>Fly Easy Sounding Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F5F7FA;
+    --surface: #FFFFFF;
+    --surface-alt: #EAEFF5;
+    --ink: #182636;
+    --ink-muted: #55697D;
+    --border: #DCE4EC;
+    --accent: #2E6C9E;
+    --accent-soft: #E4EEF6;
+    --accent-warm: #B87C2E;
+    --accent-warm-soft: #F5E9D6;
+    --status-none: #8A97A6;
+    --status-none-soft: #E9ECF0;
+    --status-sent: #A6752E;
+    --status-sent-soft: #F5E9D6;
+    --status-heard: #3F7350;
+    --status-heard-soft: #E4EFE8;
+    --shadow: 0 1px 2px rgba(24,38,54,0.04), 0 6px 20px rgba(24,38,54,0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0C1420;
+      --surface: #121E2E;
+      --surface-alt: #182839;
+      --ink: #E7EEF5;
+      --ink-muted: #93A7BB;
+      --border: #24374C;
+      --accent: #74ABDA;
+      --accent-soft: #1B3247;
+      --accent-warm: #E3B36A;
+      --accent-warm-soft: #33291A;
+      --status-none: #7C8899;
+      --status-none-soft: #1E2836;
+      --status-sent: #D3A05C;
+      --status-sent-soft: #332818;
+      --status-heard: #82B491;
+      --status-heard-soft: #1B2E22;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0C1420;
+    --surface: #121E2E;
+    --surface-alt: #182839;
+    --ink: #E7EEF5;
+    --ink-muted: #93A7BB;
+    --border: #24374C;
+    --accent: #74ABDA;
+    --accent-soft: #1B3247;
+    --accent-warm: #E3B36A;
+    --accent-warm-soft: #33291A;
+    --status-none: #7C8899;
+    --status-none-soft: #1E2836;
+    --status-sent: #D3A05C;
+    --status-sent-soft: #332818;
+    --status-heard: #82B491;
+    --status-heard-soft: #1B2E22;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.55;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 56px 24px 96px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: clamp(38px, 5.6vw, 60px);
+    line-height: 0.98;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin: 10px 0 18px;
+    text-wrap: balance;
+  }
+
+  .lede { font-size: 17px; color: var(--ink-muted); max-width: 66ch; margin: 0 0 28px; }
+
+  .callout {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-warm);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 0 0 30px;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+  .callout strong { color: var(--ink); }
+
+  nav.toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding: 14px 18px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 44px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+  }
+  nav.toc a { color: var(--ink-muted); text-decoration: none; letter-spacing: 0.02em; }
+  nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); text-decoration: underline; }
+
+  section.category { margin-bottom: 52px; scroll-margin-top: 20px; }
+
+  .cat-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 8px;
+  }
+  .cat-head .num { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--accent-warm); }
+  .cat-head h2 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: 25px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .cat-desc { color: var(--ink-muted); font-size: 14px; margin: 0 0 20px; max-width: 68ch; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 18px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .card h3 { font-family: "Public Sans", sans-serif; font-size: 16.5px; font-weight: 700; margin: 0; letter-spacing: -0.005em; }
+
+  .field { display: flex; flex-direction: column; gap: 3px; }
+  .field-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+  }
+  .field p { margin: 0; font-size: 13.5px; color: var(--ink); }
+  .field p.muted { color: var(--ink-muted); }
+
+  .status-btn {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--status-none-soft);
+    color: var(--status-none);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .status-btn[data-status="sent"] { background: var(--status-sent-soft); color: var(--status-sent); border-color: transparent; }
+  .status-btn[data-status="heard"] { background: var(--status-heard-soft); color: var(--status-heard); border-color: transparent; }
+  .status-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .progress-note {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin: 0 0 30px;
+  }
+
+  footer { margin-top: 60px; padding-top: 28px; border-top: 1px solid var(--border); }
+  footer h2 {
+    font-family: "Big Shoulders Display", sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+  footer ul { margin: 0 0 24px; padding-left: 20px; color: var(--ink-muted); font-size: 14px; }
+  footer li { margin-bottom: 8px; }
+  footer li strong { color: var(--ink); }
+</style>
+
+<div class="wrap">
+
+  <span class="eyebrow">Fly Easy — Feedback &amp; Outreach</span>
+  <h1>Who to ask next</h1>
+  <p class="lede">A working list of people and organizations who could give Fly Easy honest, specific feedback — on the website itself, on general aviation tips, and on SFO-specific accuracy. Tap a status pill as you reach out; it's saved locally in this browser so the list stays useful as you work through it.</p>
+
+  <div class="callout">
+    <strong>Already in motion:</strong> you've reached out to contacts at Oakland (OAK) and San Francisco (SFO) airports and are waiting to hear back. That's a good instinct, but both are large, PR-cautious organizations that get a lot of inbound requests — a slow or no reply is normal, not a signal to stop. Two backups worth trying in parallel rather than after: San Jose Mineta (SJC) — a smaller Bay Area airport, likely less deluged with requests — and, at OAK/SFO specifically, their community relations or guest-experience teams if you originally wrote to operations (or vice versa), since it's a different inbox and a different person's job to answer exactly this kind of question.
+  </div>
+
+  <nav class="toc">
+    <a href="#aviation">Aviation professionals</a>
+    <a href="#travelers">Expert &amp; frequent travelers</a>
+    <a href="#gaps">Underrepresented segments</a>
+    <a href="#design">Design &amp; product feedback</a>
+    <a href="#outside">Outside the box</a>
+    <a href="#notes">How to ask</a>
+  </nav>
+
+  <p class="progress-note" id="progressNote"></p>
+
+  <!-- AVIATION PROFESSIONALS -->
+  <section class="category" id="aviation">
+    <div class="cat-head"><span class="num">01</span><h2>Aviation professionals</h2></div>
+    <p class="cat-desc">People who can fact-check the flying-specific content and catch anything that reads as slightly off to someone who actually does this for a living.</p>
+    <div class="grid">
+
+      <div class="card" data-id="c1">
+        <div class="card-head"><h3>General-aviation pilots</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>They fly for the love of it, so "beauty of aviation" is their native language — and they'll immediately spot a tip (turbulence, seating, timing) that's slightly wrong.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">EAA Chapter 20 at San Carlos Airport (KSQL) — a real, active hobbyist-pilot chapter about 20 minutes from SFO. Their meetings are open to visitors.</p></div>
+      </div>
+
+      <div class="card" data-id="c2">
+        <div class="card-head"><h3>Flight attendants</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>They watch traveler stress up close, all day, and can confirm or correct the in-flight comfort tips in Global Tips from direct experience.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">r/flightattendants, or simply ask one directly next time you fly — most are happy to talk shop on a quiet flight.</p></div>
+      </div>
+
+      <div class="card" data-id="c3">
+        <div class="card-head"><h3>Air traffic controllers / dispatchers</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Could validate anything touching real-time flight/gate info, and would have an informed opinion on ideas like a live-ATC-audio feature.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Local NATCA chapter, or aviation forums where controllers post off-duty.</p></div>
+      </div>
+
+      <div class="card" data-id="c4">
+        <div class="card-head"><h3>A smaller airport's guest-experience team</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>SJC is a real backup to OAK/SFO — smaller, likely more responsive, and useful context for your own plan to expand terminal-explorer coverage beyond SFO.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">San Jose Mineta International Airport's community/guest-relations contact.</p></div>
+      </div>
+
+      <div class="card" data-id="c5">
+        <div class="card-head"><h3>Retired airline or airport employees</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Deep institutional knowledge with none of a current employee's PR caution — and often genuinely enjoy being asked.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">LinkedIn search for "retired" + gate agent / ramp / airport operations; local retiree or aviation-history groups.</p></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EXPERT & FREQUENT TRAVELERS -->
+  <section class="category" id="travelers">
+    <div class="cat-head"><span class="num">02</span><h2>Expert &amp; frequent travelers</h2></div>
+    <p class="cat-desc">People who've flown enough to have strong, specific opinions — exactly the bluntness you're asking for.</p>
+    <div class="grid">
+
+      <div class="card" data-id="c6">
+        <div class="card-head"><h3>FlyerTalk forums</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>The most detail-obsessed frequent-flyer community online — veteran travelers who will bluntly flag anything inaccurate or outdated, not just say "looks nice."</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Post in a relevant subforum (travel tools, or a regional SFO/Bay Area thread) with specific questions, not a general "check out my site."</p></div>
+      </div>
+
+      <div class="card" data-id="c7">
+        <div class="card-head"><h3>Mainstream travel subreddits</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>A useful contrast to FlyerTalk's expert lens — more like your "occasional traveler" audience segment, less specialist, more representative.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">r/travel, r/awardtravel, or Bay Area–specific subreddits.</p></div>
+      </div>
+
+      <div class="card" data-id="c8">
+        <div class="card-head"><h3>Independent aviation bloggers/YouTubers</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>They review travel tools and sites as part of their work, so their feedback tends to be structured and public — and even a passing mention is exposure to exactly your target audience.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Aviation-focused channels and blogs (not just points/miles-focused ones) — look for creators who cover the airport experience itself, not just award bookings.</p></div>
+      </div>
+
+      <div class="card" data-id="c9">
+        <div class="card-head"><h3>A local travel advisor/agent</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Hears live client complaints about airports every week — grounded in what ordinary (non-enthusiast) travelers actually struggle with, day to day.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">A local travel agency, or a travel-advisor professional association chapter.</p></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- UNDERREPRESENTED SEGMENTS -->
+  <section class="category" id="gaps">
+    <div class="cat-head"><span class="num">03</span><h2>Underrepresented segments</h2></div>
+    <p class="cat-desc">The feedback most likely to surface something you can't see from the inside — because the gap is in whose experience the site currently reflects.</p>
+    <div class="grid">
+
+      <div class="card" data-id="c10">
+        <div class="card-head"><h3>Accessible-travel advocates</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Fly Easy currently has no accessibility content at all (TSA Cares, the Hidden Disabilities Sunflower program, etc.) — someone who navigates this daily would give you the single most valuable feedback on this list, precisely because it's an invisible gap to everyone else.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Wheelchair Travel (John Morris) or similar accessible-travel writers and communities.</p></div>
+      </div>
+
+      <div class="card" data-id="c11">
+        <div class="card-head"><h3>A fear-of-flying course provider</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Their entire profession is reducing flight anxiety — they'd know precisely which of your reassurances actually land versus which read as generic.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Programs like SOAR or British Airways' Flying With Confidence — worth an email even as a "would you take a look" ask.</p></div>
+      </div>
+
+      <div class="card" data-id="c12">
+        <div class="card-head"><h3>Family/parent travel bloggers</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Tests whether the family-traveler content solves real friction (kids' spots, family security lanes) rather than assumed friction.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Family-travel blogs, or a local parents' Facebook/Nextdoor group.</p></div>
+      </div>
+
+      <div class="card" data-id="c13">
+        <div class="card-head"><h3>International students / non-native English speakers</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>SFO's international terminals serve non-native English speakers constantly — whether your tips actually read clearly to them is a blind spot most English-first sites never check.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">A local university's international student office or student group.</p></div>
+      </div>
+
+      <div class="card" data-id="c14">
+        <div class="card-head"><h3>A genuinely nervous flier</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Not a professional — just someone who gets anxious flying. The most direct test of whether the stress-reduction framing actually reduces anxiety, instead of just your own guess at what would.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Likely someone you already know — worth asking directly rather than a stranger.</p></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DESIGN & PRODUCT -->
+  <section class="category" id="design">
+    <div class="cat-head"><span class="num">04</span><h2>Design &amp; product feedback</h2></div>
+    <p class="cat-desc">For the website as a piece of software — navigation, clarity, whether the tools actually work the way people expect.</p>
+    <div class="grid">
+
+      <div class="card" data-id="c15">
+        <div class="card-head"><h3>Indie Hackers community</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Builders used to giving specific, structured critique on real live products — not vague praise, and not shy about pointing out what's confusing.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">A "Show IH" style post on indiehackers.com describing what Fly Easy is and what feedback you want.</p></div>
+      </div>
+
+      <div class="card" data-id="c16">
+        <div class="card-head"><h3>A Bay Area UX/product meetup</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>In-person critique from people who do this professionally, with the benefit of being local enough to attend easily.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Meetup.com groups for UX/product design in San Francisco.</p></div>
+      </div>
+
+      <div class="card" data-id="c17">
+        <div class="card-head"><h3>A local UX bootcamp instructor</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>Bootcamp students often need a real, live site for portfolio-critique assignments — you could get several detailed reviews for free.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">General Assembly SF, Springboard, or a local community college UX program.</p></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- OUTSIDE THE BOX -->
+  <section class="category" id="outside">
+    <div class="cat-head"><span class="num">05</span><h2>Outside the box</h2></div>
+    <p class="cat-desc">People who aren't obviously "feedback sources" but who are closer to real, unfiltered airport stress than almost anyone else on this list.</p>
+    <div class="grid">
+
+      <div class="card" data-id="c18">
+        <div class="card-head"><h3>Rideshare/taxi drivers doing SFO runs</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>They hear real, unfiltered traveler stress in the back seat constantly — completely candid, and free to ask next time you take a ride.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">Your next Uber/Lyft/taxi to or from SFO — just ask.</p></div>
+      </div>
+
+      <div class="card" data-id="c19">
+        <div class="card-head"><h3>EAA Chapter 20, San Carlos Airport</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>A real, active local hobbyist-pilot community — a low-pressure way to get a whole room of aviation-obsessed opinions at once, and a genuine gut-check on whether the site's "beauty of aviation" angle lands with people who live it.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">eaa20.org — chapter meetings are typically open to visitors.</p></div>
+      </div>
+
+      <div class="card" data-id="c20">
+        <div class="card-head"><h3>A local journalist or blogger</h3><button class="status-btn" type="button" data-status="none">Not contacted</button></div>
+        <div class="field"><p class="field-label">Why</p><p>"One person's project to fix airport stress" is a genuinely pitchable human-interest angle — and journalists ask sharp, skeptical questions by profession, so even an interview that goes nowhere tends to surface your weakest points.</p></div>
+        <div class="field"><p class="field-label">Where</p><p class="muted">A Bay Area local-news or travel section reporter.</p></div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer id="notes">
+    <h2>How to ask, so you actually get useful answers</h2>
+    <ul>
+      <li><strong>Be specific, not general.</strong> "What do you think of my website" gets a polite "looks good." "Does this Timeblocker step order match what you'd actually do at SFO Terminal 2?" gets a real answer.</li>
+      <li><strong>Point them at one page, not the whole site.</strong> Feedback on everything at once tends to average out into nothing useful — pick the page most relevant to who you're asking.</li>
+      <li><strong>Make responding effortless.</strong> A direct question they can answer in one reply beats a link to fill out the full feedback form, especially for a first contact.</li>
+      <li><strong>Follow up once, then move on.</strong> A single polite follow-up after a week or two is normal; beyond that, put the energy into the next name on this list instead.</li>
+    </ul>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var STORAGE_KEY = "flyeasy-sounding-board-status-v1";
+    var STATES = ["none", "sent", "heard"];
+    var LABELS = { none: "Not contacted", sent: "Reached out", heard: "Heard back" };
+
+    function loadState() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) { return {}; }
+    }
+
+    function saveState(state) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+    }
+
+    function updateProgressNote(state) {
+      var cards = document.querySelectorAll(".card");
+      var total = cards.length;
+      var sent = 0, heard = 0;
+      cards.forEach(function (card) {
+        var s = state[card.getAttribute("data-id")] || "none";
+        if (s === "sent") sent++;
+        if (s === "heard") heard++;
+      });
+      var note = document.getElementById("progressNote");
+      if (note) {
+        note.textContent = heard + " heard back · " + sent + " waiting · " + (total - sent - heard) + " not yet contacted (saved in this browser only)";
+      }
+    }
+
+    var state = loadState();
+
+    document.querySelectorAll(".card").forEach(function (card) {
+      var id = card.getAttribute("data-id");
+      var btn = card.querySelector(".status-btn");
+      var current = state[id] || "none";
+      btn.setAttribute("data-status", current);
+      btn.textContent = LABELS[current];
+
+      btn.addEventListener("click", function () {
+        var idx = STATES.indexOf(btn.getAttribute("data-status"));
+        var next = STATES[(idx + 1) % STATES.length];
+        btn.setAttribute("data-status", next);
+        btn.textContent = LABELS[next];
+        state[id] = next;
+        saveState(state);
+        updateProgressNote(state);
+      });
+    });
+
+    updateProgressNote(state);
+  })();
+</script>
