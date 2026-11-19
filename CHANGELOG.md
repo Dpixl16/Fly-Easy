@@ -10,6 +10,18 @@ so a minor bump can still include larger changes as the site finds its shape.
 
 ### Changed
 
+- **Timeblocker on phones: compact steps and a real way to reorder.**
+  Each step is now a slim row (about 57px instead of 160–220px) showing
+  start time, minutes, the step name, a slim duration bar and a small
+  "Heads-up" tag, so you can see the whole plan and its timeline at once.
+  Tap a step to open its editor (rename, start time, duration) with
+  **Move up**, **Move down**, **Same time as above** and **Remove**
+  buttons. To drag, hold the ☰ grip on the right, or long-press anywhere
+  on a step: it lifts, the other steps slide out of the way, the page
+  scrolls at the edges, and it settles with a brief amber glow. Scrolling
+  past a step never picks it up. Touch tablets drag by the left handle,
+  now finger-sized; laptops keep mouse drag-and-drop unchanged.
+
 - **Airports globe: one click flies you straight into a guide.** Clicking
   an airport (a pin, a search result, or Enter in search) now plays one
   continuous landing instead of zoom → card → click. A mini plane flies in

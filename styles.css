@@ -6091,3 +6091,156 @@ html.is-globe-leaving .site-footer {
   .tb-pair__range { height: 32px; margin: 0; touch-action: pan-y; }
   .tb-pair__split { min-height: 36px; }
 }
+
+/* ============================================================
+   Timeblocker v5: compact phone steps + touch sorting
+   ============================================================ */
+.tb-sum, .tb-grip, .tb-acts { display: none; }
+.tb-block__edit, .tb-block__edit-in { display: block; }
+
+/* touch sorting (phones and tablets) */
+.tb-timeline.is-sorting { -webkit-user-select: none; user-select: none; }
+.tb-timeline.is-sorting .tb-block.is-shifting { transition: transform 0.22s var(--ease); }
+.tb-block.is-lifted {
+  z-index: 20;
+  background: #fff;
+  border-color: var(--tb-warm);
+  box-shadow: 0 18px 36px rgba(15, 48, 73, 0.24), 0 0 0 3px rgba(224, 138, 30, 0.28);
+  transition: box-shadow 0.2s ease;
+  will-change: transform;
+}
+.tb-block.is-lifted.is-settling { transition: transform 0.2s var(--ease), box-shadow 0.2s ease; box-shadow: 0 4px 10px rgba(15, 48, 73, 0.12); }
+.tb-block.is-moved { animation: tb-moved 0.9s var(--ease); }
+@keyframes tb-moved { 0% { background: var(--tb-warm-tint); } 100% { background: var(--cloud-white); } }
+
+@media (max-width: 640px) {
+  .tb-timeline { padding-left: 20px; }
+  .tb-timeline__rail { left: 6px; }
+  .tb-block {
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.45rem 0.2rem 0.45rem 0.5rem;
+    margin-bottom: 0.45rem;
+    border-radius: 14px;
+    border-left-width: 4px;
+  }
+  .tb-block::before { left: -19px; top: 21px; width: 8px; height: 8px; }
+  .tb-block__handle { display: none; }
+  .tb-block__icon { width: 32px; height: 32px; border-radius: 9px; margin-top: 4px; }
+  .tb-block__icon svg { width: 16px; height: 16px; }
+
+  /* the one-line summary */
+  .tb-sum {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 40px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
+    color: var(--deep-navy);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .tb-sum:focus-visible { outline: 2px solid var(--horizon-blue); outline-offset: 2px; border-radius: 8px; }
+  .tb-sum__time {
+    flex: none;
+    width: 3.9rem;
+    font: 600 0.72rem/1.1 var(--font-mono);
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+  }
+  .tb-sum__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.22rem; }
+  .tb-sum__line { display: flex; align-items: center; gap: 0.35rem; min-width: 0; }
+  .tb-sum__title { flex: 1; min-width: 0; font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tb-sum__warn { flex: none; display: inline-flex; color: var(--warning-red); }
+  .tb-sum__warn svg { width: 14px; height: 14px; }
+  .tb-sum__mins {
+    flex: none;
+    font: 600 0.68rem/1 var(--font-mono);
+    padding: 0.2rem 0.4rem;
+    border-radius: 999px;
+    background: var(--sky-mist);
+    color: var(--deep-navy);
+  }
+  .tb-sum__duo { font-size: 0.7rem; font-weight: 600; color: var(--phase-inflight); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tb-sum__bar { display: block; height: 3px; border-radius: 3px; background: var(--border-soft); overflow: hidden; }
+  .tb-sum__bar i { display: block; height: 100%; border-radius: 3px; background: currentColor; opacity: 0.75; transition: width 0.3s var(--ease); }
+
+  /* grip on the right, where the thumb is */
+  .tb-grip {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 40px;
+    height: 40px;
+    margin-top: 0;
+    border-radius: 10px;
+    color: #94A3B8;
+    touch-action: none;
+    cursor: grab;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .tb-grip i { display: block; width: 16px; height: 2px; border-radius: 2px; background: currentColor; }
+  .tb-grip:active, .tb-block.is-lifted .tb-grip { color: var(--tb-warm); background: var(--tb-warm-tint); }
+
+  /* the editor drawer: tap a step to open it */
+  .tb-block__edit { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.32s var(--ease); }
+  .tb-block__edit-in { min-height: 0; overflow: hidden; }
+  .tb-block.is-open .tb-block__edit { grid-template-rows: 1fr; }
+  .tb-block.is-open .tb-block__edit-in { padding-top: 0.55rem; }
+  .tb-block__edit .tb-block__title { background: var(--sky-mist); min-height: 36px; padding: 6px 10px; font-size: 0.88rem; font-weight: 600; flex-basis: 100%; }
+  .tb-block.is-open { box-shadow: 0 8px 22px rgba(15, 48, 73, 0.1); }
+  .tb-block.is-open .tb-sum__bar { opacity: 0; }
+  .tb-block__top { margin-bottom: 6px; }
+  .tb-block__top .tb-block__remove { display: none; }
+  .tb-block__note { margin-left: 0; width: 100%; }
+  .tb-acts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0 0.15rem; }
+  .tb-act {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 36px;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    background: var(--cloud-white);
+    font: 600 0.76rem/1 var(--font-body);
+    color: var(--deep-navy);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tb-act svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .tb-act:active { transform: scale(0.97); }
+  .tb-act:disabled { opacity: 0.38; cursor: default; }
+  .tb-act--danger { color: var(--warning-red); border-color: rgba(220, 38, 38, 0.25); }
+}
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
+  .tb-block__edit, .tb-sum__bar i { transition: none; }
+}
+@media (max-width: 640px) {
+  .tb-sum__body { gap: 0.16rem; }
+  .tb-sum__meta { display: flex; align-items: center; gap: 0.4rem; min-width: 0; }
+  .tb-sum__time { width: auto; font-size: 0.7rem; color: var(--text-muted); }
+  .tb-sum__mins { padding: 0.12rem 0.38rem; font-size: 0.64rem; }
+  .tb-sum__warn { align-items: center; gap: 0.2rem; font-size: 0.64rem; font-weight: 700; }
+  .tb-sum__warn svg { width: 12px; height: 12px; }
+  .tb-sum__title { font-size: 0.92rem; line-height: 1.2; }
+  .tb-sum__bar { margin-top: 0.12rem; }
+}
+
+/* Touch tablets: the left handle is the drag grip, so give it a finger-sized target */
+@media (hover: none) and (pointer: coarse) and (min-width: 641px) {
+  .tb-block__handle { min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; touch-action: none; }
+}

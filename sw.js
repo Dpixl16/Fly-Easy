@@ -17,7 +17,7 @@
 
    Bump VERSION when you change which files are pre-saved below, so
    phones throw away the old set. */
-const VERSION = "fly-easy-v11";
+const VERSION = "fly-easy-v12";
 const SHELL = VERSION + "-shell";
 const RUNTIME = VERSION + "-runtime";
 

@@ -931,6 +931,14 @@ window.addEventListener("pageshow", function (e) {
         var timeInput = row.querySelector(".tb-block__time-input");
         if (document.activeElement !== timeInput) timeInput.value = format24(b.start);
         row.querySelector(".tb-block__mins").textContent = b.minutes + "m";
+        var sumTime = row.querySelector(".tb-sum__time");
+        if (sumTime) {
+          sumTime.textContent = formatDisplay(b.start);
+          row.querySelector(".tb-sum__mins").textContent = effMinutes(b) + "m";
+          row.querySelector(".tb-sum__bar i").style.width = Math.max(4, Math.min(100, effMinutes(b) / 90 * 100)) + "%";
+          var t = row.querySelector(".tb-sum__title");
+          if (t.textContent !== b.title) t.textContent = b.title || "Untitled step";
+        }
         if (b.partners) {
           row.querySelectorAll(".tb-pair__item").forEach(function (itemEl) {
             var pi = parseInt(itemEl.dataset.pIndex, 10);
@@ -940,6 +948,216 @@ window.addEventListener("pageshow", function (e) {
         }
       });
     }
+
+    /* Touch screens (phones, tablets) reorder with the finger-friendly
+       sorter below; a mouse keeps the browser's drag and drop. */
+    var touchUI = window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    var openId = null;          // the step whose editor is open (phone)
+    var movedId = null;         // the step that just moved, for a soft flash
+
+    function toggleOpen(row, id) {
+      var opening = !row.classList.contains("is-open");
+      timelineEl.querySelectorAll(".tb-block.is-open").forEach(function (r) {
+        r.classList.remove("is-open");
+        r.querySelector(".tb-sum").setAttribute("aria-expanded", "false");
+      });
+      openId = opening ? id : null;
+      if (opening) {
+        row.classList.add("is-open");
+        row.querySelector(".tb-sum").setAttribute("aria-expanded", "true");
+      }
+    }
+
+    function canPairBlocks(target, src) {
+      if (!target || !src || target === src) return false;
+      if (src.partners && src.partners.length) return false;
+      return 1 + (target.partners ? target.partners.length : 0) < MAX_SIMULTANEOUS;
+    }
+
+    function stepAction(id, act) {
+      var i = blocks.findIndex(function (x) { return x.id === id; });
+      if (i < 0) return;
+      if (act === "remove") {
+        blocks.splice(i, 1);
+        if (openId === id) openId = null;
+      } else if (act === "up" && i > 0) {
+        blocks.splice(i - 1, 0, blocks.splice(i, 1)[0]);
+        movedId = id;
+      } else if (act === "down" && i < blocks.length - 1) {
+        blocks.splice(i + 1, 0, blocks.splice(i, 1)[0]);
+        movedId = id;
+      } else if (act === "pair" && i > 0 && canPairBlocks(blocks[i - 1], blocks[i])) {
+        var src = blocks.splice(i, 1)[0];
+        var target = blocks[i - 1];
+        target.partners = target.partners || [];
+        target.partners.push({ title: src.title, cat: src.cat, icon: src.icon, minutes: src.minutes, note: src.note || null });
+        openId = target.id;
+        movedId = target.id;
+      } else return;
+      resequenceFromBoarding();
+      render();
+    }
+
+    /* ---------- Touch sorting ----------
+       Press the grip (or long-press anywhere on a step) and the step
+       lifts under your finger; the others slide out of the way, and
+       the page scrolls by itself near the top or bottom edge. */
+    var sorter = { active: false, suppressClick: false };
+    var GAP = 0;
+
+    function attachTouchSort(row) {
+      if (!touchUI) return;
+      var grip = row.querySelector(".tb-grip");
+      var handle = row.querySelector(".tb-block__handle");
+      [grip, handle].forEach(function (el) {
+        if (!el) return;
+        el.addEventListener("touchstart", function (e) {
+          if (e.touches.length !== 1) return;
+          e.preventDefault();
+          liftRow(row, e.touches[0].clientY);
+        }, { passive: false });
+      });
+      // long-press anywhere on the step (not on its inputs or buttons)
+      row.addEventListener("touchstart", function (e) {
+        if (sorter.active || e.touches.length !== 1) return;
+        if (e.target.closest("input, .tb-act, .tb-block__remove, .tb-pair__split, .tb-grip, .tb-block__handle")) return;
+        var t = e.touches[0];
+        var x0 = t.clientX, y0 = t.clientY;
+        var timer = window.setTimeout(function () { cleanup(); liftRow(row, y0); }, 380);
+        function onMove(ev) {
+          var m = ev.touches[0];
+          if (Math.abs(m.clientX - x0) > 8 || Math.abs(m.clientY - y0) > 8) cleanup();
+        }
+        function cleanup() {
+          window.clearTimeout(timer);
+          row.removeEventListener("touchmove", onMove);
+          row.removeEventListener("touchend", cleanup);
+          row.removeEventListener("touchcancel", cleanup);
+        }
+        row.addEventListener("touchmove", onMove, { passive: true });
+        row.addEventListener("touchend", cleanup);
+        row.addEventListener("touchcancel", cleanup);
+      }, { passive: true });
+    }
+
+    function liftRow(row, clientY) {
+      if (sorter.active) return;
+      var rows = Array.prototype.slice.call(timelineEl.querySelectorAll(":scope > .tb-block"));
+      var from = rows.indexOf(row);
+      if (from < 0) return;
+      var first = rows[0];
+      var cs = getComputedStyle(row);
+      GAP = parseFloat(cs.marginBottom) || 0;
+      sorter = {
+        active: true,
+        suppressClick: true,
+        row: row,
+        rows: rows,
+        from: from,
+        to: from,
+        tops: rows.map(function (r) { return r.offsetTop; }),
+        heights: rows.map(function (r) { return r.offsetHeight; }),
+        startY: clientY + window.scrollY,
+        y: clientY,
+        raf: 0,
+        base: first.offsetTop
+      };
+      if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) { try { navigator.vibrate(8); } catch (e) {} }
+      timelineEl.classList.add("is-sorting");
+      row.classList.add("is-lifted");
+      rows.forEach(function (r) { if (r !== row) r.classList.add("is-shifting"); });
+      document.addEventListener("touchmove", onSortMove, { passive: false });
+      document.addEventListener("touchend", onSortEnd);
+      document.addEventListener("touchcancel", onSortEnd);
+      sorter.raf = requestAnimationFrame(sortFrame);
+    }
+
+    function onSortMove(e) {
+      if (!sorter.active) return;
+      e.preventDefault();               // the page must not scroll under the finger
+      sorter.y = e.touches[0].clientY;
+    }
+
+    // the target slot: where the lifted step's centre now sits among the others
+    function slotFor(centre) {
+      var s = sorter, to = s.from;
+      if (centre < s.tops[s.from] + s.heights[s.from] / 2) {
+        for (var j = s.from - 1; j >= 0; j--) {
+          if (centre < s.tops[j] + s.heights[j] / 2) to = j; else break;
+        }
+      } else {
+        for (var k = s.from + 1; k < s.rows.length; k++) {
+          if (centre > s.tops[k] + s.heights[k] / 2) to = k; else break;
+        }
+      }
+      return to;
+    }
+
+    function sortFrame() {
+      var s = sorter;
+      if (!s.active) return;
+      // edge auto-scroll (above the tab bar at the bottom, below the nav at the top)
+      var vh = window.innerHeight;
+      var topEdge = 110, bottomEdge = vh - 130;
+      var speed = 0;
+      if (s.y < topEdge) speed = -Math.min(14, (topEdge - s.y) / 6);
+      else if (s.y > bottomEdge) speed = Math.min(14, (s.y - bottomEdge) / 6);
+      if (speed) window.scrollBy(0, speed);
+
+      var dy = s.y + window.scrollY - s.startY;
+      // keep the lifted step within the list
+      var minDy = s.tops[0] - s.tops[s.from];
+      var last = s.rows.length - 1;
+      var maxDy = s.tops[last] + s.heights[last] - s.heights[s.from] - s.tops[s.from];
+      dy = Math.max(minDy - 12, Math.min(maxDy + 12, dy));
+      s.dy = dy;
+      s.row.style.transform = "translate3d(0," + dy.toFixed(1) + "px,0) scale(1.025)";
+
+      var to = slotFor(s.tops[s.from] + s.heights[s.from] / 2 + dy);
+      if (to !== s.to) {
+        s.to = to;
+        if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) { try { navigator.vibrate(4); } catch (e) {} }
+        var shift = s.heights[s.from] + GAP;
+        s.rows.forEach(function (r, i) {
+          if (i === s.from) return;
+          var off = 0;
+          if (s.from < to && i > s.from && i <= to) off = -shift;
+          if (s.from > to && i >= to && i < s.from) off = shift;
+          r.style.transform = off ? "translate3d(0," + off + "px,0)" : "";
+        });
+      }
+      s.raf = requestAnimationFrame(sortFrame);
+    }
+
+    function onSortEnd() {
+      var s = sorter;
+      if (!s.active) return;
+      s.active = false;
+      cancelAnimationFrame(s.raf);
+      document.removeEventListener("touchmove", onSortMove);
+      document.removeEventListener("touchend", onSortEnd);
+      document.removeEventListener("touchcancel", onSortEnd);
+      // glide the step into its new slot, then commit
+      var target = 0;
+      if (s.to > s.from) for (var i = s.from + 1; i <= s.to; i++) target += s.heights[i] + GAP;
+      if (s.to < s.from) for (var j = s.to; j < s.from; j++) target -= s.heights[j] + GAP;
+      s.row.classList.add("is-settling");
+      s.row.style.transform = "translate3d(0," + target + "px,0)";
+      var done = function () {
+        timelineEl.classList.remove("is-sorting");
+        if (s.to !== s.from) {
+          var moved = blocks.splice(s.from, 1)[0];
+          blocks.splice(s.to, 0, moved);
+          movedId = moved.id;
+          resequenceFromBoarding();
+        }
+        render();
+        // a tap right after a drop must not open the editor
+        window.setTimeout(function () { sorter.suppressClick = false; }, 60);
+      };
+      if (FE_REDUCED_MOTION()) done(); else window.setTimeout(done, 200);
+    }
+    function FE_REDUCED_MOTION() { return typeof FE_REDUCED !== "undefined" && FE_REDUCED; }
 
     var justAdded = null;
     function insertAtEnd(newBlock) {
@@ -1003,6 +1221,7 @@ window.addEventListener("pageshow", function (e) {
         row.dataset.id = b.id;
         row.classList.add("tb-cat-" + b.cat);
         if (b.id === justAdded) row.classList.add("is-new");
+        if (b.id === movedId) row.classList.add("is-moved");
         row.style.borderLeftColor = getComputedStyle(row).color;
         var pairHTML = "";
         if (hasPartners) {
@@ -1029,22 +1248,56 @@ window.addEventListener("pageshow", function (e) {
               itemsHTML +
             '</span>';
         }
+        var idxNow = blocks.indexOf(b);
+        var partnerNames = hasPartners ? b.partners.map(function (p) { return escapeAttr(p.title); }).join(", ") : "";
         row.innerHTML =
-          '<span class="tb-block__handle" draggable="true" aria-hidden="true">&#8942;&#8942;</span>' +
-          '<span class="tb-block__icon tb-block__icon--grab tb-cat-' + b.cat + '" draggable="true">' + ICONS[b.icon] + '</span>' +
+          '<span class="tb-block__handle"' + (touchUI ? "" : ' draggable="true"') + ' aria-hidden="true">&#8942;&#8942;</span>' +
+          '<span class="tb-block__icon tb-block__icon--grab tb-cat-' + b.cat + '"' + (touchUI ? "" : ' draggable="true"') + '>' + ICONS[b.icon] + '</span>' +
           '<span class="tb-block__main">' +
+            /* phone: one compact line you can read at a glance; tap it to edit */
+            '<button type="button" class="tb-sum" aria-expanded="false">' +
+              '<span class="tb-sum__body">' +
+                '<span class="tb-sum__meta">' +
+                  '<span class="tb-sum__time"></span>' +
+                  '<span class="tb-sum__mins"></span>' +
+                  (b.note ? '<span class="tb-sum__warn" title="Heads-up inside">' + ICONS.warn + 'Heads-up</span>' : '') +
+                '</span>' +
+                '<span class="tb-sum__title"></span>' +
+                (hasPartners ? '<span class="tb-sum__duo">+ ' + partnerNames + ' at the same time</span>' : '') +
+                '<span class="tb-sum__bar" aria-hidden="true"><i></i></span>' +
+              '</span>' +
+            '</button>' +
+            '<span class="tb-block__edit"><span class="tb-block__edit-in">' +
             '<span class="tb-block__top">' +
-              '<input class="tb-block__title" value="' + escapeAttr(b.title) + '">' +
-              '<input type="time" class="tb-block__time-input">' +
+              '<input class="tb-block__title" value="' + escapeAttr(b.title) + '" aria-label="Step name">' +
+              '<input type="time" class="tb-block__time-input" aria-label="Start time">' +
               '<button class="tb-block__remove" type="button" aria-label="Remove step">&times;</button>' +
             '</span>' +
             '<span class="tb-block__duration">' +
-              '<input type="range" min="0" max="120" step="5" value="' + b.minutes + '">' +
+              '<input type="range" min="0" max="120" step="5" value="' + b.minutes + '" aria-label="Duration">' +
               '<span class="tb-block__mins"></span>' +
             '</span>' +
             (b.note ? '<span class="tb-block__note">' + ICONS.warn + '<span>' + b.note + '</span></span>' : '') +
             pairHTML +
-          '</span>';
+            '<span class="tb-acts">' +
+              '<button type="button" class="tb-act" data-act="up"' + (idxNow === 0 ? " disabled" : "") + '><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>Move up</button>' +
+              '<button type="button" class="tb-act" data-act="down"' + (idxNow === blocks.length - 1 ? " disabled" : "") + '><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>Move down</button>' +
+              '<button type="button" class="tb-act" data-act="pair"' + (idxNow === 0 || hasPartners || !canPairBlocks(blocks[idxNow - 1], b) ? " disabled" : "") + '><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Same time as above</button>' +
+              '<button type="button" class="tb-act tb-act--danger" data-act="remove"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>Remove</button>' +
+            '</span>' +
+            '</span></span>' +
+          '</span>' +
+          '<span class="tb-grip" aria-hidden="true"><i></i><i></i><i></i></span>';
+        if (b.id === openId) { row.classList.add("is-open"); row.querySelector(".tb-sum").setAttribute("aria-expanded", "true"); }
+
+        row.querySelector(".tb-sum").addEventListener("click", function () {
+          if (sorter.suppressClick) return;
+          toggleOpen(row, b.id);
+        });
+        row.querySelectorAll(".tb-act").forEach(function (btn) {
+          btn.addEventListener("click", function () { stepAction(b.id, btn.getAttribute("data-act")); });
+        });
+        attachTouchSort(row);
 
         row.querySelector(".tb-block__title").addEventListener("input", function (e) { b.title = e.target.value; });
         row.querySelector(".tb-block__remove").addEventListener("click", function () {
@@ -1106,6 +1359,7 @@ window.addEventListener("pageshow", function (e) {
       });
 
       justAdded = null;
+      movedId = null;
       updateDisplay();
     }
 
