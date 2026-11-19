@@ -16,7 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=105">
+<link rel="stylesheet" href="styles.css?v=115">
+<link rel="stylesheet" href="motion.css?v=2">
+<script src="motion.js?v=6"></script>
 </head>
 <body>
 
@@ -78,7 +80,7 @@
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
     <span class="mobile-tabbar__label">Airports</span>
   </a>
-  <a class="mobile-tabbar__item" href="timeblocker.html" aria-current="page">
+  <a class="mobile-tabbar__item" href="timeblocker.html" aria-current="page"><span class="mobile-tabbar__mark" aria-hidden="true"></span>
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
     <span class="mobile-tabbar__label">Timeblocker</span>
   </a>
@@ -106,26 +108,14 @@
           <p class="tb-hero__leave-label">Leave home by</p>
           <p class="tb-hero__leave-time" id="tb-leaveTime">—</p>
         </div>
-        <div class="tb-hero__fields">
-          <div class="tb-hero__flight">
-            <label for="tb-flightDate">Flight day</label>
-            <input type="date" id="tb-flightDate" class="tb-date-input">
-          </div>
-          <div class="tb-hero__flight">
-            <label id="tb-timeLabel">Boarding time</label>
-            <div class="tb-time-field">
-              <button type="button" class="tb-time-display" id="tb-timeDisplay" aria-haspopup="true" aria-expanded="false" aria-labelledby="tb-timeLabel tb-timeDisplayText">
-                <span id="tb-timeDisplayText">5:30 PM</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
-              </button>
-              <div class="tb-time-popover" id="tb-timePopover" hidden>
-                <div class="tb-time-col" id="tb-timeColHour" aria-label="Hour"></div>
-                <div class="tb-time-col" id="tb-timeColMinute" aria-label="Minute"></div>
-                <div class="tb-time-col tb-time-col--period" id="tb-timeColPeriod" aria-label="AM or PM"></div>
-              </div>
-            </div>
-            <input type="time" id="tb-boardingTime" value="17:30" hidden>
-          </div>
+        <div class="tb-when-wrap">
+          <button type="button" class="tb-when" id="tb-whenBtn" aria-haspopup="dialog" aria-expanded="false" aria-label="Change flight day and boarding time">
+            <span class="tb-when__cell"><span class="tb-when__label">Flight day</span><span class="tb-when__value" id="tb-whenDate">Today</span></span>
+            <span class="tb-when__cell tb-when__cell--time"><span class="tb-when__label">Boarding</span><span class="tb-when__value" id="tb-whenTime">5:30 PM</span></span>
+            <span class="tb-when__edit" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </button>
+          <input type="date" id="tb-flightDate" hidden>
+          <input type="time" id="tb-boardingTime" value="17:30" hidden>
         </div>
       </div>
       <div class="tb-hero__tools">
@@ -154,6 +144,12 @@
       </div>
     </div>
 
+    <a class="tb-delay-link" href="delays.html">
+      <span class="tb-delay-link__dot" aria-hidden="true"></span>
+      <span class="tb-delay-link__text"><strong>Flight delayed or cancelled?</strong> Don't worry. Here's what to do next.</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+
     <div class="tb-layout">
       <div class="tb-main-col">
 
@@ -173,11 +169,25 @@
       </div>
 
       <div class="tb-side-col">
-        <p class="tb-activities__heading">Add an activity</p>
-        <p class="tb-activities__hint">Tap a block to add it — or drag one onto a step to do it at the same time (up to 3 activities per step).</p>
-        <div id="tb-activitySections"></div>
+        <div class="tb-pick" id="tb-pick" aria-label="Add an activity">
+          <span class="tb-pick__grab" aria-hidden="true"></span>
+          <div class="tb-pick__head">
+            <p class="tb-pick__title">Add an activity</p>
+            <button class="tb-pick__close" id="tb-pickClose" type="button">Done</button>
+          </div>
+          <p class="tb-pick__hint"><span class="tb-pick__hint-tap">Tap one to add it to your plan.</span><span class="tb-pick__hint-drag"> Or drag it into place, or onto a step to do both at once (up to 3).</span></p>
+          <div class="tb-pick__tabs" id="tb-pickTabs" role="tablist" aria-label="Activity type"></div>
+          <div class="tb-pick__stage" id="tb-activitySections"></div>
+          <p class="tb-pick__toast" id="tb-pickToast" aria-live="polite"></p>
+        </div>
       </div>
     </div>
+
+    <button class="tb-pick-fab" id="tb-pickFab" type="button" aria-controls="tb-pick" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      Add activity
+    </button>
+    <div class="tb-sheet-backdrop" id="tb-pickBackdrop" hidden></div>
 
     <div class="tb-print-sheet" id="tb-printSheet" aria-hidden="true"></div>
 
@@ -194,6 +204,7 @@
       <a href="airports.html">Airports</a>
       <a href="timeblocker.html">Timeblocker</a>
       <a href="packer.html">Packer</a>
+      <a href="delays.html">Delays</a>
       <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
     </nav>
     <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
@@ -210,6 +221,6 @@
   <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
 </div>
 
-<script src="script.js?v=112"></script>
+<script src="script.js?v=120"></script>
 </body>
 </html>

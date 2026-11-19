@@ -1,39 +1,107 @@
-/* Arriving from another Fly Easy page in this visit: skip the phone
-   tab bar's entrance so it stays put like a native app's. */
-try {
-  if (sessionStorage.getItem("fe-seen")) document.documentElement.classList.add("is-returning");
-  sessionStorage.setItem("fe-seen", "1");
-} catch (e) {}
+/* How a page arrives (direction, view transitions, the tab bar staying
+   put) is decided in motion.js, which runs in <head> before the first
+   paint. The shared pieces of in-page motion live here. */
+var FE_REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* Cross-document view transitions (@view-transition in styles.css):
-   when the browser skips one (fast clicks, reduced motion, a hidden
-   tab), it rejects the transition's promises and logs an uncaught
-   AbortError. Nothing is broken — just acknowledge the rejections. */
-function quietViewTransition(e) {
-  var vt = e.viewTransition;
-  if (!vt) return;
-  ["ready", "finished", "updateCallbackDone"].forEach(function (k) {
-    if (vt[k] && vt[k].catch) vt[k].catch(function () {});
+/* swapCard: one hand-off for every card / panel whose content changes.
+   The old content leaves fast, update() swaps it, the new content
+   glides in. dir: 1 = the new content comes from the right, -1 = from
+   the left, 0 = from just below. Tapping again mid-swap never queues:
+   the pending swap completes at once and the new one starts.
+   inEl is the element that arrives (defaults to the one that left). */
+function swapCard(el, dir, update, inEl) {
+  inEl = inEl || el;
+  if (FE_REDUCED || !el.animate) { update(); return; }
+  if (el._swapFlush) el._swapFlush();
+  if (inEl._swapIn) { inEl._swapIn.cancel(); inEl._swapIn = null; }
+
+  var off = function (px) { return dir ? "translateX(" + (dir * px) + "px)" : "translateY(" + px + "px)"; };
+  var out = el.animate(
+    [{ opacity: 1, transform: "none" }, { opacity: 0, transform: dir ? off(-16) : "translateY(-4px)" }],
+    { duration: 120, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" }
+  );
+  var done = false, safety = 0;
+  function arrive() {
+    if (done) return;
+    done = true;
+    window.clearTimeout(safety);
+    el._swapFlush = null;
+    update();
+    out.cancel();
+    var arriving = inEl.animate(
+      [{ opacity: 0, transform: off(dir ? 26 : 10) }, { opacity: 1, transform: "none" }],
+      { duration: 340, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }
+    );
+    inEl._swapIn = arriving;
+    arriving.onfinish = arriving.oncancel = function () { if (inEl._swapIn === arriving) inEl._swapIn = null; };
+  }
+  el._swapFlush = arrive;
+  out.onfinish = arrive;
+  /* animation clocks pause in hidden tabs: never leave a card blank */
+  safety = window.setTimeout(arrive, 220);
+}
+
+/* Photos inside tabs that aren't open yet (Global Tips phase covers,
+   for example) are CSS backgrounds of hidden elements, which browsers
+   don't even download until the tab is shown, so the first tap would
+   slide in a card whose photo pops in late. Once the page has arrived
+   and loaded, fetch and decode them in idle time. */
+(function () {
+  function warm() {
+    var seen = {};
+    var els = document.querySelectorAll('[hidden] [style*="background-image"], [hidden][style*="background-image"]');
+    Array.prototype.forEach.call(els, function (el) {
+      var m = /url\(\s*['"]?([^'")]+)/.exec(el.getAttribute("style") || "");
+      if (!m || seen[m[1]]) return;
+      seen[m[1]] = true;
+      var img = new Image();
+      img.decoding = "async";
+      img.src = m[1];
+      if (img.decode) img.decode().catch(function () {});
+    });
+  }
+  function idle() {
+    (window.requestIdleCallback || function (f) { window.setTimeout(f, 400); })(warm, { timeout: 3000 });
+  }
+  (window.feArrival || Promise.resolve()).then(function () {
+    if (document.readyState === "complete") idle();
+    else window.addEventListener("load", idle, { once: true });
+  });
+})();
+
+/* revealOnScroll: elements glide in as they enter the screen. Items
+   that arrive together are staggered as one group; once landed, the
+   helper lets go so hover / press motion on the element is never
+   slowed by the arrival's timing.
+   opts.shown = class that shows the element; opts.base = optional
+   class that hides it first (removed again after landing). */
+function revealOnScroll(nodes, opts) {
+  var list = Array.prototype.slice.call(nodes);
+  if (!list.length) return;
+  if (FE_REDUCED || !("IntersectionObserver" in window)) {
+    list.forEach(function (el) { if (!opts.base) el.classList.add(opts.shown); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    var n = 0;
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      var el = entry.target;
+      io.unobserve(el);
+      var delay = Math.min(n++, 5) * 55;
+      el.style.transitionDelay = delay + "ms";
+      el.classList.add(opts.shown);
+      window.setTimeout(function () {
+        el.style.transitionDelay = "";
+        if (opts.base) el.classList.remove(opts.base, opts.shown);
+      }, delay + 720);
+    });
+  }, { rootMargin: "0px 0px -7% 0px", threshold: 0.06 });
+  list.forEach(function (el) {
+    if (opts.base) el.classList.add(opts.base);
+    io.observe(el);
   });
 }
-window.addEventListener("pagereveal", quietViewTransition);
-window.addEventListener("pageswap", function (e) {
-  /* Leaving the photo-heavy About page: skip the cross-document
-     snapshot (the plane page-transition already covers the exit),
-     so the browser never holds both pages' images at once. */
-  if (e.viewTransition && (document.body.classList.contains("page-about") ||
-      document.documentElement.classList.contains("is-globe-leaving"))) {
-    e.viewTransition.skipTransition();
-  }
-  quietViewTransition(e);
-});
-/* Arriving back on the globe (?rise=): the globe's climb is the transition */
-window.addEventListener("pagereveal", function (e) {
-  if (e.viewTransition && document.documentElement.classList.contains("ap-rise")) {
-    quietViewTransition(e);
-    e.viewTransition.skipTransition();
-  }
-});
 
 /* "Back to globe" (airport guide pages): space opens from the button,
    the page sinks back, then airports.html?rise=xxx climbs from that
@@ -46,15 +114,22 @@ document.addEventListener("click", function (e) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   e.preventDefault();
   var r = link.getBoundingClientRect();
+  /* a circle of night sky grows from the button (scaled, never
+     re-clipped, so the graphics chip does all the work), then the
+     stars come out over it */
   var veil = document.createElement("div");
+  var stars = document.createElement("div");
   veil.className = "globe-exit";
+  stars.className = "globe-exit__stars";
   veil.style.setProperty("--gx", (r.left + r.width / 2) + "px");
   veil.style.setProperty("--gy", (r.top + r.height / 2) + "px");
   document.body.appendChild(veil);
+  document.body.appendChild(stars);
   document.documentElement.classList.add("is-globe-leaving");
   veil.getBoundingClientRect();              /* commit the start state */
   veil.classList.add("is-open");
-  setTimeout(function () { window.location.href = link.href; }, 640);
+  stars.classList.add("is-open");
+  setTimeout(function () { window.location.href = link.href; }, 500);
 }, true);
 /* iPhone/iPad Safari zooms the whole page in when you tap a text field
    whose text is under 16px (Packer's item names, for example) and
@@ -88,60 +163,62 @@ document.addEventListener("click", function (e) {
     if (!ticking) { ticking = true; requestAnimationFrame(update); }
   }, { passive: true });
 })();
+/* Airport guide pages: download the globe's files in idle time, so
+   "Back to globe" climbs straight into a ready planet instead of
+   empty space on a first visit. Keep these in step with the import
+   map and the preloads in airports.html. */
+(function () {
+  if (!document.querySelector("a[data-globe-return]") || !window.fetch) return;
+  var c = navigator.connection;
+  if (c && (c.saveData || /2g/.test(c.effectiveType || ""))) return;
+  var GLOBE_FILES = [
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js",
+    "airports-globe.js?v=2",
+    "airports.js?v=5",
+    "airports-data.js?v=2",
+    "images/globe/earth-day-512.jpg",
+    "images/globe/earth-night-512.jpg"
+  ];
+  function warm() {
+    GLOBE_FILES.forEach(function (u) {
+      /* same request mode as the globe page uses (module scripts and
+         crossorigin images are CORS requests), so the cached copy is reused */
+      fetch(u, { mode: "cors", credentials: "same-origin" }).catch(function () {});
+    });
+  }
+  function idle() {
+    (window.requestIdleCallback || function (f) { window.setTimeout(f, 1500); })(warm, { timeout: 4000 });
+  }
+  (window.feArrival || Promise.resolve()).then(function () {
+    if (document.readyState === "complete") idle();
+    else window.addEventListener("load", idle, { once: true });
+  });
+})();
 /* back-button return to a guide page (bfcache): clear the exit */
 window.addEventListener("pageshow", function (e) {
   if (!e.persisted) return;
   document.documentElement.classList.remove("is-globe-leaving");
-  var v = document.querySelector(".globe-exit");
-  if (v) v.remove();
+  document.querySelectorAll(".globe-exit, .globe-exit__stars").forEach(function (v) { v.remove(); });
 });
 
 (function () {
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var cards = document.querySelectorAll(".tip-card");
+  revealOnScroll(document.querySelectorAll(".tip-card"), { shown: "is-visible" });
 
-  if (reduceMotion || !("IntersectionObserver" in window)) {
-    cards.forEach(function (card) { card.classList.add("is-visible"); });
-  } else {
-    var observer = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -60px 0px", threshold: 0.1 }
-    );
-    cards.forEach(function (card, i) {
-      card.style.transitionDelay = (i % 6) * 50 + "ms";
-      observer.observe(card);
-    });
-  }
-
-  /* ---------------- Page transition (plane fly-out on internal nav) ---------------- */
-  var pageTransition = document.getElementById("page-transition");
-  if (pageTransition && !reduceMotion) {
-    document.addEventListener("click", function (e) {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      var link = e.target.closest("a[href]");
-      if (!link) return;
-      if (link.target && link.target !== "_self") return;
-      if (link.hasAttribute("download")) return;
-
-      var url;
-      try { url = new URL(link.href, window.location.href); } catch (err) { return; }
-      if (url.origin !== window.location.origin) return;
-      if (url.pathname === window.location.pathname && url.hash) return;
-
-      e.preventDefault();
-      pageTransition.classList.add("is-exiting");
-      window.setTimeout(function () {
-        window.location.href = link.href;
-      }, 380);
-    });
-  }
+  /* ---------------- Page changes ----------------
+     Links navigate immediately; motion.js + motion.css animate the
+     change. All that's left here is an instant answer to a tab tap. */
+  document.addEventListener("click", function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var tab = e.target.closest && e.target.closest(".mobile-tabbar__item");
+    if (tab && !tab.hasAttribute("aria-current")) tab.classList.add("is-going");
+  });
+  window.addEventListener("pageshow", function (e) {
+    if (!e.persisted) return;
+    var going = document.querySelector(".mobile-tabbar__item.is-going");
+    if (going) going.classList.remove("is-going");
+  });
 
   /* ---------------- SFO Terminal Explorer ---------------- */
   var tabs = document.querySelectorAll(".explorer__tab");
@@ -179,7 +256,7 @@ window.addEventListener("pageshow", function (e) {
       notes: [
         "🍜 <strong>Bun Mee, Terminal 1</strong> — a local favorite for Vietnamese bánh mì sandwiches, open early into the evening.",
         "🧸 <strong>\"Tree Town\" kids' spot, Gate B18 (post-security)</strong> — a climbable structure carved from a reclaimed oak tree.",
-        "🖼️ <strong>SFO Museum galleries throughout T1</strong> — rotating art and photography pre-security, plus \"Women of Afrofuturism\" post-security, an exhibit on Afrofuturist art and history."
+        "🖼️ <strong>SFO Museum galleries throughout T1</strong> — free rotating art and history exhibits, both before and after security. Shows change every few months, so there's usually something new."
       ]
     },
     t2: {
@@ -188,7 +265,7 @@ window.addEventListener("pageshow", function (e) {
       badge: "Domestic",
       col1Label: "✈️ Main carriers",
       col2Label: "💆 Ease the stress here",
-      airlines: ["Air Canada", "Breeze Airways", "Southwest Airlines", "WestJet"],
+      airlines: ["Air Canada", "Breeze Airways", "Southwest Airlines"],
       notes: [
         "🛬 <strong>Free planespotting before security</strong> — the SkyTerrace deck is on the Terminal 2 roof, landside, open to the public.",
         "🧘 <strong>Yoga room, Boarding Area D (just past security)</strong> — free mats, no-shoes policy, in the corridor toward Terminal 1.",
@@ -352,8 +429,8 @@ window.addEventListener("pageshow", function (e) {
       panel.classList.add(headingEast ? "slide-in-e" : "slide-in-w", "is-arriving");
       panelCleanTimer = window.setTimeout(function () {
         PANEL_ANIM_CLASSES.forEach(function (c) { panel.classList.remove(c); });
-      }, 750);
-    }, 190);
+      }, 620);
+    }, 130);
   }
 
   tabs.forEach(function (tab) {
@@ -387,24 +464,20 @@ window.addEventListener("pageshow", function (e) {
         b.setAttribute("aria-selected", active ? "true" : "false");
       });
 
-      if (reduceMotion || !oldPanel || !newPanel) {
+      if (!oldPanel || !newPanel) {
         if (oldPanel) oldPanel.hidden = true;
         if (newPanel) newPanel.hidden = false;
         return;
       }
-
-      oldPanel.classList.add("view-panel--fading");
-      window.setTimeout(function () {
-        oldPanel.hidden = true;
-        oldPanel.classList.remove("view-panel--fading");
-        newPanel.hidden = false;
-        newPanel.classList.add("view-panel--entering");
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            newPanel.classList.remove("view-panel--entering");
-          });
+      /* the new view comes from the side its button sits on */
+      var order = Array.prototype.indexOf;
+      var dir = order.call(buttons, btn) > order.call(buttons, activeBtn) ? 1 : -1;
+      swapCard(oldPanel, dir, function () {
+        buttons.forEach(function (b) {
+          var p = document.getElementById(b.getAttribute("aria-controls"));
+          if (p) p.hidden = b !== btn;
         });
-      }, 180);
+      }, newPanel);
     });
   });
   }
@@ -421,8 +494,6 @@ window.addEventListener("pageshow", function (e) {
       tip: "📶 Free high-speed Wi-Fi and live TV at every seat, no membership needed." },
     { code: "F9", name: "Frontier Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
       tip: "🎒 Add bags and seats online in advance — it's much cheaper than at the gate." },
-    { code: "NK", name: "Spirit Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
-      tip: "🎒 Weigh and measure bags at home — oversize fees at the gate are steep." },
     { code: "MX", name: "Breeze Airways", terminal: "Terminal 2", gates: "Gates D1–D18", domestic: true,
       tip: "📲 A newer low-cost carrier based in Terminal 2 — the app is the fastest way to track your gate and boarding time." },
     { code: "AA", name: "American Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: true,
@@ -435,8 +506,8 @@ window.addEventListener("pageshow", function (e) {
       tip: "🌺 Now boards from Terminal 1 alongside its parent Alaska Airlines, following the 2024 merger — no more trek to the International Terminal." },
     { code: "AC", name: "Air Canada", terminal: "Terminal 2", gates: "Gates D1–D18", domestic: false,
       tip: "🛂 Now based in Terminal 2, not the International Terminal — but a Canada trip is still an international departure, so bring your passport." },
-    { code: "WS", name: "WestJet", terminal: "Terminal 2", gates: "Gates D1–D18", domestic: false,
-      tip: "🛂 Now based in Terminal 2, not the International Terminal — a Canada hop is still an international departure, passport required." },
+    { code: "WS", name: "WestJet", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: false,
+      tip: "🛂 Moved to Terminal 1 in March 2025, not the International Terminal — a Canada hop is still an international departure, so bring your passport." },
     { code: "PD", name: "Porter Airlines", terminal: "Terminal 1 · Boarding Areas B & C", gates: "Gates B1–B27", domestic: false,
       tip: "🇨🇦 A newer, fast-growing entrant to SFO — its terminal has shifted before as routes expand, so double-check the day of travel." },
     { code: "BA", name: "British Airways", terminal: "International Terminal · Boarding Area A", gates: "Gates A1–A15", domestic: false,
@@ -570,12 +641,18 @@ window.addEventListener("pageshow", function (e) {
     countEl.textContent = results.length + (results.length === 1 ? " airline" : " airlines") + " shown";
   }
 
-  searchInput.addEventListener("input", render);
+  /* typing filters instantly (no ripple on every keystroke);
+     choosing a filter replays the ripple */
+  searchInput.addEventListener("input", function () {
+    grid.classList.add("is-typing");
+    render();
+  });
   filterButtons.forEach(function (btn) {
     btn.addEventListener("click", function () {
       filterButtons.forEach(function (b) { b.classList.remove("is-active"); });
       btn.classList.add("is-active");
       activeFilter = btn.getAttribute("data-filter");
+      grid.classList.remove("is-typing");
       render();
     });
   });
@@ -597,7 +674,7 @@ window.addEventListener("pageshow", function (e) {
         el.classList.add("is-visible");
         return;
       }
-      el.style.transitionDelay = (i * 45) + "ms";
+      el.style.transitionDelay = (Math.min(i, 7) * 26) + "ms";
       requestAnimationFrame(function () {
         requestAnimationFrame(function () { el.classList.add("is-visible"); });
       });
@@ -626,16 +703,14 @@ window.addEventListener("pageshow", function (e) {
       window.setTimeout(function () { planeBank.classList.remove("is-banking"); }, 550);
     }
 
-    if (reduceMotion) {
-      showPanel(key);
-      return;
-    }
-
-    card.classList.add("is-transitioning");
-    window.setTimeout(function () {
-      showPanel(key);
-      card.classList.remove("is-transitioning");
-    }, 220);
+    /* the card travels with the plane: forward along the route the
+       next phase comes in from the right, backward from the left */
+    var from = -1, to = -1;
+    stops.forEach(function (s, i) {
+      if (s.getAttribute("data-phase") === card.getAttribute("data-phase")) from = i;
+      if (s.getAttribute("data-phase") === key) to = i;
+    });
+    swapCard(card, to >= from ? 1 : -1, function () { showPanel(key); });
   }
 
   stops.forEach(function (stop) {
@@ -678,6 +753,10 @@ window.addEventListener("pageshow", function (e) {
       coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.3 15.2c0 1 1.1 1.8 2.7 1.8 1.9 0 3-1 3-2.3 0-3-5.7-1.5-5.7-4.4 0-1.3 1.2-2.3 3-2.3 1.6 0 2.6.7 2.7 1.7"/></svg>',
       meal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.1"/></svg>',
       stretch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="4.2" r="1.6" fill="currentColor" stroke="none"/><path d="M12 8v5M8 6.5l4 2 4-2M8 20l4-7 4 7"/></svg>',
+      clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+      key: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="14.5" r="4"/><path d="M11 11.5L19 3.5M16 6.5l2.5 2.5M13.5 9l2 2"/></svg>',
+      download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v11M7.5 11l4.5 4.5 4.5-4.5M5 19.5h14"/></svg>',
+      family: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="6.5" r="2.3"/><circle cx="17" cy="10" r="1.8"/><path d="M3.5 20v-4a4.5 4.5 0 019 0v4M14 20v-2.5a3 3 0 016 0V20"/></svg>',
       headphones: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14.5v-2a8 8 0 0116 0v2"/><rect x="3" y="13.2" width="4.2" height="6.2" rx="1.5"/><rect x="16.8" y="13.2" width="4.2" height="6.2" rx="1.5"/></svg>'
     };
 
@@ -701,46 +780,54 @@ window.addEventListener("pageshow", function (e) {
       "Bus": MAPS_NOTE,
       "Driving": MAPS_NOTE,
       "Taxi / rideshare": MAPS_NOTE,
-      "Curbside drop-off": MAPS_NOTE
+      "Curbside drop-off": MAPS_NOTE,
+      "Airport shuttle": MAPS_NOTE
     };
 
     /* Ordered to follow the actual shape of a travel day: get
        there, clear the required steps, handle logistics, then
        eat and unwind. */
     var SECTIONS = [
-      { title: "Getting to the airport", cat: "going", items: [
+      { title: "Getting to the airport", short: "Getting there", icon: "car", cat: "going", items: [
           { key: "subway", title: "Subway / transit", icon: "train", minutes: 25, note: MAPS_NOTE },
           { key: "bus", title: "Bus", icon: "bus", minutes: 30, note: MAPS_NOTE },
           { key: "driving", title: "Driving", icon: "car", minutes: 30, note: MAPS_NOTE },
           { key: "taxi", title: "Taxi / rideshare", icon: "taxi", minutes: 25, note: MAPS_NOTE },
           { key: "parking", title: "Parking", icon: "parking", minutes: 10 },
-          { key: "dropoff", title: "Curbside drop-off", icon: "pin", minutes: 5, note: MAPS_NOTE }
+          { key: "dropoff", title: "Curbside drop-off", icon: "pin", minutes: 5, note: MAPS_NOTE },
+          { key: "shuttle", title: "Airport shuttle", icon: "bus", minutes: 20, note: MAPS_NOTE },
+          { key: "rental", title: "Return rental car", icon: "key", minutes: 20 }
         ]
       },
-      { title: "The essentials", cat: "airport", items: [
+      { title: "The essentials", short: "Essentials", icon: "shield", cat: "airport", items: [
           { key: "bagdrop", title: "Check in / Baggage Drop off", icon: "bag", minutes: 15 },
           { key: "passport", title: "Passport control", icon: "passport", minutes: 15 },
           { key: "security2", title: "Security", icon: "shield", minutes: 20, note: SECURITY_NOTE },
-          { key: "walk2", title: "Walk to your gate", icon: "walk", minutes: 8 }
+          { key: "walk2", title: "Walk to your gate", icon: "walk", minutes: 8 },
+          { key: "buffer", title: "Buffer time", icon: "clock", minutes: 15 },
+          { key: "gatecheck", title: "Recheck gate on screens", icon: "eye", minutes: 5 }
         ]
       },
-      { title: "Errands", cat: "gate", items: [
+      { title: "Errands", short: "Errands", icon: "cart", cat: "gate", items: [
           { key: "restroom", title: "Restroom", icon: "restroom", minutes: 5 },
           { key: "charging", title: "Charge devices", icon: "battery", minutes: 10 },
           { key: "printing", title: "Print documents", icon: "printer", minutes: 5 },
           { key: "currency", title: "Currency exchange", icon: "coin", minutes: 10 },
           { key: "shopping", title: "Shopping", icon: "cart", minutes: 15 },
-          { key: "work", title: "Work", icon: "laptop", minutes: 20 }
+          { key: "work", title: "Work", icon: "laptop", minutes: 20 },
+          { key: "downloads", title: "Download shows & passes", icon: "download", minutes: 10 },
+          { key: "family", title: "Kids / family break", icon: "family", minutes: 15 }
         ]
       },
-      { title: "Food & drink", cat: "food", items: [
+      { title: "Food & drink", short: "Food", icon: "cup", cat: "food", items: [
           { key: "coffee", title: "Coffee", icon: "cup", minutes: 10 },
           { key: "food", title: "Grab food", icon: "fork", minutes: 20 },
           { key: "meal", title: "Sit-down meal", icon: "meal", minutes: 30 },
-          { key: "water", title: "Water refill", icon: "droplet", minutes: 5 }
+          { key: "water", title: "Water refill", icon: "droplet", minutes: 5 },
+          { key: "snacks", title: "Snacks for the flight", icon: "cart", minutes: 10 }
         ]
       },
-      { title: "Relax & explore", cat: "explore", items: [
+      { title: "Relax & explore", short: "Relax", icon: "couch", cat: "explore", items: [
           { key: "relax", title: "Time to relax", icon: "couch", minutes: 15 },
           { key: "stretch", title: "Stretch / walk", icon: "stretch", minutes: 10 },
           { key: "music", title: "Listen to music / podcast", icon: "headphones", minutes: 15 },
@@ -854,7 +941,9 @@ window.addEventListener("pageshow", function (e) {
       });
     }
 
+    var justAdded = null;
     function insertAtEnd(newBlock) {
+      justAdded = newBlock.id;
       blocks.push(newBlock);
       resequenceFromBoarding();
       render();
@@ -913,6 +1002,7 @@ window.addEventListener("pageshow", function (e) {
         if (hasPartners) row.classList.add("tb-block--duo");
         row.dataset.id = b.id;
         row.classList.add("tb-cat-" + b.cat);
+        if (b.id === justAdded) row.classList.add("is-new");
         row.style.borderLeftColor = getComputedStyle(row).color;
         var pairHTML = "";
         if (hasPartners) {
@@ -999,6 +1089,7 @@ window.addEventListener("pageshow", function (e) {
 
         function startMove() {
           dragPayload = { type: "move", id: b.id };
+          timelineEl.classList.add("is-receiving");
           window.setTimeout(function () { row.classList.add("is-dragging"); }, 0);
         }
         function endMove() {
@@ -1014,6 +1105,7 @@ window.addEventListener("pageshow", function (e) {
         timelineEl.appendChild(row);
       });
 
+      justAdded = null;
       updateDisplay();
     }
 
@@ -1029,9 +1121,12 @@ window.addEventListener("pageshow", function (e) {
     var dragPayload = null;
     var dropBar = document.createElement("div");
     dropBar.className = "tb-drop-bar";
-    dropBar.innerHTML = '<span class="tb-drop-bar__plane">' + ICONS.walk + "</span>";
+    dropBar.innerHTML = '<span class="tb-drop-bar__plane">' + ICONS.walk + '</span><span class="tb-drop-bar__text">Drop here</span>';
 
     function clearDragUI() {
+      timelineEl.classList.remove("is-receiving");
+      lastSpot = null;
+      dropBar.classList.remove("is-on", "is-gliding");
       if (dropBar.parentNode) dropBar.parentNode.removeChild(dropBar);
       timelineEl.querySelectorAll(".pair-hint").forEach(function (r) { r.classList.remove("pair-hint"); });
     }
@@ -1052,49 +1147,94 @@ window.addEventListener("pageshow", function (e) {
       return true;
     }
 
+    /* The list never moves while you drag. Positions are read from the
+       layout (offsetTop ignores transforms) and the drop line floats over
+       the gap, so nothing under the cursor shifts and the target can't
+       bounce. A small dead band around the "both at once" zone keeps it
+       steady near the edges. */
+    var lastSpot = null;
+
     function readDropSpot(e) {
-      var rows = Array.prototype.slice.call(timelineEl.querySelectorAll(".tb-block"));
+      var rows = Array.prototype.slice.call(timelineEl.querySelectorAll(":scope > .tb-block"));
+      var y = e.clientY - timelineEl.getBoundingClientRect().top;
       for (var i = 0; i < rows.length; i++) {
-        var r = rows[i].getBoundingClientRect();
+        var top = rows[i].offsetTop;
+        var h = rows[i].offsetHeight;
+        var bottom = top + h;
+        var nextTop = rows[i + 1] ? rows[i + 1].offsetTop : bottom + 24;
+        var gapEnd = (bottom + nextTop) / 2;
+        if (y > gapEnd && i < rows.length - 1) continue;
         var blk = blocks.find(function (x) { return x.id === rows[i].dataset.id; });
-        var pairTop = r.top + r.height * 0.3;
-        var pairBottom = r.bottom - r.height * 0.3;
-        if (e.clientY < r.top + r.height / 2) {
-          if (e.clientY >= pairTop && blk && canPairWith(blk) && !rows[i].classList.contains("is-dragging")) {
-            return { mode: "pair", row: rows[i], block: blk };
-          }
-          return { mode: "insert", index: i, beforeRow: rows[i] };
+        var pairable = blk && canPairWith(blk) && !rows[i].classList.contains("is-dragging");
+        var holding = lastSpot && lastSpot.mode === "pair" && lastSpot.row === rows[i];
+        var edge = h * (holding ? 0.2 : 0.3);
+        if (pairable && y >= top + edge && y <= bottom - edge) {
+          return { mode: "pair", row: rows[i], block: blk, key: "p" + blk.id };
         }
-        if (e.clientY <= pairBottom && blk && canPairWith(blk) && !rows[i].classList.contains("is-dragging")) {
-          return { mode: "pair", row: rows[i], block: blk };
-        }
+        var index = y < top + h / 2 ? i : i + 1;
+        return { mode: "insert", index: index, key: "i" + index };
       }
-      return { mode: "insert", index: rows.length, beforeRow: null };
+      return { mode: "insert", index: 0, key: "i0" };
+    }
+
+    /* where the line sits for an insert at `index` (middle of the gap) */
+    function gapY(index) {
+      var rows = timelineEl.querySelectorAll(":scope > .tb-block");
+      if (!rows.length) return 8;
+      if (index <= 0) return rows[0].offsetTop - 6;
+      var prev = rows[index - 1];
+      var prevBottom = prev.offsetTop + prev.offsetHeight;
+      if (index >= rows.length) return prevBottom + 6;
+      return (prevBottom + rows[index].offsetTop) / 2;
+    }
+
+    /* moving a step next to itself changes nothing, so show no line there */
+    function isNoOp(spot) {
+      if (spot.mode !== "insert" || !dragPayload || dragPayload.type !== "move") return false;
+      var from = blocks.findIndex(function (x) { return x.id === dragPayload.id; });
+      return spot.index === from || spot.index === from + 1;
+    }
+
+    function showSpot(spot) {
+      if (lastSpot && lastSpot.key === spot.key) return;
+      if (lastSpot && lastSpot.mode === "pair" && lastSpot.row) lastSpot.row.classList.remove("pair-hint");
+      var wasShown = dropBar.parentNode && dropBar.classList.contains("is-on");
+      lastSpot = spot;
+      if (spot.mode === "pair") {
+        dropBar.classList.remove("is-on");
+        spot.row.classList.add("pair-hint");
+        return;
+      }
+      if (!dropBar.parentNode) timelineEl.appendChild(dropBar);
+      if (isNoOp(spot)) { dropBar.classList.remove("is-on"); return; }
+      /* first appearance fades in on the spot; after that it glides */
+      dropBar.classList.toggle("is-gliding", !!wasShown);
+      dropBar.style.transform = "translateY(" + gapY(spot.index) + "px)";
+      dropBar.classList.add("is-on");
     }
 
     timelineEl.addEventListener("dragover", function (e) {
       if (!dragPayload) return;
       e.preventDefault();
+      timelineEl.classList.add("is-receiving");
       if (e.dataTransfer) e.dataTransfer.dropEffect = dragPayload.type === "move" ? "move" : "copy";
-      var spot = readDropSpot(e);
-      timelineEl.querySelectorAll(".pair-hint").forEach(function (r) { r.classList.remove("pair-hint"); });
-      if (spot.mode === "pair") {
-        if (dropBar.parentNode) dropBar.parentNode.removeChild(dropBar);
-        spot.row.classList.add("pair-hint");
-      } else {
-        if (spot.beforeRow) timelineEl.insertBefore(dropBar, spot.beforeRow);
-        else timelineEl.appendChild(dropBar);
-      }
+      showSpot(readDropSpot(e));
     });
 
     timelineEl.addEventListener("dragleave", function (e) {
-      if (e.target === timelineEl && !timelineEl.contains(e.relatedTarget)) clearDragUI();
+      if (e.relatedTarget && timelineEl.contains(e.relatedTarget)) return;
+      /* Safari often reports no relatedTarget: trust the pointer instead */
+      var r = timelineEl.getBoundingClientRect();
+      if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) return;
+      dropBar.classList.remove("is-on");
+      if (lastSpot && lastSpot.row) lastSpot.row.classList.remove("pair-hint");
+      lastSpot = null;
     });
 
     timelineEl.addEventListener("drop", function (e) {
       if (!dragPayload) return;
       e.preventDefault();
-      var spot = readDropSpot(e);
+      var spot = lastSpot || readDropSpot(e);
       var payload = dragPayload;
       dragPayload = null;
       clearDragUI();
@@ -1117,6 +1257,7 @@ window.addEventListener("pageshow", function (e) {
 
       var index = spot.index;
       if (payload.type === "new") {
+        justAdded = "b" + nextId;
         blocks.splice(index, 0, { id: "b" + (nextId++), title: payload.item.title, cat: payload.item.cat, icon: payload.item.icon, minutes: payload.item.minutes, note: payload.item.note || null });
       } else {
         var fromIdx = blocks.findIndex(function (x) { return x.id === payload.id; });
@@ -1134,33 +1275,60 @@ window.addEventListener("pageshow", function (e) {
       clearDragUI();
     });
 
+    /* ==========================================================
+       Activity picker: one tab per kind of activity, big tap
+       targets. On a laptop it sits beside the plan; on a phone it
+       is a sheet that slides up from the "Add activity" button.
+       ========================================================== */
     function renderChips() {
-      activitySectionsEl.innerHTML = "";
-      SECTIONS.forEach(function (section) {
-        var titleEl = document.createElement("p");
-        titleEl.className = "tb-activity-section__title tb-cat-title-" + (section.cat || "none");
-        activitySectionsEl.appendChild(titleEl);
-        titleEl.textContent = section.title;
+      var tabsEl = document.getElementById("tb-pickTabs");
+      var stage = activitySectionsEl;
+      var pick = document.getElementById("tb-pick");
+      var toast = document.getElementById("tb-pickToast");
+      var fab = document.getElementById("tb-pickFab");
+      var backdrop = document.getElementById("tb-pickBackdrop");
+      var closeBtn = document.getElementById("tb-pickClose");
+      var current = 0;
+      var toastTimer = null;
+      var tabs = [];
 
-        var grid = document.createElement("div");
-        grid.className = "tb-activity-grid";
+      function addItem(item, cat, card) {
+        insertAtEnd({ id: "b" + (nextId++), title: item.title, cat: cat, icon: item.icon, minutes: item.minutes, note: item.note || null });
+        if (card) {
+          card.classList.remove("is-added");
+          void card.offsetWidth;
+          card.classList.add("is-added");
+        }
+        if (toast) {
+          toast.textContent = item.title + " added to your plan ✓";
+          toast.classList.add("is-on");
+          window.clearTimeout(toastTimer);
+          toastTimer = window.setTimeout(function () { toast.classList.remove("is-on"); }, 2200);
+        }
+      }
 
-        section.items.forEach(function (item) {
+      function fill() {
+        var section = SECTIONS[current];
+        stage.innerHTML = "";
+        stage.setAttribute("aria-labelledby", "tb-pickTab-" + current);
+        section.items.forEach(function (item, n) {
           var cat = item.cat || section.cat;
           var card = document.createElement("button");
           card.type = "button";
           card.className = "tb-activity-card";
+          card.style.setProperty("--i", n);
           card.innerHTML =
             '<span class="tb-activity-card__icon tb-cat-' + cat + '">' + ICONS[item.icon] + '</span>' +
-            '<span class="tb-activity-card__title">' + item.title + '</span>' +
-            '<span class="tb-activity-card__mins">' + item.minutes + 'm</span>';
-          card.addEventListener("click", function () {
-            insertAtEnd({ id: "b" + (nextId++), title: item.title, cat: cat, icon: item.icon, minutes: item.minutes, note: item.note || null });
-          });
+            '<span class="tb-activity-card__body"><span class="tb-activity-card__title">' + item.title + '</span>' +
+            '<span class="tb-activity-card__mins">' + item.minutes + ' min</span></span>' +
+            '<span class="tb-activity-card__add" aria-hidden="true"></span>';
+          card.setAttribute("aria-label", "Add " + item.title + ", " + item.minutes + " minutes");
+          card.addEventListener("click", function () { addItem(item, cat, card); });
           card.draggable = true;
           card.addEventListener("dragstart", function (e) {
             dragPayload = { type: "new", item: { title: item.title, cat: cat, icon: item.icon, minutes: item.minutes, note: item.note || null } };
             card.classList.add("is-lifting");
+            timelineEl.classList.add("is-receiving");
             if (e.dataTransfer) { e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", item.title); }
           });
           card.addEventListener("dragend", function () {
@@ -1168,136 +1336,329 @@ window.addEventListener("pageshow", function (e) {
             dragPayload = null;
             clearDragUI();
           });
-          grid.appendChild(card);
+          stage.appendChild(card);
         });
+      }
 
-        activitySectionsEl.appendChild(grid);
+      function select(i, focus) {
+        if (i === current || !tabs[i]) return;
+        var dir = i > current ? 1 : -1;
+        current = i;
+        tabs.forEach(function (tab, n) {
+          tab.setAttribute("aria-selected", n === i ? "true" : "false");
+          tab.tabIndex = n === i ? 0 : -1;
+        });
+        tabsEl.style.setProperty("--at", i);
+        if (focus) tabs[i].focus();
+        swapCard(stage, dir, fill);
+      }
+
+      tabsEl.innerHTML = '<span class="tb-pick__thumb" aria-hidden="true"></span>';
+      tabsEl.style.setProperty("--n", SECTIONS.length);
+      tabsEl.style.setProperty("--at", 0);
+      SECTIONS.forEach(function (section, i) {
+        var tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = "tb-pick__tab tb-cat-title-" + section.cat;
+        tab.id = "tb-pickTab-" + i;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-selected", i === 0 ? "true" : "false");
+        tab.setAttribute("aria-controls", "tb-activitySections");
+        tab.tabIndex = i === 0 ? 0 : -1;
+        tab.title = section.title;
+        tab.innerHTML = '<span class="tb-pick__tab-icon">' + ICONS[section.icon] + '</span><span>' + section.short + '</span>';
+        tab.addEventListener("click", function () { select(i, false); });
+        tab.addEventListener("keydown", function (e) {
+          var to = -1;
+          if (e.key === "ArrowRight") to = (i + 1) % SECTIONS.length;
+          else if (e.key === "ArrowLeft") to = (i - 1 + SECTIONS.length) % SECTIONS.length;
+          if (to < 0) return;
+          e.preventDefault();
+          select(to, true);
+        });
+        tabsEl.appendChild(tab);
+        tabs.push(tab);
       });
+      stage.setAttribute("role", "tabpanel");
+      fill();
+
+      /* phone: the picker is a sheet */
+      var closeTimer = null;
+      function openSheet() {
+        window.clearTimeout(closeTimer);
+        backdrop.hidden = false;
+        pick.classList.add("is-sheet-ready");
+        void pick.offsetWidth;
+        window.setTimeout(function () {
+          pick.classList.add("is-open");
+          backdrop.classList.add("is-on");
+        }, 20);
+        fab.setAttribute("aria-expanded", "true");
+      }
+      function closeSheet() {
+        pick.classList.remove("is-open");
+        backdrop.classList.remove("is-on");
+        fab.setAttribute("aria-expanded", "false");
+        closeTimer = window.setTimeout(function () {
+          backdrop.hidden = true;
+          pick.classList.remove("is-sheet-ready");
+        }, 380);
+      }
+      if (fab && backdrop && closeBtn) {
+        fab.addEventListener("click", function () {
+          if (pick.classList.contains("is-open")) closeSheet(); else openSheet();
+        });
+        closeBtn.addEventListener("click", closeSheet);
+        backdrop.addEventListener("click", closeSheet);
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && pick.classList.contains("is-open")) closeSheet();
+        });
+      }
     }
 
-    function buildTimePicker() {
-      var display = document.getElementById("tb-timeDisplay");
-      var displayText = document.getElementById("tb-timeDisplayText");
-      var popover = document.getElementById("tb-timePopover");
-      var colHour = document.getElementById("tb-timeColHour");
-      var colMinute = document.getElementById("tb-timeColMinute");
-      var colPeriod = document.getElementById("tb-timeColPeriod");
+    /* ==========================================================
+       Flight day + boarding time: one button, one picker. The two
+       hidden inputs stay the source of truth, so saving, share
+       links, printing and the calendar file read them as before.
+       ========================================================== */
+    function buildWhenPicker() {
+      var btn = document.getElementById("tb-whenBtn");
+      var dateOut = document.getElementById("tb-whenDate");
+      var timeOut = document.getElementById("tb-whenTime");
+      if (!btn || !dateInput) return;
 
-      var hourBtns = {}, minuteBtns = {}, periodBtns = {};
+      var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      var HOURS = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      var MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+      var chev = function (d) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + d + '"/></svg>'; };
 
-      function makeItem(container, label, onSelect) {
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "tb-time-col__item";
-        btn.textContent = label;
-        btn.addEventListener("click", onSelect);
-        container.appendChild(btn);
-        return btn;
+      var backdrop = document.createElement("div");
+      backdrop.className = "tb-sheet-backdrop tb-sheet-backdrop--when";
+      backdrop.hidden = true;
+      var pop = document.createElement("div");
+      pop.className = "tb-whenpop";
+      pop.hidden = true;
+      pop.setAttribute("role", "dialog");
+      pop.setAttribute("aria-label", "Flight day and boarding time");
+      pop.innerHTML =
+        '<span class="tb-pick__grab" aria-hidden="true"></span>' +
+        '<div class="tb-whenpop__cols">' +
+          '<div class="tb-cal">' +
+            '<p class="tb-whenpop__label">Flight day</p>' +
+            '<div class="tb-cal__head">' +
+              '<button type="button" class="tb-cal__nav" data-nav="-1" aria-label="Previous month">' + chev("M15 6l-6 6 6 6") + '</button>' +
+              '<b class="tb-cal__title" aria-live="polite"></b>' +
+              '<button type="button" class="tb-cal__nav" data-nav="1" aria-label="Next month">' + chev("M9 6l6 6-6 6") + '</button>' +
+            '</div>' +
+            '<div class="tb-cal__dow" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>' +
+            '<div class="tb-cal__grid"></div>' +
+            '<div class="tb-cal__quick"><button type="button" data-quick="0">Today</button><button type="button" data-quick="1">Tomorrow</button></div>' +
+          '</div>' +
+          '<div class="tb-clock">' +
+            '<p class="tb-whenpop__label">Boarding time</p>' +
+            '<p class="tb-clock__read" aria-hidden="true"><span data-read="hour"></span><i>:</i><span data-read="minute"></span><span class="tb-clock__ampm" data-read="period"></span></p>' +
+            '<p class="tb-clock__sub">Hour</p><div class="tb-clock__grid" data-part="hour"></div>' +
+            '<p class="tb-clock__sub">Minute</p><div class="tb-clock__grid" data-part="minute"></div>' +
+            '<div class="tb-clock__period" data-part="period"><span class="tb-clock__thumb" aria-hidden="true"></span></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tb-whenpop__foot"><p class="tb-whenpop__sum" aria-live="polite"></p><button type="button" class="tb-whenpop__done">Done</button></div>';
+      document.body.appendChild(backdrop);
+      document.body.appendChild(pop);
+
+      var grid = pop.querySelector(".tb-cal__grid");
+      var title = pop.querySelector(".tb-cal__title");
+      var prevBtn = pop.querySelector('.tb-cal__nav[data-nav="-1"]');
+      var sum = pop.querySelector(".tb-whenpop__sum");
+      var periodEl = pop.querySelector(".tb-clock__period");
+      var view = { y: 0, m: 0 };
+
+      function pad2(n) { return (n < 10 ? "0" : "") + n; }
+      function iso(y, m, d) { return y + "-" + pad2(m + 1) + "-" + pad2(d); }
+      function parseDate(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+      function selDate() { return dateInput.value || todayStr(); }
+      function niceDate(s, long) {
+        var t = todayStr();
+        if (!long && s === t) return "Today";
+        return parseDate(s).toLocaleDateString(undefined, long
+          ? { weekday: "long", month: "long", day: "numeric" }
+          : { weekday: "short", month: "short", day: "numeric" });
       }
 
-      [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].forEach(function (h) {
-        hourBtns[h] = makeItem(colHour, String(h), function () { setPart("hour", h); });
-      });
-      ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"].forEach(function (m) {
-        minuteBtns[m] = makeItem(colMinute, m, function () { setPart("minute", parseInt(m, 10)); });
-      });
-      ["AM", "PM"].forEach(function (p) {
-        periodBtns[p] = makeItem(colPeriod, p, function () { setPart("period", p); });
-      });
-
-      function currentParts() {
+      function parts() {
         var total = boardingMin();
         var h24 = Math.floor(total / 60);
-        var mins = total % 60;
-        var period = h24 >= 12 ? "PM" : "AM";
+        var minute = Math.round((total % 60) / 5) * 5;
+        if (minute === 60) minute = 55;
         var h12 = h24 % 12; if (h12 === 0) h12 = 12;
-        var roundedMin = Math.round(mins / 5) * 5;
-        if (roundedMin === 60) roundedMin = 0;
-        return { hour: h12, minute: roundedMin, period: period };
+        return { hour: h12, minute: minute, period: h24 >= 12 ? "PM" : "AM" };
       }
-
-      function highlightSelection() {
-        var parts = currentParts();
-        Object.keys(hourBtns).forEach(function (k) { hourBtns[k].classList.toggle("is-selected", parseInt(k, 10) === parts.hour); });
-        Object.keys(minuteBtns).forEach(function (k) { minuteBtns[k].classList.toggle("is-selected", parseInt(k, 10) === parts.minute); });
-        Object.keys(periodBtns).forEach(function (k) { periodBtns[k].classList.toggle("is-selected", k === parts.period); });
-      }
-
-      function scrollSelectionIntoView() {
-        [colHour, colMinute, colPeriod].forEach(function (col) {
-          var sel = col.querySelector(".is-selected");
-          if (sel) sel.scrollIntoView({ block: "center" });
-        });
-      }
-
       function setPart(part, value) {
-        var parts = currentParts();
-        parts[part] = value;
-        var h24 = parts.hour % 12;
-        if (parts.period === "PM") h24 += 12;
-        boardingInput.value = (h24 < 10 ? "0" : "") + h24 + ":" + (parts.minute < 10 ? "0" : "") + parts.minute;
+        var p = parts();
+        p[part] = value;
+        var h24 = p.hour % 12;
+        if (p.period === "PM") h24 += 12;
+        boardingInput.value = pad2(h24) + ":" + pad2(p.minute);
         boardingInput.dispatchEvent(new Event("change"));
       }
-
-      function onDocClick(e) {
-        if (!popover.contains(e.target) && e.target !== display && !display.contains(e.target)) closePopover();
+      function setDate(ds) {
+        dateInput.value = ds;
+        dateInput.dispatchEvent(new Event("change"));
       }
-      function onKeydown(e) { if (e.key === "Escape") closePopover(); }
 
-      function clampPopoverPosition() {
-        /* Preferred: open BESIDE the field (left), so it never
-           covers Flight day or the toolbar. If there's no room
-           (mobile), drop below the field and clamp to viewport. */
-        popover.classList.remove("tb-time-popover--below");
-        popover.style.left = "";
-        popover.style.right = "";
-        var rect = popover.getBoundingClientRect();
-        if (rect.left < 8) {
-          popover.classList.add("tb-time-popover--below");
-          rect = popover.getBoundingClientRect();
-          if (rect.left < 8) {
-            popover.style.right = "auto";
-            popover.style.left = "0";
-            rect = popover.getBoundingClientRect();
-          }
-          if (rect.right > window.innerWidth - 8) {
-            popover.style.left = "auto";
-            popover.style.right = "0";
-          }
+      function fillGrid() {
+        var today = todayStr();
+        var sel = selDate();
+        var now = new Date();
+        title.textContent = MONTHS[view.m] + " " + view.y;
+        prevBtn.disabled = view.y < now.getFullYear() || (view.y === now.getFullYear() && view.m <= now.getMonth());
+        grid.innerHTML = "";
+        var lead = new Date(view.y, view.m, 1).getDay();
+        var days = new Date(view.y, view.m + 1, 0).getDate();
+        for (var i = 0; i < lead; i++) grid.appendChild(document.createElement("span"));
+        for (var d = 1; d <= days; d++) {
+          (function (d) {
+            var ds = iso(view.y, view.m, d);
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "tb-cal__day";
+            b.textContent = d;
+            b.setAttribute("aria-label", parseDate(ds).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }));
+            if (ds < today) b.disabled = true;
+            if (ds === today) b.classList.add("is-today");
+            if (ds === sel) { b.classList.add("is-selected"); b.setAttribute("aria-pressed", "true"); }
+            b.addEventListener("click", function () { setDate(ds); });
+            grid.appendChild(b);
+          })(d);
+        }
+      }
+      function showMonthOf(ds) {
+        var d = parseDate(ds);
+        view.y = d.getFullYear();
+        view.m = d.getMonth();
+      }
+      function shiftMonth(dir) {
+        var d = new Date(view.y, view.m + dir, 1);
+        view.y = d.getFullYear();
+        view.m = d.getMonth();
+        swapCard(grid, dir, fillGrid);
+      }
+
+      HOURS.forEach(function (h) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = h; b.dataset.v = h;
+        b.addEventListener("click", function () { setPart("hour", h); });
+        pop.querySelector('[data-part="hour"]').appendChild(b);
+      });
+      MINUTES.forEach(function (m) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = pad2(m); b.dataset.v = m;
+        b.addEventListener("click", function () { setPart("minute", m); });
+        pop.querySelector('[data-part="minute"]').appendChild(b);
+      });
+      ["AM", "PM"].forEach(function (p) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = p; b.dataset.v = p;
+        b.addEventListener("click", function () { setPart("period", p); });
+        periodEl.appendChild(b);
+      });
+
+      function sync() {
+        var p = parts();
+        var sel = selDate();
+        dateOut.textContent = niceDate(sel, false);
+        timeOut.textContent = formatDisplay(boardingMin());
+        sum.innerHTML = "Boarding <strong>" + niceDate(sel, true) + "</strong> at <strong>" + formatDisplay(boardingMin()) + "</strong>";
+        pop.querySelector('[data-read="hour"]').textContent = p.hour;
+        pop.querySelector('[data-read="minute"]').textContent = pad2(p.minute);
+        pop.querySelector('[data-read="period"]').textContent = p.period;
+        Array.prototype.forEach.call(pop.querySelectorAll(".tb-clock [data-part] button"), function (b) {
+          var part = b.parentNode.getAttribute("data-part");
+          var on = String(p[part]) === b.dataset.v;
+          b.classList.toggle("is-selected", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        periodEl.setAttribute("data-at", p.period === "PM" ? "1" : "0");
+        Array.prototype.forEach.call(pop.querySelectorAll(".tb-cal__quick button"), function (b) {
+          var d = new Date(); d.setDate(d.getDate() + parseInt(b.dataset.quick, 10));
+          b.classList.toggle("is-selected", iso(d.getFullYear(), d.getMonth(), d.getDate()) === sel);
+        });
+        if (!pop.hidden) {
+          /* keep the calendar on the chosen day's month */
+          var d = parseDate(sel);
+          if (d.getFullYear() !== view.y || d.getMonth() !== view.m) {
+            var dir = (d.getFullYear() * 12 + d.getMonth()) > (view.y * 12 + view.m) ? 1 : -1;
+            showMonthOf(sel);
+            swapCard(grid, dir, fillGrid);
+          } else fillGrid();
         }
       }
 
-      function openPopover() {
-        popover.hidden = false;
-        display.setAttribute("aria-expanded", "true");
-        highlightSelection();
-        clampPopoverPosition();
-        requestAnimationFrame(scrollSelectionIntoView);
-        document.addEventListener("click", onDocClick, true);
-        document.addEventListener("keydown", onKeydown);
+      pop.addEventListener("click", function (e) {
+        var nav = e.target.closest(".tb-cal__nav");   /* not [data-nav]: <html> carries that too */
+        if (nav) { shiftMonth(parseInt(nav.dataset.nav, 10)); return; }
+        var quick = e.target.closest("[data-quick]");
+        if (quick) {
+          var d = new Date(); d.setDate(d.getDate() + parseInt(quick.dataset.quick, 10));
+          setDate(iso(d.getFullYear(), d.getMonth(), d.getDate()));
+          return;
+        }
+        if (e.target.closest(".tb-whenpop__done")) close(true);
+      });
+
+      var phone = window.matchMedia("(max-width: 640px)");
+      function place() {
+        if (phone.matches) { pop.style.left = pop.style.top = ""; return; }
+        var r = btn.getBoundingClientRect();
+        var w = pop.offsetWidth;
+        var left = Math.max(12, Math.min(r.right - w, window.innerWidth - w - 12));
+        pop.style.left = (left + window.scrollX) + "px";
+        pop.style.top = (r.bottom + window.scrollY + 10) + "px";
+        /* grow out of the button */
+        pop.style.transformOrigin = (r.left + r.width / 2 - left) + "px -10px";
       }
-      function closePopover() {
-        popover.hidden = true;
-        display.setAttribute("aria-expanded", "false");
-        document.removeEventListener("click", onDocClick, true);
-        document.removeEventListener("keydown", onKeydown);
+
+      var closeTimer = null;
+      function onDocDown(e) {
+        if (!pop.contains(e.target) && !btn.contains(e.target)) close(false);
       }
-
-      display.addEventListener("click", function () {
-        if (popover.hidden) openPopover(); else closePopover();
+      function onKey(e) { if (e.key === "Escape") close(true); }
+      function open() {
+        window.clearTimeout(closeTimer);
+        showMonthOf(selDate());
+        pop.hidden = false;
+        backdrop.hidden = false;
+        fillGrid();
+        sync();
+        place();
+        void pop.offsetWidth;
+        window.setTimeout(function () {
+          pop.classList.add("is-open");
+          backdrop.classList.add("is-on");
+        }, 20);
+        btn.setAttribute("aria-expanded", "true");
+        document.addEventListener("pointerdown", onDocDown, true);
+        document.addEventListener("keydown", onKey);
+        var focusTo = grid.querySelector(".is-selected") || pop.querySelector(".tb-cal__day:not(:disabled)");
+        if (focusTo) focusTo.focus({ preventScroll: true });
+      }
+      function close(refocus) {
+        pop.classList.remove("is-open");
+        backdrop.classList.remove("is-on");
+        btn.setAttribute("aria-expanded", "false");
+        document.removeEventListener("pointerdown", onDocDown, true);
+        document.removeEventListener("keydown", onKey);
+        closeTimer = window.setTimeout(function () { pop.hidden = true; backdrop.hidden = true; }, FE_REDUCED ? 0 : 320);
+        if (refocus) btn.focus({ preventScroll: true });
+      }
+      btn.addEventListener("click", function () {
+        if (btn.getAttribute("aria-expanded") === "true") close(false); else open();
       });
+      window.addEventListener("resize", function () { if (!pop.hidden) place(); });
 
-      window.addEventListener("resize", function () {
-        if (!popover.hidden) clampPopoverPosition();
-      });
-
-      boardingInput.addEventListener("change", function () {
-        displayText.textContent = formatDisplay(boardingMin());
-        highlightSelection();
-      });
-
-      displayText.textContent = formatDisplay(boardingMin());
-      highlightSelection();
+      boardingInput.addEventListener("change", sync);
+      dateInput.addEventListener("change", sync);
+      sync();
     }
 
     document.getElementById("tb-addBtn").addEventListener("click", function () {
@@ -1578,7 +1939,7 @@ window.addEventListener("pageshow", function (e) {
     boardingInput.dispatchEvent(new Event("change"));
     resequenceFromBoarding();
     renderChips();
-    buildTimePicker();
+    buildWhenPicker();
     render();
     savePlan();
   }
@@ -2917,23 +3278,7 @@ window.addEventListener("pageshow", function (e) {
     var targets = document.querySelectorAll(
       ".dest-card, .tb-feature__card, .value-item, .explorer__panel, .airline-warning, .tb-notice, .stat-item, .photo-band, .about-reveal"
     );
-    if (reduced || !("IntersectionObserver" in window)) {
-      targets.forEach(function (t) { t.classList.add("ws-reveal", "is-landed"); });
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-landed");
-          io.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: "0px 0px -70px 0px", threshold: 0.12 });
-    targets.forEach(function (t, i) {
-      t.classList.add("ws-reveal");
-      t.style.transitionDelay = (i % 4) * 70 + "ms";
-      io.observe(t);
-    });
+    revealOnScroll(targets, { base: "ws-reveal", shown: "is-landed" });
   }
 
   /* ---------- Boot ---------- */
@@ -3565,8 +3910,8 @@ window.addEventListener("pageshow", function (e) {
 })();
 
 /* Document-space top of an element, from layout offsets rather than
-   getBoundingClientRect(): <main> plays a translateY entrance animation
-   (ws-page-in), and a transform would skew the math while it runs. */
+   getBoundingClientRect(): <main> plays a short entrance animation
+   (motion.css), and a transform would skew the math while it runs. */
 function layoutTop(el) {
   var y = 0;
   for (var n = el; n; n = n.offsetParent) y += n.offsetTop;
@@ -3847,5 +4192,78 @@ function layoutTop(el) {
   }
   window.addEventListener("load", function () {
     navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+})();
+
+/* ============================================================
+   Global Tips: diagrams in the Departure and In-Flight panels draw
+   themselves when they scroll into view (and again each time their
+   phase is reopened), plus the "through the airport" stepper.
+   ============================================================ */
+(function () {
+  var card = document.getElementById("phase-card");
+  if (!card) return;
+
+  var targets = card.querySelectorAll("[data-gt-draw]");
+  if (targets.length && !FE_REDUCED && "IntersectionObserver" in window) {
+    card.classList.add("gt-anim");
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) entry.target.classList.add("is-drawn");
+        /* its phase was closed: reset so it draws again next time */
+        else if (!entry.target.offsetParent) entry.target.classList.remove("is-drawn");
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.2 });
+    Array.prototype.forEach.call(targets, function (el) { io.observe(el); });
+  } else {
+    Array.prototype.forEach.call(targets, function (el) { el.classList.add("is-drawn"); });
+  }
+
+  Array.prototype.forEach.call(card.querySelectorAll("[data-gt-steps]"), function (box) {
+    var tabs = Array.prototype.slice.call(box.querySelectorAll('[role="tab"]'));
+    var stage = box.querySelector(".dp-walk__stage");
+    var count = box.querySelector(".dp-walk__count");
+    var prev = box.querySelector('[data-gt-step="-1"]');
+    var next = box.querySelector('[data-gt-step="1"]');
+    var current = 0;
+
+    function sync() {
+      box.setAttribute("data-at", current);
+      tabs.forEach(function (tab, n) {
+        tab.setAttribute("aria-selected", n === current ? "true" : "false");
+        tab.tabIndex = n === current ? 0 : -1;
+      });
+      if (count) count.textContent = "Stop " + (current + 1) + " of " + tabs.length;
+      if (prev) prev.disabled = current === 0;
+      if (next) next.disabled = current === tabs.length - 1;
+    }
+    function go(i, focus) {
+      if (i === current || i < 0 || i >= tabs.length) return;
+      var dir = i > current ? 1 : -1;
+      current = i;
+      sync();
+      if (focus) tabs[i].focus();
+      swapCard(stage, dir, function () {
+        tabs.forEach(function (tab, n) {
+          document.getElementById(tab.getAttribute("aria-controls")).hidden = n !== i;
+        });
+      });
+    }
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener("click", function () { go(i, false); });
+      tab.addEventListener("keydown", function (e) {
+        var to = -1;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") to = Math.min(i + 1, tabs.length - 1);
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") to = Math.max(i - 1, 0);
+        else if (e.key === "Home") to = 0;
+        else if (e.key === "End") to = tabs.length - 1;
+        if (to < 0) return;
+        e.preventDefault();
+        go(to, true);
+      });
+    });
+    if (prev) prev.addEventListener("click", function () { go(current - 1, false); });
+    if (next) next.addEventListener("click", function () { go(current + 1, false); });
+    sync();
   });
 })();

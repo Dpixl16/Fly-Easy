@@ -675,3 +675,155 @@
 
 /* selected pin with no room for its "Open guide" segment (phones, screen edges) */
 .ap-pin.is-active.is-compact .ap-pin__go { max-width: 0; opacity: 0; padding: 0; margin-left: -0.45rem; animation: none; }
+
+/* ============================================================
+   One-click landing (v4): mini plane, contrail, shadow, touchdown
+   ============================================================ */
+.ap-flight {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.ap-flight[hidden] { display: none; }
+.ap-flight.is-on { opacity: 1; }
+.ap-flight__trail { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ap-flight__plane,
+.ap-flight__shadow {
+  position: absolute;
+  left: 0; top: 0;
+  width: 46px; height: 46px;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+.ap-flight__plane svg,
+.ap-flight__shadow svg { width: 100%; height: 100%; display: block; }
+.ap-flight__plane svg {
+  fill: #fff;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.85)) drop-shadow(0 3px 8px rgba(2, 6, 23, 0.5));
+}
+.ap-flight__shadow svg { fill: rgba(2, 6, 23, 0.85); filter: blur(2.5px); }
+.ap-flight__touch {
+  position: absolute;
+  left: 0; top: 0;
+  width: 0; height: 0;
+}
+.ap-flight__touch::before,
+.ap-flight__touch::after {
+  content: "";
+  position: absolute;
+  left: -40px; top: -40px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.8);
+  opacity: 0;
+  transform: scale(0.15);
+}
+.ap-flight__touch.is-on::before { animation: ap-touch 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+.ap-flight__touch.is-on::after { animation: ap-touch 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.14s forwards; }
+@keyframes ap-touch {
+  0% { opacity: 1; transform: scale(0.15); }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* while landing: everything else steps back so the flight is the moment */
+.ap-stage.is-landing .ap-top,
+.ap-stage.is-landing .ap-controls,
+.ap-stage.is-landing .ap-peek,
+.ap-stage.is-landing .ap-space {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.35s ease;
+}
+.ap-stage.is-landing .ap-pin:not(.is-active) { opacity: 0; pointer-events: none; }
+.ap-stage.is-landing .ap-pin { pointer-events: none; }
+.ap-stage.is-landing .ap-pin.is-active .ap-pin__label {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #fff;
+}
+.ap-stage.is-landing .ap-pin.is-active .ap-pin__code { color: #0972A6; }
+.ap-stage.is-landing .ap-pin.is-active .ap-pin__city { color: var(--deep-navy); }
+.ap-stage.is-touched .ap-pin.is-active .ap-pin__dot { background: #fff; box-shadow: 0 0 0 4px var(--ap-accent), 0 0 26px 8px rgba(56, 189, 248, 0.9); }
+.ap-stage.is-landing .ap-stage__canvas { cursor: default; }
+.page-airports .page-transition.is-exiting .page-transition__plane { display: none; }
+
+/* boarding-pass strip */
+.ap-strip {
+  position: absolute;
+  left: 50%;
+  top: 1.1rem;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.55rem 1.1rem 0.55rem 0.7rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--deep-navy);
+  box-shadow: 0 14px 34px rgba(2, 6, 23, 0.4);
+  transform: translate(-50%, -14px);
+  opacity: 0;
+  transition: opacity 0.45s ease 0.15s, transform 0.6s var(--ease) 0.15s;
+  pointer-events: none;
+  max-width: calc(100% - 32px);
+}
+.ap-strip[hidden] { display: none; }
+.ap-strip.is-on { opacity: 1; transform: translate(-50%, 0); }
+.ap-strip::before {
+  content: "";
+  position: absolute;
+  left: 4.6rem; top: 8px; bottom: 8px;
+  border-left: 2px dashed rgba(15, 48, 73, 0.18);
+}
+.ap-strip__label {
+  font: 600 0.62rem/1.15 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0972A6;
+  width: 3.6rem;
+}
+.ap-strip__code { font: 600 1.55rem/1 var(--font-mono); letter-spacing: 0.04em; color: var(--deep-navy); }
+.ap-strip__text { display: flex; flex-direction: column; min-width: 0; }
+.ap-strip__text b { font-size: 0.86rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap-strip__text span { font-size: 0.74rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 760px) {
+  .ap-strip { gap: 0.6rem; padding: 0.5rem 0.9rem 0.5rem 0.6rem; }
+  .ap-strip__code { font-size: 1.3rem; }
+  .ap-flight__plane, .ap-flight__shadow { width: 38px; height: 38px; }
+}
+
+/* merged pins: each code is its own button */
+.ap-pin.is-cluster { cursor: default; }
+.ap-pin.is-cluster .ap-pin__dot { cursor: zoom-in; }
+.ap-pin.is-cluster .ap-pin__label { gap: 0.15rem; padding: 0.18rem 0.3rem; }
+.ap-pin__pick {
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  color: var(--ap-accent);
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  min-height: 30px;
+  transition: background 0.2s ease, color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.ap-pin__pick:hover,
+.ap-pin__pick:focus-visible { background: #fff; color: #0972A6; outline: none; }
+.ap-pin__sep { width: 1px; height: 14px; background: rgba(255, 255, 255, 0.28); }
+.ap-pin.is-cluster:hover .ap-pin__label { background: rgba(10, 17, 40, 0.86); transform: none; }
+.ap-pin.is-cluster:hover .ap-pin__code { color: var(--ap-accent); }
+.ap-pin.is-cluster .ap-pin__pick:hover { color: #0972A6; }
+@media (pointer: coarse) {
+  .ap-pin__pick { min-height: 40px; padding: 0.45rem 0.7rem; }
+  .ap-pin { min-height: 40px; }
+}
+/* the pulse ring is decoration: it must never catch a tap meant for a code */
+.ap-pin__dot::after { pointer-events: none; }
+.ap-pin__label { position: relative; z-index: 1; }

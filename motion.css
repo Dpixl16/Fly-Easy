@@ -1,0 +1,249 @@
+/* ============================================================
+   Fly Easy — motion system
+   Loaded last on every page. One set of speeds and curves for
+   page changes, tab changes, card swaps, scroll arrivals and
+   presses, so the whole site moves the same way.
+
+   Rules of the house:
+   - Only opacity and transform ever animate (no layout, no blur),
+     so phones can run everything on the GPU at full frame rate.
+   - Things leave fast (--out) and arrive a little slower (--in).
+   - Nothing ever waits before responding to a tap.
+
+   motion.js (in <head>) sets <html data-nav="next|prev|in|out|fade">
+   and the "vt" class used below.
+   ============================================================ */
+
+:root {
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);               /* leaving */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);       /* travelling */
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1);    /* a soft overshoot */
+  /* --ease (styles.css) is the arrival curve: quick start, long glide */
+
+  --out: 150ms;
+  --in: 340ms;
+  --page-shift: clamp(26px, 4.5vw, 56px);
+}
+
+/* a sideways arrival must never produce a sideways scrollbar */
+html, body { overflow-x: clip; }
+
+/* ============================================================
+   1. Page changes
+   ============================================================ */
+
+/* ---- Browsers with cross-document view transitions ---- */
+@view-transition { navigation: auto; }
+
+::view-transition-old(root),
+::view-transition-new(root) { mix-blend-mode: normal; }
+::view-transition-old(root) { animation: var(--out) var(--ease-in) both vt-out-fade; }
+::view-transition-new(root) { animation: var(--in) var(--ease) both vt-in-fade; }
+
+/* along the tab order: the page moves the way you tapped */
+html[data-nav="next"]::view-transition-old(root) { animation-name: vt-out-left; }
+html[data-nav="next"]::view-transition-new(root) { animation-name: vt-in-right; }
+html[data-nav="prev"]::view-transition-old(root) { animation-name: vt-out-right; }
+html[data-nav="prev"]::view-transition-new(root) { animation-name: vt-in-left; }
+/* into an airport guide: push in. Back out to Airports: pull back */
+html[data-nav="in"]::view-transition-old(root) { animation-name: vt-out-near; }
+html[data-nav="in"]::view-transition-new(root) { animation-name: vt-in-far; }
+html[data-nav="out"]::view-transition-old(root) { animation-name: vt-out-far; }
+html[data-nav="out"]::view-transition-new(root) { animation-name: vt-in-near; }
+
+@keyframes vt-out-fade { to { opacity: 0; } }
+@keyframes vt-in-fade { from { opacity: 0; transform: translateY(10px); } }
+@keyframes vt-out-left { to { opacity: 0; transform: translateX(calc(var(--page-shift) * -0.6)); } }
+@keyframes vt-out-right { to { opacity: 0; transform: translateX(calc(var(--page-shift) * 0.6)); } }
+@keyframes vt-in-right { from { opacity: 0; transform: translateX(var(--page-shift)); } }
+@keyframes vt-in-left { from { opacity: 0; transform: translateX(calc(var(--page-shift) * -1)); } }
+@keyframes vt-out-near { to { opacity: 0; transform: scale(1.035); } }
+@keyframes vt-in-far { from { opacity: 0; transform: scale(0.965); } }
+@keyframes vt-out-far { to { opacity: 0; transform: scale(0.965); } }
+@keyframes vt-in-near { from { opacity: 0; transform: scale(1.035); } }
+
+/* The top nav and the phone tab bar are lifted out of the page, so
+   they stay exactly where they are while the content changes under
+   them, the way a native app's bars do. */
+.site-nav { view-transition-name: site-nav; }
+.mobile-tabbar { view-transition-name: tabbar; }
+::view-transition-group(site-nav),
+::view-transition-group(tabbar) { animation-duration: 0.3s; z-index: 2; }
+::view-transition-group(site-nav) { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+::view-transition-group(tabbar) { -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+
+/* ---- The tab bar's runway light: glides to the tab you tapped ---- */
+.mobile-tabbar__mark { display: none; }
+@media (max-width: 640px) {
+  .mobile-tabbar__item { position: relative; }
+  .mobile-tabbar__mark {
+    display: block;
+    position: absolute;
+    top: -0.3rem;
+    left: 50%;
+    width: 26px;
+    height: 3px;
+    margin-left: -13px;
+    border-radius: 0 0 4px 4px;
+    background: var(--horizon-blue);
+    box-shadow: 0 2px 10px rgba(14, 165, 233, 0.55);
+    view-transition-name: tab-mark;
+  }
+  /* the icon of the tab you landed on settles with a small bounce */
+  html.is-returning .mobile-tabbar__item[aria-current="page"] .mobile-tabbar__icon {
+    animation: tab-settle 0.5s var(--ease-spring) 0.06s backwards;
+  }
+  /* instant answer to the tap, before the next page is even here */
+  .mobile-tabbar__item.is-going { color: var(--deep-navy); }
+  body[data-tod="dusk"] .mobile-tabbar__item.is-going,
+  body[data-tod="night"] .mobile-tabbar__item.is-going { color: #FFF; }
+}
+::view-transition-group(tab-mark) {
+  z-index: 3;
+  animation-duration: 0.42s;
+  animation-timing-function: var(--ease-spring);
+}
+::view-transition-old(tab-mark) { display: none; }
+::view-transition-new(tab-mark) { animation: none; }
+@keyframes tab-settle { from { transform: translateY(3px) scale(0.78); } }
+
+/* ---- Every other browser: the new page's content arrives by itself ---- */
+main { animation: page-in 0.42s var(--ease) backwards; }
+html[data-nav="next"] main { animation-name: page-in-right; }
+html[data-nav="prev"] main { animation-name: page-in-left; }
+html[data-nav="in"] main { animation-name: page-in-far; }
+html[data-nav="out"] main { animation-name: page-in-near; }
+html.vt main,
+html.ap-rise main { animation: none; }
+@keyframes page-in { from { opacity: 0; transform: translateY(14px); } }
+@keyframes page-in-right { from { opacity: 0; transform: translateX(var(--page-shift)); } }
+@keyframes page-in-left { from { opacity: 0; transform: translateX(calc(var(--page-shift) * -1)); } }
+@keyframes page-in-far { from { opacity: 0; transform: scale(0.975); } }
+@keyframes page-in-near { from { opacity: 0; transform: scale(1.025); } }
+
+/* ---- Big moments only: the plane and the clouds ----
+   Shown when a page asks for them: leaving the globe for a guide
+   (.is-exiting) and arriving from that dive (html.arrive-clouds).
+   Ordinary page changes never see this layer. */
+.page-transition { display: none; }
+.page-transition.is-exiting,
+html.arrive-clouds .page-transition { display: flex; }
+html.arrive-clouds .page-transition__puff--l,
+html.arrive-clouds .page-transition__puff--r { animation-duration: 0.8s; }
+html.arrive-clouds .page-transition__veil,
+html.arrive-clouds .page-transition__plane { animation-duration: 0.55s; animation-delay: 0.05s; }
+.page-transition.is-exiting .page-transition__puff--l,
+.page-transition.is-exiting .page-transition__puff--r { animation-duration: 0.36s; }
+html.arrive-clouds main { animation: page-in 0.7s var(--ease) 0.12s backwards; }
+
+/* the globe fades up sooner once it's ready */
+.ap-stage .ap-stage__canvas { transition-duration: 0.7s; }
+html.ap-rise .ap-stage .ap-stage__canvas { transition-duration: 0.45s; }
+
+/* ============================================================
+   2. Scroll arrivals — one feel for every card and section
+   ============================================================ */
+.ws-reveal {
+  transform: translateY(22px) scale(0.985);
+  transition: opacity 0.5s var(--ease), transform 0.62s var(--ease);
+  will-change: auto;
+}
+.tip-card {
+  transform: translateY(18px);
+  transition: opacity 0.45s var(--ease), transform 0.58s var(--ease);
+}
+.ap-reveal {
+  transform: translateY(20px);
+  transition: opacity 0.5s var(--ease), transform 0.62s var(--ease);
+}
+.reveal {
+  transform: translateY(10px);
+  transition: opacity 0.34s var(--ease), transform 0.42s var(--ease);
+}
+
+/* ============================================================
+   3. Card and panel swaps
+   ============================================================ */
+/* script.js drives these with the Web Animations API (swapCard);
+   the old CSS hand-offs are switched off so they can't double up */
+.phase-card, .phase-card.is-transitioning,
+#view-terminals, #view-airlines { transition: none; opacity: 1; transform: none; }
+
+/* SFO + SJC explorer card: rides with the train, just quicker */
+.explorer__panel.slide-out-w, .explorer__panel.slide-out-e { animation-duration: 0.13s; }
+.explorer__panel.slide-in-e, .explorer__panel.slide-in-w { animation-duration: 0.36s; }
+.explorer__panel.is-arriving .chip,
+.explorer__panel.is-arriving .tip-row { animation-duration: 0.34s; }
+.explorer__panel.is-arriving .chip:nth-child(1) { animation-delay: 0.04s; }
+.explorer__panel.is-arriving .chip:nth-child(2) { animation-delay: 0.07s; }
+.explorer__panel.is-arriving .chip:nth-child(3) { animation-delay: 0.1s; }
+.explorer__panel.is-arriving .chip:nth-child(n+4) { animation-delay: 0.13s; }
+.explorer__panel.is-arriving .tip-row:nth-child(1) { animation-delay: 0.06s; }
+.explorer__panel.is-arriving .tip-row:nth-child(2) { animation-delay: 0.1s; }
+.explorer__panel.is-arriving .tip-row:nth-child(3) { animation-delay: 0.14s; }
+.explorer__panel.is-arriving .tip-row:nth-child(4) { animation-delay: 0.18s; }
+.explorer__panel.is-arriving .tip-row:nth-child(n+5) { animation-delay: 0.22s; }
+
+/* Airline cards: a quicker ripple, and none at all while typing a search */
+.airline-grid .airline-card { animation-duration: 0.32s; }
+.airline-grid .airline-card:nth-child(3n+2) { animation-delay: 0.035s; }
+.airline-grid .airline-card:nth-child(3n+3) { animation-delay: 0.07s; }
+.airline-grid .airline-card:nth-child(n+10) { animation-delay: 0.09s; }
+.airline-grid.is-typing .airline-card { animation: none; }
+
+/* Packer steps and bag panels */
+.pk-step-panel.is-active { animation-duration: 0.34s; }
+.pk-panel.is-active { animation-duration: 0.3s; }
+.pk-hero, .pk-enter { animation-duration: 0.45s; }
+
+/* ============================================================
+   4. Touch: instant, springy presses
+   ============================================================ */
+a, button, summary, label, [role="tab"], [role="button"] { touch-action: manipulation; }
+
+@media (hover: none) {
+  .btn, .site-nav__cta, .tracker__stop, .explorer__tab, .page-toggle__btn,
+  .filter-btn, .airline-filter, .status-btn, .sjc-chip, .pk-btn, .pk-step,
+  .pk-bag-option, .pk-suggest-card, .tb-tool-btn, .tb-add-btn, .tb-reset-btn,
+  .ap-ctrl, .ap-list__item, .dest-card, .ab-sectionbar a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tracker__stop:active, .explorer__tab:active, .page-toggle__btn:active,
+  .filter-btn:active, .airline-filter:active, .status-btn:active, .sjc-chip:active,
+  .pk-btn:active, .pk-step:active, .pk-bag-option:active, .pk-suggest-card:active,
+  .tb-tool-btn:active, .tb-add-btn:active, .tb-reset-btn:active,
+  .site-nav__cta:active, .ab-sectionbar a:active {
+    transform: scale(0.96);
+    transition-duration: 0.08s;
+  }
+  .dest-card:active, .ap-list__item:active { transform: scale(0.985); transition-duration: 0.1s; }
+}
+
+/* ============================================================
+   5. Smooth scrolling on phones and tablets
+   Frosted glass behind dozens of cards is the single most
+   expensive thing a phone can be asked to scroll. The cards are
+   92% white already, so they lose the blur (not the look) and
+   scrolling stays at full frame rate. Nav and tab bar keep theirs.
+   ============================================================ */
+@media (hover: none), (max-width: 820px) {
+  .dest-card, .tb-feature__card, .tip-card, .explorer__panel, .airline-card,
+  .phase-card, .tb-block, .tb-notice, .airline-warning {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* ============================================================
+   Reduced motion: everything simply appears
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+  main, html.arrive-clouds main { animation: none; }
+  .page-transition { display: none !important; }
+  .mobile-tabbar__icon { animation: none !important; }
+  .ws-reveal, .tip-card, .ap-reveal, .reveal { transition: none; transform: none; opacity: 1; }
+}

@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Delays — Fly Easy</title>
+<meta name="description" content="Delayed or cancelled flight? A calm guide to what to do right now, what you're owed, and why being kind gets you further.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22195 118 212 224%22><path d=%22M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z%22 fill=%22%231B6FA8%22 transform=%22translate(300,230) rotate(-15) scale(9) translate(-11.5,-12)%22/></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="images/app/apple-touch-icon.png">
+<meta name="theme-color" content="#F0F9FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fly Easy">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=115">
+<link rel="stylesheet" href="delays.css?v=3">
+<link rel="stylesheet" href="motion.css?v=2">
+<script src="motion.js?v=6"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="page-transition" id="page-transition" aria-hidden="true">
+  <div class="page-transition__veil"></div>
+  <span class="page-transition__puff page-transition__puff--l"></span>
+  <span class="page-transition__puff page-transition__puff--r"></span>
+  <span class="page-transition__plane">
+    <svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z" fill="currentColor" stroke="none"/></svg>
+  </span>
+</div>
+
+<header class="site-nav">
+  <div class="site-nav__inner">
+    <a class="site-nav__brand" href="index.html">
+      <span class="site-nav__mark"><img src="images/flyeasy-mark.svg" alt="" width="48" height="34"></span>
+      <span class="site-nav__word">Fly Easy</span>
+    </a>
+    <div class="site-nav__right">
+      <nav class="site-nav__links" id="siteNavLinks" aria-label="Main navigation">
+      <div class="site-nav__item site-nav__item--has-menu">
+        <a href="index.html">About</a>
+        <button class="site-nav__caret" type="button" aria-expanded="false" aria-controls="aboutMenu" aria-label="Show About sections">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="site-nav__menu" id="aboutMenu" role="menu" aria-label="About sections">
+          <a href="index.html#who" role="menuitem">Who I am</a>
+          <a href="index.html#what" role="menuitem">What travelers miss</a>
+          <a href="index.html#why" role="menuitem">Why Fly Easy</a>
+          <a href="index.html#how" role="menuitem">How it works</a>
+          <a href="index.html#contact" role="menuitem">Contact me!</a>
+        </div>
+      </div>
+      <a href="global.html">Global Tips</a>
+      <a href="airports.html">Airports</a>
+      <a href="timeblocker.html">Timeblocker</a>
+      <a href="packer.html">Packer</a>
+      </nav>
+      <a class="site-nav__cta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+      <button class="site-nav__toggle" id="siteNavToggle" type="button" aria-expanded="false" aria-controls="siteNavLinks" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-tabbar" aria-label="Primary">
+  <a class="mobile-tabbar__item" href="index.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+    <span class="mobile-tabbar__label">About</span>
+  </a>
+  <a class="mobile-tabbar__item" href="global.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
+    <span class="mobile-tabbar__label">Global</span>
+  </a>
+  <a class="mobile-tabbar__item" href="airports.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+    <span class="mobile-tabbar__label">Airports</span>
+  </a>
+  <a class="mobile-tabbar__item" href="timeblocker.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+    <span class="mobile-tabbar__label">Timeblocker</span>
+  </a>
+  <a class="mobile-tabbar__item" href="packer.html">
+    <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span>
+    <span class="mobile-tabbar__label">Packer</span>
+  </a>
+</nav>
+
+<main id="main" class="dl">
+
+  <!-- Above the clouds: the title sits in the sky, the biggest tip sits on the cloud tops -->
+  <section class="dl-sky" id="kind" aria-labelledby="dl-h1">
+    <div class="dl-sky__photo" aria-hidden="true"></div>
+    <div class="dl-sky__drift" aria-hidden="true"></div>
+    <div class="dl-sky__veil" aria-hidden="true"></div>
+    <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · In flight</span>
+
+    <div class="dl-sky__top">
+      <p class="eyebrow eyebrow--onphoto">Delays &amp; cancellations</p>
+      <h1 class="dl-sky__title" id="dl-h1">Delayed? Cancelled? <em class="nowrap">Don't worry.</em></h1>
+      <p class="dl-sky__sub">Above the clouds it's always calm. You'll get there too.</p>
+    </div>
+
+    <div class="dl-tip" id="dlTip">
+      <div class="dl-tip__inner">
+        <div class="dl-tip__main">
+          <div class="dl-tip__head">
+            <span class="dl-orb" aria-hidden="true">
+              <span class="dl-orb__ring dl-orb__ring--outer"></span>
+              <span class="dl-orb__ring"></span>
+              <span class="dl-orb__core"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg></span>
+            </span>
+            <div>
+              <p class="dl-kicker">The biggest tip</p>
+              <h2 class="dl-tip__title">Be nice and respectful. It gets you further than yelling ever will.</h2>
+            </div>
+          </div>
+          <p class="dl-tip__text">They didn't cause it, and they're the ones who can fix it. Say hello, wait your turn, ask instead of demand, and say thank you.</p>
+          <ul class="dl-who" aria-label="Who to be nice and respectful to">
+            <li style="--i:0">Flight attendants</li><li style="--i:1">Pilots</li><li style="--i:2">Gate agents</li><li style="--i:3">Desk staff</li><li style="--i:4">Airport staff</li><li style="--i:5">Phone agents</li>
+          </ul>
+        </div>
+
+        <div class="dl-say">
+          <p class="dl-say__head">Breathe, then try this</p>
+          <div class="dl-say__stage">
+            <div class="dl-say__pair is-on">
+              <p class="dl-say__no"><span>"This is ridiculous. Fix it!"</span></p>
+              <p class="dl-say__yes">"I know this isn't your fault. What are my options?"</p>
+            </div>
+            <div class="dl-say__pair">
+              <p class="dl-say__no"><span>"Get me on the next flight. Now."</span></p>
+              <p class="dl-say__yes">"I found flight 456 at 6:10. Could you check for a seat?"</p>
+            </div>
+            <div class="dl-say__pair">
+              <p class="dl-say__no"><span>"I demand a hotel!"</span></p>
+              <p class="dl-say__yes">"Since this is overnight, is a hotel something you can help with?"</p>
+            </div>
+          </div>
+          <div class="dl-say__pips" aria-hidden="true"><i class="is-on"></i><i></i><i></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stays pinned under the nav: the two-page switch, and the tip once it has scrolled away -->
+  <div class="dl-dock" id="dlDock">
+    <div class="dl-dock__inner">
+      <div class="dl-switch" role="tablist" aria-label="Guide" data-dl-tabs="view" data-at="0">
+        <span class="dl-switch__thumb" aria-hidden="true"></span>
+        <span class="dl-switch__plane" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z"/></svg></span>
+        <button class="dl-switch__btn" role="tab" type="button" id="dl-view-tab-now" aria-selected="true" aria-controls="now">
+          <span class="dl-switch__win" style="background-image: url('images/kollen/kollen-hkg-cathay-gates-window.jpg');" aria-hidden="true"></span>
+          <span class="dl-switch__txt"><b>What's happening</b><small>Steps for right now</small></span>
+        </button>
+        <button class="dl-switch__btn" role="tab" type="button" id="dl-view-tab-owed" aria-selected="false" aria-controls="owed" tabindex="-1">
+          <span class="dl-switch__win" style="background-image: url('images/kollen/kollen-hkg-sunset-tower-3.jpg'); background-position: 72% center;" aria-hidden="true"></span>
+          <span class="dl-switch__txt"><b>What you're owed</b><small>Refunds, meals, hotels</small></span>
+        </button>
+      </div>
+      <a class="dl-nice" id="dlNice" href="#kind"><span class="dl-nice__dot" aria-hidden="true"></span>Be nice and respectful.</a>
+    </div>
+  </div>
+
+  <div class="container dl-wrap">
+
+    <div class="airline-warning" role="note">
+      <span class="icon airline-warning__icon"><svg viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg></span>
+      <div>
+        <p class="airline-warning__title">Always check your own airline's policy</p>
+        <p class="airline-warning__text">This is a general guide, not legal advice. What you get depends on your airline, your ticket and the country, and the rules change. Look up your airline's delay and cancellation policy and confirm it for your flight.</p>
+      </div>
+    </div>
+
+    <div class="dl-views" data-dl-panels="view">
+
+      <!-- ===== Mini page 1: What's happening ===== -->
+      <section class="dl-view" id="now" role="tabpanel" aria-labelledby="dl-view-tab-now">
+        <div class="dl-card">
+          <p class="dl-kicker">Right now</p>
+          <h2 class="dl-title">What's happening?</h2>
+          <p class="dl-lede">Pick your situation.</p>
+
+          <div class="dl-tabs" role="tablist" aria-label="Your situation" data-dl-tabs="now">
+            <button class="dl-tab" role="tab" type="button" id="dl-tab-delay" aria-selected="true" aria-controls="dl-panel-delay"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>Delayed</button>
+            <button class="dl-tab" role="tab" type="button" id="dl-tab-cancel" aria-selected="false" aria-controls="dl-panel-cancel" tabindex="-1"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg></span>Cancelled</button>
+            <button class="dl-tab" role="tab" type="button" id="dl-tab-miss" aria-selected="false" aria-controls="dl-panel-miss" tabindex="-1"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h3M14 12h3"/></svg></span>Missed connection</button>
+            <button class="dl-tab" role="tab" type="button" id="dl-tab-tarmac" aria-selected="false" aria-controls="dl-panel-tarmac" tabindex="-1"><span class="icon"><svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z"/></svg></span>Stuck on the plane</button>
+          </div>
+
+          <div class="dl-panels" data-dl-panels="now">
+
+            <div class="dl-panel" role="tabpanel" id="dl-panel-delay" aria-labelledby="dl-tab-delay" data-dl-draw>
+              <div class="dl-strip" role="img" aria-label="Timeline of a US delay: open the app now. At 3 hours, a meal if the airline caused it, and a refund option on domestic flights. At 6 hours, a refund option on international flights.">
+                <span class="dl-strip__line" aria-hidden="true"></span>
+                <div class="dl-strip__stop dl-pop" style="--i:1"><i></i><b>Now</b><small>Open the app</small></div>
+                <div class="dl-strip__stop dl-pop" style="--i:3"><i></i><b>3 hours</b><small>Meal, if the airline caused it. Refund option (US domestic).</small></div>
+                <div class="dl-strip__stop dl-pop" style="--i:5"><i></i><b>6 hours</b><small>Refund option (international)</small></div>
+              </div>
+              <ol class="dl-path">
+                <li><span class="dl-path__dot">1</span><div><h3>Open the airline app</h3><p>The new time and the reason show up there first. Turn on alerts.</p></div></li>
+                <li><span class="dl-path__dot">2</span><div><h3>Stay near the gate</h3><p>Delays shrink as fast as they grow.</p></div></li>
+                <li><span class="dl-path__dot">3</span><div><h3>Tight connection? Ask now</h3><p>Get moved to a later connecting flight before you miss the first one.</p></div></li>
+                <li><span class="dl-path__dot">4</span><div><h3>Know your way out</h3><p>A long enough delay means you can skip the trip and get your money back. <button class="dl-jump" type="button" data-dl-goto="1">See what you're owed</button></p></div></li>
+              </ol>
+            </div>
+
+            <div class="dl-panel" role="tabpanel" id="dl-panel-cancel" aria-labelledby="dl-tab-cancel" data-dl-draw hidden>
+              <div class="dl-trio" role="img" aria-label="Rebook three ways at once: the app, the phone and the desk. Take whichever answers first.">
+                <div class="dl-trio__row" aria-hidden="true">
+                  <span class="dl-trio__item dl-pop" style="--i:1"><span class="icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg></span>App</span>
+                  <span class="dl-trio__plus">+</span>
+                  <span class="dl-trio__item dl-pop" style="--i:2"><span class="icon"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg></span>Phone</span>
+                  <span class="dl-trio__plus">+</span>
+                  <span class="dl-trio__item dl-pop" style="--i:3"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M6 14a6 6 0 0112 0M3 14h18v6H3z"/></svg></span>Desk</span>
+                </div>
+                <p class="dl-trio__cap dl-pop" style="--i:4" aria-hidden="true">All three at once. Take whichever answers first.</p>
+              </div>
+              <ol class="dl-path">
+                <li><span class="dl-path__dot">1</span><div><h3>Rebook right away</h3><p>Seats on the next flights go fast.</p></div></li>
+                <li><span class="dl-path__dot">2</span><div><h3>Bring your own option</h3><p>Hand the agent a flight number. Check nearby airports and partner airlines too.</p></div></li>
+                <li><span class="dl-path__dot">3</span><div><h3>Ask what caused it</h3><p>The airline's side usually means meals and a hotel. Weather usually doesn't. Overnight? Ask about a hotel before you book your own.</p></div></li>
+                <li><span class="dl-path__dot">4</span><div><h3>Fly later, or get your money back</h3><p>You never have to accept a voucher. <button class="dl-jump" type="button" data-dl-goto="1">See what you're owed</button></p></div></li>
+              </ol>
+            </div>
+
+            <div class="dl-panel" role="tabpanel" id="dl-panel-miss" aria-labelledby="dl-tab-miss" data-dl-draw hidden>
+              <div class="dl-duo">
+                <div class="dl-duo__tile dl-duo__tile--yes dl-pop" style="--i:1">
+                  <p class="dl-duo__tag">One ticket</p>
+                  <p class="dl-duo__big">You're covered</p>
+                  <p>If the first flight ran late, the airline normally puts you on its next available flight for free.</p>
+                </div>
+                <div class="dl-duo__tile dl-pop" style="--i:2">
+                  <p class="dl-duo__tag">Separate tickets</p>
+                  <p class="dl-duo__big">Call fast</p>
+                  <p>The second airline doesn't have to help. Call it, then check your insurance or card cover.</p>
+                </div>
+              </div>
+              <ol class="dl-path">
+                <li><span class="dl-path__dot">1</span><div><h3>Check the app before you run</h3><p>You may already be rebooked, with a new boarding pass waiting.</p></div></li>
+                <li><span class="dl-path__dot">2</span><div><h3>Find a transfer desk or call</h3><p>Ask kindly what else is open. Not every option shows in the app.</p></div></li>
+                <li><span class="dl-path__dot">3</span><div><h3>Ask where your checked bag is going</h3><p>It may fly without you. Photograph the bag tag.</p></div></li>
+              </ol>
+            </div>
+
+            <div class="dl-panel" role="tabpanel" id="dl-panel-tarmac" aria-labelledby="dl-tab-tarmac" data-dl-draw hidden>
+              <div class="dl-tarmac">
+                <div class="dl-clock" role="img" aria-label="Timeline: status update after 30 minutes, a snack and water by 2 hours, the chance to get off by 3 hours on domestic flights and 4 hours on international flights.">
+                  <svg viewBox="0 0 200 200" aria-hidden="true">
+                    <circle class="dl-clock__track" cx="100" cy="100" r="78"/>
+                    <circle class="dl-clock__arc" cx="100" cy="100" r="78" pathLength="100" transform="rotate(-90 100 100)"/>
+                    <g class="dl-clock__marks">
+                      <circle cx="155.2" cy="44.8" r="6"/>
+                      <circle cx="100" cy="178" r="6"/>
+                      <circle cx="22" cy="100" r="6"/>
+                      <circle cx="100" cy="22" r="7"/>
+                    </g>
+                    <text x="100" y="94" text-anchor="middle" class="dl-clock__big">4 hrs</text>
+                    <text x="100" y="116" text-anchor="middle" class="dl-clock__small">at the most</text>
+                  </svg>
+                </div>
+                <ol class="dl-path dl-path--tight">
+                  <li><span class="dl-path__dot">1</span><div><h3>30 minutes: an update</h3><p>The airline has to tell you what's going on.</p></div></li>
+                  <li><span class="dl-path__dot">2</span><div><h3>2 hours: a snack and water</h3><p>Plus working toilets and a comfortable cabin.</p></div></li>
+                  <li><span class="dl-path__dot">3</span><div><h3>3 hours domestic, 4 international</h3><p>You must be given the chance to get off, unless safety, security or air traffic control prevents it.</p></div></li>
+                  <li><span class="dl-path__dot">4</span><div><h3>Think before you get off</h3><p>The airline doesn't have to let you back on, and your checked bag may fly without you.</p></div></li>
+                </ol>
+              </div>
+              <p class="dl-fine">These limits apply at US airports. <a href="https://www.transportation.gov/individuals/aviation-consumer-protection/tarmac-delays" target="_blank" rel="noopener">US DOT: tarmac delays</a></p>
+            </div>
+
+          </div>
+
+          <!-- The wait checklist, part of the same page -->
+          <div class="dl-wait" id="wait">
+            <div class="dl-wait__head">
+              <div>
+                <p class="dl-kicker">While you wait</p>
+                <h3 class="dl-wait__title">Make the wait easier</h3>
+              </div>
+              <p class="dl-wait__count"><span id="dlWaitCount" aria-live="polite">0 of 8 done</span><button class="dl-wait__reset" id="dlWaitReset" type="button" hidden>Start over</button></p>
+            </div>
+            <div class="dl-flight" id="dlFlight" aria-hidden="true">
+              <span class="dl-flight__line"></span>
+              <span class="dl-flight__done"></span>
+              <span class="dl-flight__plane"><svg viewBox="0 0 24 24"><path d="M21,16V14L13,9V3.5C13,2.67,12.33,2,11.5,2C10.67,2,10,2.67,10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z"/></svg></span>
+              <span class="dl-flight__end"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+            </div>
+            <div class="dl-checks">
+              <label class="dl-check"><input type="checkbox" data-k="charge"><span class="dl-check__body"><span class="dl-check__top"><span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M10 10l-2 3h3l-2 3"/></svg></span><span class="dl-check__box"></span></span><b>Charge your phone</b><small>It's your rebooking tool.</small></span></label>
+              <label class="dl-check"><input type="checkbox" data-k="shots"><span class="dl-check__body"><span class="dl-check__top"><span class="icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg></span><span class="dl-check__box"></span></span><b>Screenshot everything</b><small>The notice, the reason, any offer.</small></span></label>
+              <label class="dl-check"><input type="checkbox" data-k="receipts"><span class="dl-check__body"><span class="dl-check__top"><span class="icon"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span class="dl-check__box"></span></span><b>Keep every receipt</b><small>Meals, hotel, rides.</small></span></label>
+              <label class="dl-check"><input type="checkbox" data-k="cover"><span class="dl-check__body"><span class="dl-check__top"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span><span class="dl-check__box"></span></span><b>Check card and insurance</b><small>Many cover meals and a hotel.</small></span></label>
+              <label class="dl-check"><input type="checkbox" data-k="carryon"><span class="dl-check__body"><span class="dl-check__top"><span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span><span class="dl-check__box"></span></span><b>Essentials with you</b><small>Medicine, chargers, spare clothes.</small></span></label>
+              <label class="dl-check"><input type="checkbox" data-k="quiet"><span class="dl-check__body"><span class="dl-check__top"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 18v-5a3 3 0 013-3h10a3 3 0 013 3v5M4 15h16M7 10V7h10v3"/></svg></span><span class="dl-check__box"></span></span><b>Find a quiet gate</b><small>Keep the app's alerts on.</small></span></label>
+              <label class="dl-check"><input type="checkbox" data-k="lounge"><span class="dl-check__body"><span class="dl-check__top"><span class="icon"><svg viewBox="0 0 24 24"><path d="M5 8h12v5a5 5 0 01-5 5h-2a5 5 0 01-5-5z"/><path d="M17 9h2a2 2 0 010 4h-2M8 3v2M12 3v2"/></svg></span><span class="dl-check__box"></span></span><b>Consider a lounge</b><small>Food, quiet, shorter lines.</small></span></label>
+              <label class="dl-check"><input type="checkbox" data-k="tell"><span class="dl-check__body"><span class="dl-check__top"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg></span><span class="dl-check__box"></span></span><b>Tell someone, then eat</b><small>Text your pickup. Stretch your legs.</small></span></label>
+            </div>
+          </div>
+        </div>
+
+        <button class="dl-next" type="button" data-dl-goto="1">
+          <span class="dl-next__img" style="background-image: url('images/kollen/kollen-hkg-sunset-tower-3.jpg');" aria-hidden="true"></span>
+          <span class="dl-next__txt"><small>Next</small><b>What you're owed</b><span>Refunds, meals, hotels and compensation.</span></span>
+          <span class="dl-next__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </button>
+      </section>
+
+      <!-- ===== Mini page 2: What you're owed ===== -->
+      <section class="dl-view" id="owed" role="tabpanel" aria-labelledby="dl-view-tab-owed" hidden>
+        <div class="dl-card">
+          <p class="dl-kicker">Know your rights</p>
+          <h2 class="dl-title">What you're owed</h2>
+          <p class="dl-lede">It depends on where you're flying.</p>
+
+          <div class="dl-tabs" role="tablist" aria-label="Region" data-dl-tabs="region">
+            <button class="dl-tab" role="tab" type="button" id="dl-tab-us" aria-selected="true" aria-controls="dl-panel-us">United States</button>
+            <button class="dl-tab" role="tab" type="button" id="dl-tab-eu" aria-selected="false" aria-controls="dl-panel-eu" tabindex="-1">Europe (EU)</button>
+            <button class="dl-tab" role="tab" type="button" id="dl-tab-uk" aria-selected="false" aria-controls="dl-panel-uk" tabindex="-1">United Kingdom</button>
+            <button class="dl-tab" role="tab" type="button" id="dl-tab-ca" aria-selected="false" aria-controls="dl-panel-ca" tabindex="-1">Canada</button>
+          </div>
+
+          <div class="dl-regions" data-dl-panels="region">
+
+            <div class="dl-panel" role="tabpanel" id="dl-panel-us" aria-labelledby="dl-tab-us">
+              <h3 class="dl-sub"><span>1</span>You always get a choice</h3>
+              <div class="dl-fork" data-dl-draw>
+                <div class="dl-fork__start">Flight cancelled, or changed in a big way</div>
+                <svg class="dl-fork__lines" viewBox="0 0 600 64" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M300 0 C300 40 150 24 150 64"/>
+                  <path d="M300 0 C300 40 450 24 450 64"/>
+                </svg>
+                <div class="dl-fork__ends">
+                  <div class="dl-fork__end">
+                    <p class="dl-fork__tag">Still want to go</p>
+                    <h4>Take the new flight</h4>
+                    <p>Rebooked at no extra cost. No ticket refund, since you traveled.</p>
+                  </div>
+                  <div class="dl-fork__end dl-fork__end--refund">
+                    <p class="dl-fork__tag">Rather not go</p>
+                    <h4>Get your money back</h4>
+                    <p>Decline the new flight and any voucher. Refund to your original payment, even on a non-refundable ticket: 7 business days for cards, 20 days otherwise.</p>
+                  </div>
+                </div>
+              </div>
+
+              <h3 class="dl-sub"><span>2</span>What counts as a "big change"</h3>
+              <div class="dl-gauge" data-dl-draw>
+                <div class="dl-gauge__row">
+                  <span class="dl-gauge__label">Domestic</span>
+                  <span class="dl-gauge__track"><span class="dl-gauge__fill" style="--to: 37.5%"></span><span class="dl-gauge__pin" style="--at: 37.5%"><b>3 hours</b></span></span>
+                </div>
+                <div class="dl-gauge__row">
+                  <span class="dl-gauge__label">International</span>
+                  <span class="dl-gauge__track"><span class="dl-gauge__fill" style="--to: 75%"></span><span class="dl-gauge__pin" style="--at: 75%"><b>6 hours</b></span></span>
+                </div>
+                <div class="dl-gauge__scale" aria-hidden="true"><span>0</span><span>2 h</span><span>4 h</span><span>6 h</span><span>8 h</span></div>
+                <p class="dl-gauge__note">Leaving that much <strong>earlier</strong> or arriving that much <strong>later</strong>.</p>
+                <div class="dl-chips" aria-label="Other changes that count">
+                  <span>Also counts:</span><span>A different airport</span><span>More connections</span><span>A lower cabin class</span>
+                </div>
+              </div>
+
+              <h3 class="dl-sub"><span>3</span>Who caused it matters</h3>
+              <div class="dl-cause">
+                <div class="dl-cause__col">
+                  <span class="dl-cause__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 00-5.2 5.2L3 18l3 3 6.3-6.3a4 4 0 005.2-5.2l-2.5 2.5-2.5-2.5z"/></svg></span></span>
+                  <h4>The airline's side</h4>
+                  <p class="dl-cause__eg">Maintenance, crew, cleaning, fuelling, loading bags</p>
+                  <ul>
+                    <li class="is-yes">Refund if you don't travel</li>
+                    <li class="is-yes">Free rebooking</li>
+                    <li class="is-yes">Meal after a 3-hour wait</li>
+                    <li class="is-yes">Overnight hotel (most airlines)</li>
+                  </ul>
+                </div>
+                <div class="dl-cause__col dl-cause__col--out">
+                  <span class="dl-cause__icon"><span class="icon"><svg viewBox="0 0 24 24"><path d="M7 16a4 4 0 010-8 5 5 0 019.6-1A4.5 4.5 0 0117 16z"/><path d="M9 19l-1 2M13 19l-1 2M17 19l-1 2"/></svg></span></span>
+                  <h4>Out of its hands</h4>
+                  <p class="dl-cause__eg">Weather, air traffic control, security</p>
+                  <ul>
+                    <li class="is-yes">Refund if you don't travel</li>
+                    <li class="is-yes">Rebooking on the same airline</li>
+                    <li class="is-no">Meals aren't promised</li>
+                    <li class="is-no">Hotels aren't promised</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="dl-note">
+                <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg></span>
+                <p><strong>No US rule makes an airline pay you cash for a delay.</strong> Anything beyond a refund comes from promises each airline has made.</p>
+              </div>
+
+              <div class="dl-promise" data-dl-draw>
+                <p class="dl-promise__head">What the nine biggest US airlines promise when they cause the problem</p>
+                <ul class="dl-promise__list">
+                  <li><span class="dl-dots" data-n="9" aria-hidden="true"></span><span class="dl-promise__what"><b>9 of 9</b> rebook you free on their own flights</span></li>
+                  <li><span class="dl-dots" data-n="9" aria-hidden="true"></span><span class="dl-promise__what"><b>9 of 9</b> give a meal or voucher after 3 hours</span></li>
+                  <li><span class="dl-dots" data-n="8" aria-hidden="true"></span><span class="dl-promise__what"><b>8 of 9</b> give a hotel and a ride to it overnight</span></li>
+                  <li><span class="dl-dots" data-n="6" aria-hidden="true"></span><span class="dl-promise__what"><b>6 of 9</b> will rebook you on a partner airline</span></li>
+                  <li><span class="dl-dots" data-n="0" aria-hidden="true"></span><span class="dl-promise__what"><b>0 of 9</b> promise cash for your time</span></li>
+                </ul>
+                <p class="dl-fine">Alaska, Allegiant, American, Delta, Frontier, Hawaiian, JetBlue, Southwest and United. Checked November 2026. See your airline on the <a href="https://www.transportation.gov/airconsumer/airline-cancellation-delay-dashboard" target="_blank" rel="noopener">US DOT dashboard</a>.</p>
+              </div>
+
+              <div class="dl-note dl-note--soft">
+                <span class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V4h6v3"/></svg></span>
+                <p><strong>Checked bag late?</strong> Report it before you leave the airport. The bag fee comes back if it's 12+ hours late (domestic) or 15 to 30 hours late (international, by flight length).</p>
+              </div>
+              <p class="dl-fine">Airline won't budge on a US flight? <a href="https://www.transportation.gov/airconsumer/file-consumer-complaint" target="_blank" rel="noopener">File a free complaint with the US DOT</a>.</p>
+            </div>
+
+            <div class="dl-panel" role="tabpanel" id="dl-panel-eu" aria-labelledby="dl-tab-eu" data-dl-draw hidden>
+              <div class="dl-money">
+                <div class="dl-money__tile dl-pop" style="--i:0"><strong>€250</strong><span>Flights up to 1,500 km</span></div>
+                <div class="dl-money__tile dl-pop" style="--i:1"><strong>€400</strong><span>1,500 to 3,500 km, and longer flights within the EU</span></div>
+                <div class="dl-money__tile dl-pop" style="--i:2"><strong>€600</strong><span>Over 3,500 km</span></div>
+              </div>
+              <ul class="dl-list">
+                <li><strong>When:</strong> you arrive 3 or more hours late, or your flight is cancelled with less than 14 days' notice.</li>
+                <li><strong>Unless:</strong> the airline can show "extraordinary circumstances", such as severe weather.</li>
+                <li><strong>Either way:</strong> food, drink and a hotel if needed, and a refund option once a delay reaches 5 hours.</li>
+                <li><strong>Covers:</strong> flights within the EU, flights leaving the EU on any airline, and flights into the EU on an EU airline.</li>
+              </ul>
+              <p class="dl-fine">The EU agreed updated rules in 2026 that are expected to start applying in 2027, so check before you travel. <a href="https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm" target="_blank" rel="noopener">Your Europe: air passenger rights</a></p>
+            </div>
+
+            <div class="dl-panel" role="tabpanel" id="dl-panel-uk" aria-labelledby="dl-tab-uk" data-dl-draw hidden>
+              <div class="dl-money">
+                <div class="dl-money__tile dl-pop" style="--i:0"><strong>£220</strong><span>Flights under 1,500 km</span></div>
+                <div class="dl-money__tile dl-pop" style="--i:1"><strong>£350</strong><span>1,500 to 3,500 km</span></div>
+                <div class="dl-money__tile dl-pop" style="--i:2"><strong>£520</strong><span>Over 3,500 km and 4+ hours late (£260 if 3 to 4 hours)</span></div>
+              </div>
+              <ul class="dl-list">
+                <li><strong>When:</strong> you reach your destination more than 3 hours late.</li>
+                <li><strong>Unless:</strong> the airline can show "extraordinary circumstances".</li>
+                <li><strong>Either way:</strong> food and drink after a 2 to 4 hour wait (depending on distance), and a hotel if you're delayed overnight.</li>
+                <li><strong>Refund:</strong> after a 5-hour delay you can choose not to travel and get your money back.</li>
+              </ul>
+              <p class="dl-fine">Compensation isn't automatic; claim it from the airline. <a href="https://www.caa.co.uk/air-passengers/travel-problems-and-rights/flight-delays-and-cancellations/delays/" target="_blank" rel="noopener">UK Civil Aviation Authority: delays</a></p>
+            </div>
+
+            <div class="dl-panel" role="tabpanel" id="dl-panel-ca" aria-labelledby="dl-tab-ca" data-dl-draw hidden>
+              <div class="dl-money">
+                <div class="dl-money__tile dl-pop" style="--i:0"><strong>CA$400</strong><span>3 to 6 hours late</span></div>
+                <div class="dl-money__tile dl-pop" style="--i:1"><strong>CA$700</strong><span>6 to 9 hours late</span></div>
+                <div class="dl-money__tile dl-pop" style="--i:2"><strong>CA$1,000</strong><span>9 or more hours late</span></div>
+              </div>
+              <ul class="dl-list">
+                <li><strong>These are for large airlines.</strong> Small airlines owe CA$125, $250 and $500.</li>
+                <li><strong>When:</strong> the problem was within the airline's control (and not needed for safety), and you were told 14 days or less before departure.</li>
+                <li><strong>Measured by:</strong> how late you reach your final destination.</li>
+                <li><strong>Deadline:</strong> claim in writing from the airline within 1 year.</li>
+              </ul>
+              <p class="dl-fine">Canada has proposed changes to these rules (2026) that aren't in force yet, so check before you claim. <a href="https://protection-passager-passenger.otc-cta.gc.ca/en/refunds-and-compensation/flight-delays-cancellations-rebooking-refunds-compensation" target="_blank" rel="noopener">Canadian Transportation Agency: delays and cancellations</a></p>
+            </div>
+
+          </div>
+
+          <div class="dl-note dl-note--soft">
+            <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
+            <p><strong>On most international trips,</strong> a treaty called the Montreal Convention may also let you claim real costs a delay caused you, up to a limit. Keep receipts and ask the airline how to claim.</p>
+          </div>
+        </div>
+
+        <button class="dl-next" type="button" data-dl-goto="0">
+          <span class="dl-next__img" style="background-image: url('images/kollen/kollen-hkg-cathay-gates-window.jpg');" aria-hidden="true"></span>
+          <span class="dl-next__txt"><small>Back to</small><b>What's happening</b><span>Steps for right now, and the wait checklist.</span></span>
+          <span class="dl-next__arrow dl-next__arrow--back" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span>
+        </button>
+      </section>
+
+    </div>
+
+    <!-- Sources -->
+    <section class="dl-card dl-sources about-reveal" aria-labelledby="dl-sources-title">
+      <h2 class="dl-sources__title" id="dl-sources-title">Where this comes from</h2>
+      <p class="dl-sources__text">Every number on this page was checked against the official source in November 2026. Rules change, and <strong>your airline's own policy is what applies to your flight</strong>, so confirm before you rely on it.</p>
+      <ul class="dl-sources__list">
+        <li><a href="https://www.transportation.gov/individuals/aviation-consumer-protection/refunds" target="_blank" rel="noopener">US DOT: refunds</a></li>
+        <li><a href="https://www.transportation.gov/airconsumer/airline-cancellation-delay-dashboard" target="_blank" rel="noopener">US DOT: airline promises dashboard</a></li>
+        <li><a href="https://www.transportation.gov/individuals/aviation-consumer-protection/tarmac-delays" target="_blank" rel="noopener">US DOT: tarmac delays</a></li>
+        <li><a href="https://www.transportation.gov/airconsumer/file-consumer-complaint" target="_blank" rel="noopener">US DOT: file a complaint</a></li>
+        <li><a href="https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm" target="_blank" rel="noopener">EU: air passenger rights</a></li>
+        <li><a href="https://www.caa.co.uk/air-passengers/travel-problems-and-rights/flight-delays-and-cancellations/delays/" target="_blank" rel="noopener">UK CAA: delays</a></li>
+        <li><a href="https://protection-passager-passenger.otc-cta.gc.ca/en/refunds-and-compensation/flight-delays-cancellations-rebooking-refunds-compensation" target="_blank" rel="noopener">Canada CTA: delays and cancellations</a></li>
+      </ul>
+    </section>
+
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__brand"><img src="images/flyeasy-mark.svg" alt="" width="37" height="26">Fly Easy</p>
+    <nav class="site-footer__links" aria-label="Footer navigation">
+      <a href="index.html">About</a>
+      <a href="global.html">Global Tips</a>
+      <a href="airports.html">Airports</a>
+      <a href="timeblocker.html">Timeblocker</a>
+      <a href="packer.html">Packer</a>
+      <a href="delays.html" aria-current="page">Delays</a>
+      <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
+    </nav>
+    <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
+    <p class="site-footer__credit">Photography by Kollen, with a few from Unsplash &amp; Pexels.</p>
+  </div>
+</footer>
+
+<div class="survey-toast" id="surveyToast" hidden>
+  <button class="survey-toast__close" type="button" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <p class="survey-toast__title">Got a sec?</p>
+  <p class="survey-toast__text">Help shape Fly Easy — a quick survey on what's working and what's missing.</p>
+  <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
+</div>
+
+<script src="script.js?v=120"></script>
+<script src="delays.js?v=2"></script>
+</body>
+</html>

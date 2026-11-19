@@ -16,7 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=105">
+<link rel="stylesheet" href="styles.css?v=115">
+<link rel="stylesheet" href="motion.css?v=2">
+<script src="motion.js?v=6"></script>
 </head>
 <body>
 
@@ -82,7 +84,7 @@
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
     <span class="mobile-tabbar__label">Timeblocker</span>
   </a>
-  <a class="mobile-tabbar__item" href="packer.html" aria-current="page">
+  <a class="mobile-tabbar__item" href="packer.html" aria-current="page"><span class="mobile-tabbar__mark" aria-hidden="true"></span>
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 5V3h6v2M4 12h16"/></svg></span>
     <span class="mobile-tabbar__label">Packer</span>
   </a>
@@ -277,7 +279,7 @@
                 <p class="pk-rule__head"><span class="pk-rule__emoji">🔋</span> Batteries &amp; power banks</p>
                 <ul class="pk-rule__points">
                   <li class="is-bad"><b>Never</b> checked &mdash; carry-on only</li>
-                  <li>100 Wh max each</li>
+                  <li>Up to 100 Wh each (100–160 Wh needs airline OK)</li>
                 </ul>
               </div>
 
@@ -358,6 +360,7 @@
       <a href="airports.html">Airports</a>
       <a href="timeblocker.html">Timeblocker</a>
       <a href="packer.html">Packer</a>
+      <a href="delays.html">Delays</a>
       <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
     </nav>
     <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
@@ -374,6 +377,6 @@
   <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
 </div>
 
-<script src="script.js?v=112"></script>
+<script src="script.js?v=120"></script>
 </body>
 </html>

@@ -1,8 +1,12 @@
 /* Fly Easy service worker: makes the site work offline once it has
    been opened (and as a home-screen app).
 
-   - Pages: network first, so you always see the newest version when
-     online; falls back to the saved copy offline.
+   - Pages: opening the site (or reloading) is network first, so you
+     always start on the newest version; that also refreshes the saved
+     copy of every other page behind the scenes. Moving between pages
+     inside the site then shows the saved copy instantly (tab switches
+     never wait on the network) and refreshes it again for next time.
+     Offline, the saved copy is used throughout.
    - Our CSS/JS/photos: the saved copy shows instantly and a fresh
      copy is fetched behind it, so an edit (even one without a new
      ?v= number) reaches phones by the next visit. Photos are saved
@@ -13,7 +17,7 @@
 
    Bump VERSION when you change which files are pre-saved below, so
    phones throw away the old set. */
-const VERSION = "fly-easy-v1";
+const VERSION = "fly-easy-v11";
 const SHELL = VERSION + "-shell";
 const RUNTIME = VERSION + "-runtime";
 
@@ -25,7 +29,8 @@ const PAGES = [
   "sfo.html",
   "sjc.html",
   "timeblocker.html",
-  "packer.html"
+  "packer.html",
+  "delays.html"
 ];
 
 /* Everything the pages need to render, read from the pages' own
@@ -92,19 +97,60 @@ async function trim(cache) {
   for (let i = 0; i < keys.length - MAX_RUNTIME; i++) await cache.delete(keys[i]);
 }
 
-async function pageRequest(request) {
+function pageName(request) {
+  const name = new URL(request.url).pathname.split("/").pop() || "./";
+  return PAGES.includes(name) ? name : null;
+}
+
+/* Fetch a page and save it. */
+async function fetchPage(request) {
+  const res = await clean(await fetch(request));
+  if (res.ok && res.type === "basic") {
+    const cache = await caches.open(SHELL);
+    await cache.put(pageName(request) || request, res.clone());
+  }
+  return res;
+}
+
+/* Re-save every page (at most once a minute), so the copies used for
+   instant tab switches are as new as the page you opened. */
+let lastRefresh = 0;
+async function refreshPages(except) {
+  if (Date.now() - lastRefresh < 60000) return;
+  lastRefresh = Date.now();
   const cache = await caches.open(SHELL);
-  try {
-    const res = await clean(await fetch(request));
-    if (res.ok && res.type === "basic") {
-      const url = new URL(request.url);
-      const name = url.pathname.split("/").pop() || "./";
-      cache.put(PAGES.includes(name) ? name : request, res.clone());
+  await Promise.all(PAGES.filter((p) => p !== except).map(async (page) => {
+    try {
+      const res = await clean(await fetch(page, { cache: "no-cache" }));
+      if (res.ok && res.type === "basic") await cache.put(page, res);
+    } catch (e) { /* offline: keep the copy we have */ }
+  }));
+}
+
+async function pageRequest(event) {
+  const { request } = event;
+  const name = pageName(request);
+  let inApp = false;
+  try { inApp = !!request.referrer && new URL(request.referrer).origin === location.origin; } catch (e) {}
+
+  /* Moving between our own pages: saved copy now, fresh copy behind it. */
+  if (inApp && name && request.cache !== "reload" && request.cache !== "no-cache") {
+    const cache = await caches.open(SHELL);
+    const hit = await cache.match(name);
+    if (hit) {
+      event.waitUntil(fetchPage(request).catch(() => {}));
+      return hit;
     }
+  }
+
+  try {
+    const res = await fetchPage(request);
+    if (!inApp) event.waitUntil(refreshPages(name));
     return res;
   } catch (e) {
     const hit = await caches.match(request, { ignoreSearch: true });
     if (hit) return hit;
+    const cache = await caches.open(SHELL);
     return (await cache.match("index.html")) || Response.error();
   }
 }
@@ -150,7 +196,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   if (request.mode === "navigate" && url.origin === location.origin) {
-    event.respondWith(pageRequest(request));
+    event.respondWith(pageRequest(event));
     return;
   }
   if (url.origin === location.origin) {

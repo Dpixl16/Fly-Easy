@@ -177,6 +177,7 @@ export async function createGlobe({ container, pinLayer, airports, patches = [],
   let activeId = null;
   let idleTimer = null;
   let wasZoomedIn = false;
+  let frameHook = null;     // called after each rendered frame (the landing plane rides on it)
 
   /* --- size + framing --- */
   let W = 1, H = 1, homeDist = 3.2;
@@ -385,33 +386,46 @@ export async function createGlobe({ container, pinLayer, airports, patches = [],
   function pinElement(key, members) {
     let b = pinEls.get(key);
     if (b) return b;
-    b = document.createElement("button");
-    b.type = "button";
-    b.className = "ap-pin" + (members.length > 1 ? " is-cluster" : "");
+    const single = members.length === 1;
+    // a single airport is one button; a merged pin is a little group with
+    // one button per airport, so every airport is always one click away
+    b = document.createElement(single ? "button" : "div");
+    b.className = "ap-pin" + (single ? "" : " is-cluster");
     const dot = document.createElement("span");
     dot.className = "ap-pin__dot";
     const label = document.createElement("span");
     label.className = "ap-pin__label";
-    const code = document.createElement("span");
-    code.className = "ap-pin__code";
-    code.textContent = members.map((m) => m.a.iata).join(" · ");
-    label.append(code);
-    if (members.length === 1) {
+    if (single) {
+      b.type = "button";
+      const code = document.createElement("span");
+      code.className = "ap-pin__code";
+      code.textContent = members[0].a.iata;
       const city = document.createElement("span");
       city.className = "ap-pin__city";
       city.textContent = members[0].a.city;
-      // shown only while this airport is selected: the pin itself opens the guide
-      const go = document.createElement("span");
-      go.className = "ap-pin__go";
-      go.innerHTML = 'Open guide<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-      label.append(city, go);
-      b.setAttribute("aria-label", `${members[0].a.iata}, ${members[0].a.name}. Fly there`);
+      label.append(code, city);
+      b.setAttribute("aria-label", `${members[0].a.iata}, ${members[0].a.name}. Fly to the guide`);
+      b.addEventListener("click", () => onPick(b._members[0].a));
     } else {
-      const count = document.createElement("span");
-      count.className = "ap-pin__count";
-      count.textContent = String(members.length);
-      label.append(count);
-      b.setAttribute("aria-label", `${members.length} airports: ${members.map((m) => m.a.iata).join(", ")}. Zoom in`);
+      b.setAttribute("role", "group");
+      b.setAttribute("aria-label", `${members.length} airports close together`);
+      members.forEach((m, i) => {
+        if (i) {
+          const sep = document.createElement("span");
+          sep.className = "ap-pin__sep";
+          sep.setAttribute("aria-hidden", "true");
+          label.append(sep);
+        }
+        const pick = document.createElement("button");
+        pick.type = "button";
+        pick.className = "ap-pin__code ap-pin__pick";
+        pick.textContent = m.a.iata;
+        pick.setAttribute("aria-label", `${m.a.iata}, ${m.a.name}. Fly to the guide`);
+        pick.addEventListener("click", (e) => { e.stopPropagation(); onPick(m.a); });
+        label.append(pick);
+      });
+      // tapping the dot (not a code) still zooms in to split them
+      dot.addEventListener("click", () => zoomToCluster(b._members));
     }
     b.append(dot, label);
     b._members = members;
@@ -419,11 +433,6 @@ export async function createGlobe({ container, pinLayer, airports, patches = [],
       const p = patchFor(m.a.lat, m.a.lon);
       if (p) ensurePatch(p);
     }));
-    b.addEventListener("click", () => {
-      const ms = b._members;
-      if (ms.length === 1) onPick(ms[0].a);
-      else zoomToCluster(ms);
-    });
     pinLayer.append(b);
     pinEls.set(key, b);
     return b;
@@ -628,6 +637,7 @@ export async function createGlobe({ container, pinLayer, airports, patches = [],
       earthUniforms.camPos.value.copy(camera.position);
       renderer.render(scene, camera);
       updatePins();
+      if (frameHook) frameHook(now);
       const zoomedIn = dist < homeDist * 0.72;
       if (zoomedIn !== wasZoomedIn) { wasZoomedIn = zoomedIn; onZoomChange && onZoomChange(zoomedIn); }
     }
@@ -666,6 +676,66 @@ export async function createGlobe({ container, pinLayer, airports, patches = [],
       const p = patchFor(a.lat, a.lon);
       if (p) ensurePatch(p);              // start loading now; it fades in on arrival
       return flyToDir(latLonToVec(a.lat, a.lon), p ? ARRIVE_DIST_PATCH : ARRIVE_DIST, opts);
+    },
+    /* One-click landing: a single continuous camera move from wherever
+       you are, over the curve of the Earth and down to just above the
+       airport. onFrame(k, point) runs after every rendered frame with the
+       progress (0..1) and the airport's screen position, so the HTML
+       plane is drawn in lock-step with the globe (never a frame behind). */
+    land(a, onFrame) {
+      const p = patchFor(a.lat, a.lon);
+      const sharp = p ? ensurePatch(p) : Promise.resolve();
+      const dir = latLonToVec(a.lat, a.lon).normalize();
+      const s = camera.position.clone().normalize();
+      const d0 = camera.position.length();
+      const d1 = 1.06;
+      const angle = s.angleTo(dir);
+      const q = new THREE.Quaternion().setFromUnitVectors(s, dir);
+      const qt = new THREE.Quaternion();
+      const cruise = 1 + Math.min(2.2, angle * 1.1);
+      const lift = Math.max(0, cruise - lerp(d0, d1, 0.4));
+      const duration = reduceMotion ? 0 : clamp(2300 + angle * 600, 2400, 3400);
+      const pos = latLonToVec(a.lat, a.lon, 1);
+      controls.enabled = false;
+      controls.autoRotate = false;
+      activeId = a.id;
+      const tw = startTween({
+        duration,
+        apply(k) {
+          // turn toward the airport first, then settle in and descend
+          const kr = easeInOutCubic(Math.min(1, k / 0.78));
+          qt.copy(qId).slerp(q, kr);
+          const kd = easeInOutSine(k);
+          // altitude: a smooth "flight profile" that ends in a long final approach
+          const d = lerp(d0, d1, 1 - Math.pow(1 - kd, 2.2)) + lift * Math.sin(Math.PI * Math.min(1, k / 0.7));
+          camera.position.copy(s).applyQuaternion(qt).multiplyScalar(d);
+          tween.k = k;
+        },
+      });
+      const start = performance.now();
+      frameHook = (now) => {
+        const k = tween ? (tween.k || 0) : clamp((now - start) / (duration || 1), 0, 1);
+        tmp.copy(pos).project(camera);
+        onFrame && onFrame(k, { x: (tmp.x + 1) / 2 * W, y: (1 - tmp.y) / 2 * H, w: W, h: H });
+      };
+      return Promise.all([tw, Promise.race([sharp, new Promise((r) => setTimeout(r, 300))])]).then(([ok]) => ok);
+    },
+    // screen position of an airport right now (used to start the plane's path)
+    project(a) {
+      tmp.copy(latLonToVec(a.lat, a.lon, 1)).project(camera);
+      return { x: (tmp.x + 1) / 2 * W, y: (1 - tmp.y) / 2 * H, w: W, h: H };
+    },
+    // back from a guide via the browser's Back button: hand control back
+    reset(a) {
+      frameHook = null;
+      cancelTween();
+      controls.enabled = true;
+      activeId = null;
+      const dir = a ? latLonToVec(a.lat, a.lon).normalize() : camera.position.clone().normalize();
+      camera.position.copy(dir).multiplyScalar(a ? ARRIVE_DIST : homeDist);
+      camera.lookAt(0, 0, 0);
+      controls.update();
+      dirty = true; wake();
     },
     prefetch(a) {
       const p = patchFor(a.lat, a.lon);

@@ -19,8 +19,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="images/globe/earth-day-512.jpg" crossorigin="anonymous">
 <link rel="preload" as="image" href="images/globe/earth-night-512.jpg" crossorigin="anonymous">
-<link rel="stylesheet" href="styles.css?v=105">
-<link rel="stylesheet" href="airports.css?v=3">
+<link rel="stylesheet" href="styles.css?v=115">
+<link rel="stylesheet" href="airports.css?v=5">
+<link rel="stylesheet" href="motion.css?v=2">
+<script src="motion.js?v=6"></script>
 <script>
   /* returning from a guide (?rise=sfo): skip the cloud-wipe entrance; the globe does the arrival */
   if (/[?&]rise=/.test(location.search)) document.documentElement.classList.add("ap-rise");
@@ -90,7 +92,7 @@
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg></span>
     <span class="mobile-tabbar__label">Global</span>
   </a>
-  <a class="mobile-tabbar__item" href="airports.html" aria-current="page">
+  <a class="mobile-tabbar__item" href="airports.html" aria-current="page"><span class="mobile-tabbar__mark" aria-hidden="true"></span>
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
     <span class="mobile-tabbar__label">Airports</span>
   </a>
@@ -135,21 +137,20 @@
       </button>
     </div>
 
-    <article class="ap-card" id="ap-card" aria-live="polite" title="Open this airport's guide" hidden>
-      <button class="ap-card__close" id="ap-card-close" type="button" aria-label="Close airport card">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <div class="ap-card__photo" id="ap-card-photo"></div>
-      <div class="ap-card__body">
-        <p class="ap-card__codes" id="ap-card-codes"></p>
-        <h2 class="ap-card__name" id="ap-card-name"></h2>
-        <p class="ap-card__blurb" id="ap-card-blurb"></p>
-        <ul class="ap-card__facts" id="ap-card-facts"></ul>
-        <a class="btn ap-card__go" id="ap-card-go" href="#">Open guide
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-      </div>
-    </article>
+    <!-- the one-click landing: contrail, plane, its shadow and the touchdown ring -->
+    <div class="ap-flight" id="ap-flight" aria-hidden="true" hidden>
+      <canvas class="ap-flight__trail" id="ap-flight-trail"></canvas>
+      <span class="ap-flight__shadow" id="ap-flight-shadow"><svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z"/></svg></span>
+      <span class="ap-flight__touch" id="ap-flight-touch"></span>
+      <span class="ap-flight__plane" id="ap-flight-plane"><svg viewBox="0 0 24 24"><path d="M2 13l8-2 5-8 2 1-3 7 6-1 2 2-7 3-2 6-2-1 1-5-6 2z"/></svg></span>
+    </div>
+
+    <!-- a boarding-pass strip that names where you're landing -->
+    <div class="ap-strip" id="ap-strip" aria-hidden="true" hidden>
+      <span class="ap-strip__label">Now landing</span>
+      <span class="ap-strip__code" id="ap-strip-code"></span>
+      <span class="ap-strip__text"><b id="ap-strip-name"></b><span id="ap-strip-city"></span></span>
+    </div>
 
     <div class="ap-controls" id="ap-controls" hidden>
       <button type="button" class="ap-ctrl" data-zoom="in" aria-label="Zoom in">
@@ -186,10 +187,11 @@
       <a href="airports.html">Airports</a>
       <a href="timeblocker.html">Timeblocker</a>
       <a href="packer.html">Packer</a>
+      <a href="delays.html">Delays</a>
       <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
     </nav>
     <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
-    <p class="site-footer__credit">Photography by Kollen, with a few from Unsplash &amp; Pexels. Earth imagery: NASA Blue Marble &amp; Black Marble (NASA Earth Observatory).</p>
+    <p class="site-footer__credit">Photography by Kollen, with a few from Unsplash &amp; Pexels. Earth imagery: NASA Earth Observatory, <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/" target="_blank" rel="noopener">Blue Marble Next Generation</a> (day) and <a href="https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps" target="_blank" rel="noopener">Black Marble 2016</a> (night lights, Suomi NPP VIIRS). Public domain.</p>
   </div>
 </footer>
 
@@ -202,8 +204,8 @@
   <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
 </div>
 
-<script src="script.js?v=112"></script>
+<script src="script.js?v=120"></script>
 <script src="airports-data.js?v=2"></script>
-<script type="module" src="airports.js?v=3"></script>
+<script type="module" src="airports.js?v=6"></script>
 </body>
 </html>

@@ -19,7 +19,7 @@
   "shortcuts": [
     { "name": "Airports", "url": "./airports.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] },
     { "name": "Global Tips", "url": "./global.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Time Blocker", "url": "./timeblocker.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Packer Assistant", "url": "./packer.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Timeblocker", "url": "./timeblocker.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Packer", "url": "./packer.html", "icons": [{ "src": "images/app/icon-192.png", "sizes": "192x192" }] }
   ]
 }

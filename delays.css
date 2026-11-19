@@ -1,0 +1,743 @@
+/* ============================================================
+   Delays page (delays.html). Everything here is prefixed dl-.
+   Calm on purpose: slow motion, soft teal, lots of air.
+   ============================================================ */
+.dl {
+  --dl: #0A6E63;
+  --dl-deep: #0B4F5C;
+  --dl-tint: #E2F4F1;
+  --dl-soft: #F3FAF9;
+  --phase-color: var(--dl);
+  --phase-tint: var(--dl-tint);
+}
+
+.dl-wrap { display: grid; gap: 1.75rem; padding-bottom: 4rem; }
+.dl-wrap > * { min-width: 0; }
+.dl-wrap > .airline-warning { margin-bottom: 0; }
+
+/* ---------- Shared card pieces ---------- */
+.dl-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 18px 44px -22px rgba(15, 48, 73, 0.4);
+  padding: clamp(1.4rem, 4vw, 2.6rem);
+}
+.dl-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dl);
+  margin-bottom: 0.55rem;
+}
+.dl-kicker--light { color: #A9EBD9; }
+.dl-title { font-size: clamp(1.7rem, 3.4vw, 2.4rem); letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+.dl-lede { color: var(--text-muted); font-size: 1.05rem; max-width: 58ch; margin-bottom: 1.5rem; }
+.dl-fine { font-size: 0.86rem; color: var(--text-muted); margin-top: 1.1rem; line-height: 1.5; }
+.dl-card a, .dl-fine a { color: var(--dl); font-weight: 600; text-underline-offset: 3px; }
+.dl-card a:hover, .dl-fine a:hover { color: var(--dl-deep); }
+.dl-sub {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1.3rem;
+  margin: 2.4rem 0 1.1rem;
+}
+.dl-sub:first-of-type { margin-top: 0.5rem; }
+.dl-sub span {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--dl-tint);
+  color: var(--dl);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Tabs ---------- */
+.dl-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  padding: 0.4rem;
+  border-radius: 18px;
+  background: var(--dl-soft);
+  border: 1px solid var(--dl-tint);
+  margin-bottom: 1.6rem;
+}
+.dl-tabs--three { grid-template-columns: repeat(3, 1fr); }
+.dl-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.6rem 0.7rem;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--text-muted);
+  font: 600 0.95rem/1.2 var(--font-body);
+  cursor: pointer;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.dl-tab .icon { width: 19px; height: 19px; flex: none; }
+.dl-tab:hover { color: var(--dl-deep); }
+.dl-tab[aria-selected="true"] {
+  background: #fff;
+  color: var(--dl-deep);
+  box-shadow: 0 8px 18px -10px rgba(11, 79, 92, 0.5);
+}
+.dl-tab:focus-visible { outline: 2px solid var(--dl); outline-offset: 2px; }
+
+/* ---------- Flight-path steps ---------- */
+.dl-path { position: relative; display: grid; gap: 1.25rem; padding-left: 0; }
+.dl-path::before {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  background-image: repeating-linear-gradient(180deg, var(--dl) 0 7px, transparent 7px 13px);
+  opacity: 0.45;
+  transform-origin: top;
+}
+.dl-path li { position: relative; display: flex; gap: 1rem; align-items: flex-start; }
+.dl-path__dot {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--dl);
+  color: var(--dl);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dl-path li:last-child .dl-path__dot { background: var(--dl); color: #fff; }
+.dl-path h3 { font-family: var(--font-body); font-size: 1.05rem; font-weight: 700; line-height: 1.35; margin: 0.3rem 0 0.2rem; }
+.dl-path p { color: var(--text-muted); max-width: 62ch; }
+/* drawn in when a panel is shown */
+.dl-anim .dl-path::before { transform: scaleY(0); }
+.dl-anim .dl-path li { opacity: 0; transform: translateY(10px); }
+.dl-anim .is-drawn .dl-path::before { transform: scaleY(1); transition: transform 0.9s var(--ease); }
+.dl-anim .is-drawn .dl-path li { opacity: 1; transform: none; transition: opacity 0.45s var(--ease), transform 0.55s var(--ease); transition-delay: calc(var(--i, 0) * 90ms + 80ms); }
+
+/* ---------- Tarmac clock ---------- */
+.dl-tarmac { display: grid; grid-template-columns: minmax(200px, 280px) 1fr; gap: 2rem; align-items: center; }
+.dl-clock { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+.dl-clock svg { width: 100%; max-width: 220px; margin: 0 auto; }
+.dl-clock__track { fill: none; stroke: var(--dl-tint); stroke-width: 12; }
+.dl-clock__arc { fill: none; stroke: var(--dl); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 0; }
+.dl-anim .dl-clock__arc { stroke-dashoffset: 100; }
+.dl-anim .is-drawn .dl-clock__arc { stroke-dashoffset: 0; transition: stroke-dashoffset 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s; }
+.dl-clock__marks circle { fill: #fff; stroke: var(--dl-deep); stroke-width: 3; }
+.dl-clock__big { font-family: var(--font-display); font-size: 30px; font-weight: 600; fill: var(--deep-navy); }
+.dl-clock__small { font-family: var(--font-body); font-size: 12px; fill: var(--text-muted); }
+.dl-clock__tag {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.28rem 0.65rem;
+  border-radius: var(--radius-pill);
+  background: var(--dl-tint);
+  color: var(--dl-deep);
+  white-space: nowrap;
+}
+
+/* ---------- Refund fork ---------- */
+.dl-fork { display: grid; }
+.dl-fork__start {
+  justify-self: center;
+  padding: 0.75rem 1.3rem;
+  border-radius: var(--radius-pill);
+  background: var(--deep-navy);
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+}
+.dl-fork__lines { width: 100%; height: 64px; overflow: visible; }
+.dl-fork__lines path { fill: none; stroke: var(--dl); stroke-width: 2; stroke-dasharray: 5 6; vector-effect: non-scaling-stroke; opacity: 0.7; }
+.dl-fork__ends { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.dl-fork__end { padding: 1.3rem 1.4rem; border-radius: var(--radius-md); background: var(--sky-mist); border: 1px solid var(--border-soft); }
+.dl-fork__end--refund { background: var(--dl-soft); border-color: #BFE5DE; }
+.dl-fork__tag { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem; }
+.dl-fork__end--refund .dl-fork__tag { color: var(--dl); }
+.dl-fork__end h4 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; margin: 0 0 0.4rem; }
+.dl-fork__end p:last-child { color: var(--text-muted); font-size: 0.97rem; }
+.dl-anim .dl-fork__lines { clip-path: inset(0 0 100% 0); }
+.dl-anim .dl-fork__end { opacity: 0; transform: translateY(12px); }
+.dl-anim .is-drawn .dl-fork__lines { clip-path: inset(0); transition: clip-path 0.8s var(--ease); }
+.dl-anim .is-drawn .dl-fork__end { opacity: 1; transform: none; transition: opacity 0.5s var(--ease) 0.55s, transform 0.6s var(--ease) 0.55s; }
+.dl-anim .is-drawn .dl-fork__end--refund { transition-delay: 0.7s; }
+
+/* ---------- "Big change" gauge ---------- */
+.dl-gauge { display: grid; gap: 1.9rem; padding-top: 1.6rem; }
+.dl-gauge__row { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: center; }
+.dl-gauge__label { font-weight: 600; }
+.dl-gauge__track { position: relative; height: 14px; border-radius: 999px; background: var(--dl-tint); }
+.dl-gauge__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--to);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7FD1C2, var(--dl));
+  transform-origin: left;
+}
+.dl-gauge__pin { position: absolute; left: var(--at); top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #fff; border: 3px solid var(--dl-deep); }
+.dl-gauge__pin b { position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 0.82rem; padding: 0.15rem 0.55rem; border-radius: var(--radius-pill); background: var(--dl-deep); color: #fff; }
+.dl-gauge__scale { display: flex; justify-content: space-between; margin: -1.2rem 0 0 8.5rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+.dl-gauge__note { color: var(--text-muted); max-width: 60ch; margin-top: -0.6rem; }
+.dl-gauge__note strong { color: var(--deep-navy); }
+.dl-anim .dl-gauge__fill { transform: scaleX(0); }
+.dl-anim .dl-gauge__pin { opacity: 0; }
+.dl-anim .is-drawn .dl-gauge__fill { transform: scaleX(1); transition: transform 1.1s var(--ease) 0.1s; }
+.dl-anim .is-drawn .dl-gauge__pin { opacity: 1; transition: opacity 0.4s ease 0.9s; }
+.dl-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; margin-top: -0.8rem; }
+.dl-chips span { font-size: 0.85rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); background: var(--sky-pale); color: var(--deep-navy); }
+.dl-chips span:first-child { background: none; padding-left: 0; color: var(--text-muted); }
+
+/* ---------- Who caused it ---------- */
+.dl-cause { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.dl-cause__col { padding: 1.4rem; border-radius: var(--radius-md); background: var(--dl-soft); border: 1px solid #BFE5DE; }
+.dl-cause__col--out { background: var(--sky-mist); border-color: var(--border-soft); }
+.dl-cause__icon { width: 44px; height: 44px; border-radius: 13px; background: #fff; color: var(--dl); display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem; }
+.dl-cause__col--out .dl-cause__icon { color: #0972A6; }
+.dl-cause__icon .icon { width: 22px; height: 22px; }
+.dl-cause h4 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; margin: 0 0 0.2rem; }
+.dl-cause__eg { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.9rem; }
+.dl-cause ul { display: grid; gap: 0.5rem; }
+.dl-cause li { position: relative; padding-left: 1.9rem; font-weight: 500; }
+.dl-cause li::before {
+  position: absolute;
+  left: 0;
+  top: 0.12rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.dl-cause li.is-yes::before { content: "✓"; background: var(--dl); color: #fff; }
+.dl-cause li.is-no::before { content: "–"; background: #DCE6EE; color: var(--text-muted); }
+.dl-cause li.is-no { color: var(--text-muted); }
+
+/* ---------- Notes ---------- */
+.dl-note {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  margin-top: 1.5rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: #FFF8EA;
+  border: 1px solid #F1DDB0;
+}
+.dl-note .icon { flex: none; width: 22px; height: 22px; color: #B8791F; margin-top: 0.15rem; }
+.dl-note--soft { background: var(--sky-mist); border-color: var(--border-soft); }
+.dl-note--soft .icon { color: #0972A6; }
+
+/* ---------- Airline promises ---------- */
+.dl-promise { margin-top: 1.5rem; padding: 1.4rem; border-radius: var(--radius-md); border: 1px solid var(--border-soft); }
+.dl-promise__head { font-weight: 700; margin-bottom: 1rem; }
+.dl-promise__list { display: grid; gap: 0.75rem; }
+.dl-promise__list li { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; }
+.dl-dots { display: inline-flex; gap: 4px; }
+.dl-dots i { width: 12px; height: 12px; border-radius: 50%; background: #DCE6EE; }
+.dl-dots i.is-on { background: var(--dl); }
+.dl-anim .dl-dots i.is-on { background: #DCE6EE; }
+.dl-anim .is-drawn .dl-dots i.is-on { background: var(--dl); transition: background 0.3s ease; transition-delay: calc(var(--i) * 55ms + 150ms); }
+.dl-promise__what b { font-family: var(--font-mono); font-weight: 600; color: var(--dl-deep); margin-right: 0.15rem; }
+
+/* ---------- Abroad ---------- */
+.dl-money { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin-bottom: 1.4rem; }
+.dl-money__tile { padding: 1.2rem 1.1rem; border-radius: var(--radius-md); background: var(--dl-soft); border: 1px solid #BFE5DE; }
+.dl-money__tile strong { display: block; font-family: var(--font-display); font-size: clamp(1.6rem, 3.6vw, 2.3rem); font-weight: 600; color: var(--dl-deep); line-height: 1.1; margin-bottom: 0.3rem; }
+.dl-money__tile span { font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; display: block; }
+.dl-list { display: grid; gap: 0.6rem; }
+.dl-list li { position: relative; padding-left: 1.2rem; max-width: 68ch; }
+.dl-list li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--dl); }
+
+.dl-sources { padding-block: clamp(1.3rem, 3vw, 1.9rem); }
+.dl-sources__title { font-size: 1.3rem; margin-bottom: 0.5rem; }
+.dl-sources__text { color: var(--text-muted); max-width: 70ch; margin-bottom: 1rem; }
+.dl-sources__text strong { color: var(--deep-navy); }
+.dl-sources__list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.dl-sources__list a { display: inline-block; padding: 0.4rem 0.85rem; border-radius: var(--radius-pill); background: var(--dl-soft); border: 1px solid #BFE5DE; font-size: 0.88rem; text-decoration: none; }
+.dl-sources__list a:hover { background: var(--dl-tint); }
+
+
+/* ============================================================
+   Above the clouds: hero + the biggest tip
+   The grid rows are 45 / 55 so the photo's horizon (45% down the
+   frame) always sits between the title and the tip.
+   ============================================================ */
+.dl-sky {
+  position: relative;
+  display: grid;
+  grid-template-rows: 45fr 55fr;
+  isolation: isolate;
+  overflow: hidden;
+}
+.dl-sky__photo,
+.dl-sky__drift,
+.dl-sky__veil { position: absolute; inset: 0; pointer-events: none; }
+.dl-sky__photo {
+  z-index: -3;
+  background: #1B3A70 url("images/kollen/kollen-inflight-wing-cloud-sea-hero.jpg") center 45% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, #000 0 74%, transparent 99%);
+  mask-image: linear-gradient(180deg, #000 0 74%, transparent 99%);
+}
+/* a slow bank of cloud drifting along the horizon */
+.dl-sky__drift {
+  z-index: -2;
+  inset: 43% -30% 28% -30%;
+  background:
+    radial-gradient(40% 46% at 22% 55%, rgba(255, 255, 255, 0.5), transparent 70%),
+    radial-gradient(34% 40% at 58% 48%, rgba(255, 255, 255, 0.42), transparent 70%),
+    radial-gradient(30% 44% at 86% 60%, rgba(255, 255, 255, 0.46), transparent 70%);
+  filter: blur(14px);
+  animation: dl-drift 70s ease-in-out infinite alternate;
+}
+@keyframes dl-drift { from { transform: translateX(-9%); } to { transform: translateX(9%); } }
+/* brightens the cloud tops so the tip reads straight off them */
+.dl-sky__veil {
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(12, 32, 78, 0.5) 0%, rgba(12, 32, 78, 0.28) 28%, rgba(12, 32, 78, 0) 44%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0) 44%, rgba(255, 255, 255, 0.6) 55%, rgba(255, 255, 255, 0.82) 76%, rgba(255, 255, 255, 0) 100%);
+}
+
+.dl-sky__top {
+  align-self: end;
+  text-align: center;
+  padding: clamp(3.2rem, 9vw, 6rem) 1.5rem 2.6rem;
+  color: #fff;
+}
+.dl-sky__top .eyebrow { margin-bottom: 0.9rem; }
+.dl-sky__title {
+  font-size: clamp(2.5rem, 6.4vw, 4.4rem);
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-wrap: balance;
+  text-shadow: 0 2px 26px rgba(9, 24, 58, 0.45);
+}
+.dl-sky__title em { font-style: italic; color: #CDE9FB; }
+.dl-sky__sub {
+  margin: 1rem auto 0;
+  max-width: 34ch;
+  font-size: clamp(1.02rem, 1.6vw, 1.2rem);
+  color: #fff;
+  font-weight: 500;
+  text-shadow: 0 1px 14px rgba(9, 24, 58, 0.6);
+}
+
+.dl-tip { align-self: start; padding: 1.6rem 1.5rem 6.5rem; color: var(--deep-navy); }
+.dl-tip__inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 1.6rem 3.5rem;
+  align-items: center;
+}
+.dl-tip__head { display: flex; align-items: center; gap: 1.1rem; }
+.dl-tip .dl-kicker { color: var(--dl-deep); margin-bottom: 0.3rem; }
+.dl-tip__title { font-size: clamp(1.55rem, 3vw, 2.15rem); letter-spacing: -0.01em; max-width: 22ch; text-wrap: balance; }
+.dl-tip__text { margin: 0.9rem 0 0; max-width: 46ch; font-size: 1.05rem; color: #24415E; font-weight: 500; }
+
+/* breathing orb: in for 4, out for 6 */
+.dl-orb { position: relative; flex: none; width: 84px; height: 84px; }
+.dl-orb__ring, .dl-orb__core { position: absolute; border-radius: 50%; }
+.dl-orb__ring { inset: 12%; background: rgba(10, 110, 99, 0.2); animation: dl-breathe 10s ease-in-out infinite; }
+.dl-orb__ring--outer { inset: 0; background: rgba(10, 110, 99, 0.1); animation-delay: 0.25s; }
+.dl-orb__core {
+  inset: 29%;
+  background: linear-gradient(140deg, var(--dl-deep), var(--dl));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 18px -8px rgba(11, 79, 92, 0.7);
+}
+.dl-orb__core svg { width: 17px; height: 17px; fill: currentColor; }
+@keyframes dl-breathe {
+  0% { transform: scale(0.72); }
+  40% { transform: scale(1); }
+  100% { transform: scale(0.72); }
+}
+
+.dl-who { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+.dl-who li {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 14px -10px rgba(15, 48, 73, 0.5);
+  color: var(--dl-deep);
+}
+
+/* one unkind line crossed out, one kind line offered; three pairs take turns */
+.dl-say__head { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dl-deep); margin-bottom: 0.7rem; }
+.dl-say__stage { display: grid; }
+.dl-say__pair { grid-area: 1 / 1; display: grid; gap: 0.55rem; align-content: start; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity 0.5s var(--ease), transform 0.6s var(--ease), visibility 0s 0.5s; }
+.dl-say__pair.is-on { opacity: 1; visibility: visible; transform: none; transition-delay: 0.25s, 0.25s, 0s; }
+.dl-say__no { font-size: 0.95rem; color: #5B7089; }
+.dl-say__no span {
+  background: linear-gradient(currentColor, currentColor) left 56% / 0 1.5px no-repeat;
+  transition: background-size 0.7s var(--ease) 0.9s;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.dl-say__pair.is-on .dl-say__no span { background-size: 100% 1.5px; }
+.dl-say__yes {
+  justify-self: start;
+  background: #fff;
+  color: var(--dl-deep);
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 0.75rem 1rem;
+  border-radius: 16px 16px 16px 4px;
+  box-shadow: 0 14px 30px -16px rgba(15, 48, 73, 0.55);
+}
+.dl-say.is-static .dl-say__pair { grid-area: auto; opacity: 1; visibility: visible; transform: none; margin-bottom: 0.9rem; }
+.dl-say.is-static .dl-say__no span { background-size: 100% 1.5px; }
+.dl-say.is-static .dl-say__pips { display: none; }
+.dl-say__pips { display: flex; gap: 6px; margin-top: 0.9rem; }
+.dl-say__pips i { width: 18px; height: 3px; border-radius: 3px; background: rgba(11, 79, 92, 0.22); transition: background 0.4s ease, width 0.4s var(--ease); }
+.dl-say__pips i.is-on { width: 30px; background: var(--dl); }
+
+/* things arrive softly, in order */
+.dl-anim .dl-sky__top > *, .dl-anim .dl-tip__main > *, .dl-anim .dl-say, .dl-anim .dl-who li {
+  animation: dl-rise 0.9s var(--ease) both;
+  animation-delay: calc(var(--d, 0) * 1ms);
+}
+.dl-anim .dl-sky__top > :nth-child(2) { --d: 120; }
+.dl-anim .dl-sky__top > :nth-child(3) { --d: 240; }
+.dl-anim .dl-tip__main > * { --d: 420; }
+.dl-anim .dl-tip__main > .dl-tip__text { --d: 520; }
+.dl-anim .dl-tip__main > .dl-who { animation: none; }
+.dl-anim .dl-who li { animation-delay: calc(640ms + var(--i) * 70ms); }
+.dl-anim .dl-say { --d: 700; }
+@keyframes dl-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* ============================================================
+   The dock: pinned under the nav. Holds the two-page switch and,
+   once the tip has scrolled away, a small reminder of it.
+   ============================================================ */
+.dl-dock {
+  position: sticky;
+  top: var(--site-nav-h, 72px);
+  z-index: 50;
+  margin: -4.2rem 0 1.4rem;
+  padding: 0.6rem 1rem;
+  pointer-events: none;
+}
+.dl-dock__inner { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 1fr minmax(0, 600px) 1fr; align-items: center; gap: 0.8rem; }
+.dl-dock__inner > * { pointer-events: auto; }
+.dl-switch {
+  grid-column: 2;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 36px -18px rgba(15, 48, 73, 0.55);
+}
+.dl-switch__thumb {
+  position: absolute;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  left: 0.35rem;
+  width: calc(50% - 0.35rem);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--dl-deep), var(--dl) 70%, #1B8A77);
+  box-shadow: 0 10px 20px -10px rgba(11, 79, 92, 0.8);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dl-switch[data-at="1"] .dl-switch__thumb { transform: translateX(100%); }
+/* a little plane rides the top edge from one page to the other */
+.dl-switch__plane {
+  position: absolute;
+  top: -11px;
+  left: 25%;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--dl);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 10px -4px rgba(15, 48, 73, 0.6);
+  transform: rotate(90deg);
+  transition: left 0.75s cubic-bezier(0.45, 0, 0.2, 1), transform 0.35s ease 0.6s;
+}
+.dl-switch__plane svg { width: 13px; height: 13px; fill: currentColor; }
+.dl-switch[data-at="1"] .dl-switch__plane { left: 75%; transform: rotate(-90deg); }
+.dl-switch__btn {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 54px;
+  padding: 0.3rem 1rem 0.3rem 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--deep-navy);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.35s ease;
+}
+.dl-switch__btn[aria-selected="true"] { color: #fff; }
+.dl-switch__btn:focus-visible { outline: 2px solid var(--dl); outline-offset: 3px; }
+/* photo thumbnails shaped like a cabin window */
+.dl-switch__win {
+  flex: none;
+  width: 34px;
+  height: 46px;
+  border-radius: 17px;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(15, 48, 73, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+.dl-switch__txt b { display: block; font-size: 0.98rem; font-weight: 700; line-height: 1.2; }
+.dl-switch__txt small { display: block; font-size: 0.76rem; opacity: 0.75; line-height: 1.3; }
+
+.dl-nice {
+  grid-column: 3;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 30px -18px rgba(15, 48, 73, 0.55);
+  color: var(--dl-deep);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-10px);
+  transition: opacity 0.45s var(--ease), transform 0.55s var(--ease), visibility 0s 0.45s;
+}
+.dl-nice.is-shown { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.dl-nice__dot { width: 11px; height: 11px; border-radius: 50%; background: var(--dl); box-shadow: 0 0 0 4px rgba(10, 110, 99, 0.18); animation: dl-breathe 10s ease-in-out infinite; }
+
+/* ============================================================
+   The two mini pages
+   ============================================================ */
+.dl-view { display: grid; gap: 1.75rem; }
+.dl-view > * { min-width: 0; }
+.dl-view[hidden] { display: none; }
+.dl-jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dl);
+  font: 600 1em/1.4 var(--font-body);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.dl-jump::after { content: "→"; text-decoration: none; display: inline-block; transition: transform 0.3s var(--ease); }
+.dl-jump:hover { color: var(--dl-deep); }
+.dl-jump:hover::after { transform: translateX(3px); }
+
+/* generic "pop in" piece for the small diagrams */
+.dl-anim [data-dl-draw] .dl-pop { opacity: 0; transform: translateY(10px); }
+.dl-anim [data-dl-draw].is-drawn .dl-pop { opacity: 1; transform: none; transition: opacity 0.45s var(--ease), transform 0.55s var(--ease); transition-delay: calc(var(--i, 0) * 90ms); }
+
+/* small diagram above each set of steps */
+.dl-strip, .dl-trio, .dl-duo { margin-bottom: 1.7rem; }
+.dl-strip { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; padding: 1.2rem 1.3rem 1.1rem; border-radius: var(--radius-md); background: var(--dl-soft); border: 1px solid #BFE5DE; }
+.dl-strip__line { position: absolute; left: 1.3rem; right: 1.3rem; top: calc(1.2rem + 7px); height: 2px; background: linear-gradient(90deg, #7FD1C2, var(--dl)); transform-origin: left; }
+.dl-anim .dl-strip__line { transform: scaleX(0); }
+.dl-anim .is-drawn .dl-strip__line { transform: scaleX(1); transition: transform 1s var(--ease) 0.1s; }
+.dl-strip__stop { position: relative; display: grid; gap: 0.15rem; }
+.dl-strip__stop i { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3px solid var(--dl); margin-bottom: 0.45rem; }
+.dl-strip__stop b { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; line-height: 1.2; }
+.dl-strip__stop small { font-size: 0.84rem; color: var(--text-muted); line-height: 1.4; }
+
+.dl-trio { padding: 1.2rem 1.3rem; border-radius: var(--radius-md); background: var(--dl-soft); border: 1px solid #BFE5DE; text-align: center; }
+.dl-trio__row { display: flex; align-items: center; justify-content: center; gap: clamp(0.5rem, 3vw, 1.4rem); }
+.dl-trio__item { display: grid; justify-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.92rem; }
+.dl-trio__item .icon { width: 54px; height: 54px; padding: 15px; border-radius: 50%; background: #fff; color: var(--dl); box-shadow: 0 8px 18px -12px rgba(11, 79, 92, 0.6); }
+.dl-trio__plus { font-family: var(--font-display); font-size: 1.5rem; color: var(--dl); margin-bottom: 1.5rem; }
+.dl-trio__cap { margin-top: 0.8rem; color: var(--text-muted); font-size: 0.95rem; }
+
+.dl-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+.dl-duo__tile { padding: 1.1rem 1.2rem; border-radius: var(--radius-md); background: var(--sky-mist); border: 1px solid var(--border-soft); }
+.dl-duo__tile--yes { background: var(--dl-soft); border-color: #BFE5DE; }
+.dl-duo__tag { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+.dl-duo__tile--yes .dl-duo__tag { color: var(--dl); }
+.dl-duo__big { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; margin: 0.15rem 0 0.3rem; }
+.dl-duo__tile p:last-child { color: var(--text-muted); font-size: 0.93rem; }
+
+/* ---------- The wait checklist ---------- */
+.dl-wait { margin-top: 2.4rem; padding-top: 2rem; border-top: 2px dashed #CFEAE5; }
+.dl-wait__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 0.8rem 1.5rem; flex-wrap: wrap; }
+.dl-wait__title { font-size: clamp(1.4rem, 2.6vw, 1.8rem); }
+.dl-wait__count { display: flex; align-items: center; gap: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; color: var(--dl-deep); }
+.dl-wait__reset { border: 0; background: none; padding: 0; font: 600 0.8rem var(--font-body); color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.dl-wait__reset:hover { color: var(--deep-navy); }
+.dl-flight { position: relative; height: 34px; margin: 0.9rem 0 1.2rem; --p: 0; }
+.dl-flight__line, .dl-flight__done { position: absolute; left: 0; top: 50%; height: 2px; margin-top: -1px; }
+.dl-flight__line { right: 0; background-image: repeating-linear-gradient(90deg, #A9DDD4 0 8px, transparent 8px 14px); }
+.dl-flight__done { width: calc(var(--p) * (100% - 64px) + 15px); background: var(--dl); transition: width 0.8s var(--ease); }
+.dl-flight__plane, .dl-flight__end { position: absolute; top: 50%; width: 30px; height: 30px; margin-top: -15px; border-radius: 50%; display: grid; place-items: center; }
+.dl-flight__plane { left: calc(var(--p) * (100% - 64px)); background: var(--dl); color: #fff; box-shadow: 0 8px 16px -8px rgba(11, 79, 92, 0.8); transition: left 0.8s var(--ease); }
+.dl-flight__plane svg { width: 16px; height: 16px; fill: currentColor; transform: rotate(90deg); }
+.dl-flight__end { right: 0; background: #fff; border: 2px solid #A9DDD4; color: #A9DDD4; transition: background 0.4s ease 0.5s, border-color 0.4s ease 0.5s, color 0.4s ease 0.5s, transform 0.5s var(--ease) 0.5s; }
+.dl-flight__end svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.dl-flight.is-done .dl-flight__end { background: var(--dl); border-color: var(--dl); color: #fff; transform: scale(1.12); }
+
+.dl-checks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+.dl-check { position: relative; display: block; cursor: pointer; }
+.dl-check input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.dl-check__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  height: 100%;
+  padding: 0.9rem 0.95rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--sky-mist);
+  border: 1.5px solid var(--border-soft);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s var(--ease), box-shadow 0.3s ease;
+}
+.dl-check:hover .dl-check__body { transform: translateY(-2px); box-shadow: 0 12px 22px -16px rgba(15, 48, 73, 0.5); }
+.dl-check__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.55rem; }
+.dl-check__top .icon { width: 38px; height: 38px; padding: 9px; border-radius: 11px; background: #fff; color: var(--dl); }
+.dl-check__box { position: relative; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #B9CBD9; background: #fff; transition: background 0.25s ease, border-color 0.25s ease, transform 0.35s var(--ease); }
+.dl-check__box::after { content: ""; position: absolute; left: 7px; top: 3.5px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg) scale(0); transition: transform 0.3s var(--ease) 0.05s; }
+.dl-check b { font-size: 0.96rem; line-height: 1.3; }
+.dl-check small { font-size: 0.83rem; color: var(--text-muted); line-height: 1.4; }
+.dl-check input:checked + .dl-check__body { background: var(--dl-soft); border-color: #9ED9CD; }
+.dl-check input:checked + .dl-check__body .dl-check__box { background: var(--dl); border-color: var(--dl); transform: scale(1.08); }
+.dl-check input:checked + .dl-check__body .dl-check__box::after { transform: rotate(45deg) scale(1); }
+.dl-check input:checked + .dl-check__body b { color: var(--dl-deep); }
+.dl-check input:focus-visible + .dl-check__body { outline: 2px solid var(--dl); outline-offset: 2px; }
+
+/* ---------- Hand-off to the other mini page ---------- */
+.dl-next {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 190px;
+  padding: 1.6rem 1.8rem;
+  border: 0;
+  border-radius: var(--radius-lg);
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 22px 44px -24px rgba(15, 48, 73, 0.7);
+}
+.dl-next__img { position: absolute; inset: 0; z-index: -2; background-size: cover; background-position: center 42%; transition: transform 1.4s var(--ease); }
+.dl-next::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(8, 20, 40, 0.05) 20%, rgba(8, 20, 40, 0.72)); }
+.dl-next:hover .dl-next__img { transform: scale(1.05); }
+.dl-next:focus-visible { outline: 3px solid var(--dl); outline-offset: 3px; }
+.dl-next__txt { display: grid; gap: 0.1rem; }
+.dl-next__txt small { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.85; }
+.dl-next__txt b { font-family: var(--font-display); font-size: clamp(1.6rem, 3.4vw, 2.2rem); font-weight: 600; line-height: 1.15; }
+.dl-next__txt span { font-size: 0.95rem; opacity: 0.9; }
+.dl-next__arrow { flex: none; width: 50px; height: 50px; border-radius: 50%; background: #fff; color: var(--dl-deep); display: grid; place-items: center; transition: transform 0.4s var(--ease); }
+.dl-next__arrow svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dl-next:hover .dl-next__arrow { transform: translateX(5px); }
+.dl-next:hover .dl-next__arrow--back { transform: translateX(-5px); }
+
+/* ---------- Smaller screens ---------- */
+@media (max-width: 1180px) {
+  .dl-dock__inner { grid-template-columns: minmax(0, 600px); justify-content: center; gap: 0; }
+  .dl-switch { grid-column: 1; }
+  .dl-nice { grid-column: 1; justify-self: center; max-height: 0; padding-block: 0; margin-top: 0; border-width: 0; font-size: 0.8rem; transform: translateY(-8px); overflow: hidden; transition: opacity 0.4s var(--ease), transform 0.5s var(--ease), max-height 0.5s var(--ease), padding 0.5s var(--ease), margin 0.5s var(--ease), visibility 0s 0.45s; }
+  .dl-nice.is-shown { max-height: 40px; padding-block: 0.35rem; margin-top: 0.4rem; border-width: 1px; transition-delay: 0s; }
+}
+@media (max-width: 900px) {
+  .dl-tip__inner { grid-template-columns: 1fr; }
+  .dl-tarmac { grid-template-columns: 1fr; gap: 1.4rem; }
+  .dl-tabs { grid-template-columns: 1fr 1fr; }
+  .dl-checks { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .dl-sky__photo { background-image: url("images/kollen/kollen-inflight-wing-cloud-sea.jpg"); }
+  .dl-sky__top { padding: 3.6rem 1.15rem 2rem; }
+  .dl-tip { padding: 1.2rem 1.15rem 5.5rem; }
+  .dl-orb { width: 66px; height: 66px; }
+  .dl-tip__head { gap: 0.8rem; }
+  .dl-dock { margin-top: -3.6rem; padding-inline: 0.7rem; }
+  .dl-switch__win, .dl-switch__txt small { display: none; }
+  .dl-switch__btn { justify-content: center; min-height: 46px; padding: 0.3rem 0.5rem; text-align: center; }
+  .dl-switch__txt b { font-size: 0.9rem; }
+  .dl-wrap { gap: 1.25rem; padding-bottom: 2.5rem; }
+  .dl-view { gap: 1.25rem; }
+  .dl-tab { font-size: 0.88rem; padding: 0.5rem 0.4rem; }
+  .dl-strip { gap: 0.6rem; padding-inline: 0.9rem; }
+  .dl-strip__line { left: 0.9rem; right: 0.9rem; }
+  .dl-strip__stop b { font-size: 1.05rem; }
+  .dl-strip__stop small { font-size: 0.78rem; }
+  .dl-trio__item .icon { width: 46px; height: 46px; padding: 12px; }
+  .dl-duo { grid-template-columns: 1fr; }
+  .dl-check__body { padding: 0.75rem 0.8rem 0.85rem; }
+  .dl-check b { font-size: 0.9rem; }
+  .dl-check small { font-size: 0.78rem; }
+  .dl-next { min-height: 160px; padding: 1.2rem 1.25rem; }
+  .dl-next__txt span { display: none; }
+  .dl-fork__lines { display: none; }
+  .dl-fork__start { margin-bottom: 1rem; border-radius: var(--radius-md); }
+  .dl-fork__ends, .dl-cause, .dl-money { grid-template-columns: 1fr; }
+  .dl-gauge__row { grid-template-columns: 1fr; gap: 2.1rem; }
+  .dl-gauge { gap: 1.2rem; }
+  .dl-gauge__scale { margin: -0.4rem 0 0; }
+  .dl-gauge__note, .dl-chips { margin-top: 0; }
+  .dl-promise__list li { grid-template-columns: 1fr; gap: 0.3rem; }
+}
+
+/* ---------- Reduced motion: everything visible, nothing moving ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .dl-sky__drift, .dl-orb__ring, .dl-nice__dot { animation: none !important; }
+  .dl-orb__ring { transform: scale(0.9); }
+  .dl-switch__thumb, .dl-switch__plane, .dl-flight__plane, .dl-flight__done, .dl-say__pair, .dl-say__no span, .dl-nice { transition: none !important; }
+}

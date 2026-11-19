@@ -33,3 +33,5 @@ Naming: `kollen-<place>-<subject>[-n].jpg`
 | kollen-hkg-golden-hour-apron-1 … -5 | Hong Kong (HKG) | Jun 2026 | Golden-hour apron: Qatar 777, Air France, Emirates, Cathay |
 | kollen-inflight-wing-cloud-sea | In flight | Jun 2026 | Wing over a sea of clouds |
 | kollen-inflight-wing-sunrise-1 / -2 | In flight | Jun 2026 | Wing at sunrise above the clouds |
+
+`kollen-inflight-wing-cloud-sea-hero.jpg` is a larger (1800px wide) copy of `kollen-inflight-wing-cloud-sea`, metadata stripped, used as the Delays page hero on wide screens.

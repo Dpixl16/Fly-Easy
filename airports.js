@@ -2,7 +2,7 @@
    Airports — globe navigation (airports.html)
 
    Two layers, so the page never breaks:
-     1. Directory UI (always): search combobox, airport card,
+     1. Directory UI (always): search combobox,
         "All airport guides" list. Plain DOM, no dependencies.
      2. Globe (enhancement): Three.js is loaded with a dynamic
         import. If WebGL, the CDN or the textures fail, the page
@@ -24,11 +24,9 @@ const stage = $("ap-stage");
 const input = $("ap-search-input");
 const listbox = $("ap-search-list");
 const statusEl = $("ap-status");
-const card = $("ap-card");
-const cardGo = $("ap-card-go");
 
 let globe = null;          // set once the 3D globe is up
-let selected = null;       // the airport whose card is open
+let selected = null;       // the airport being flown to
 
 /* ---------------- helpers ---------------- */
 function fold(s) {
@@ -64,100 +62,160 @@ function setStatus(text) { statusEl.textContent = text || ""; }
   });
 })();
 
-/* ---------------- Airport card ---------------- */
-let cardHideTimer = null;
-function openCard(a) {
-  selected = a;
-  clearTimeout(cardHideTimer);
-  $("ap-card-photo").style.backgroundImage = `url('${a.photo}')`;
-  $("ap-card-photo").style.backgroundPosition = a.photoPos || "center";
-  $("ap-card-codes").textContent = `${a.iata} · ${a.icao}`;
-  $("ap-card-name").textContent = a.name;
-  $("ap-card-blurb").textContent = a.blurb;
-  const facts = $("ap-card-facts");
-  facts.textContent = "";
-  (a.facts || []).forEach(([k, v]) => {
-    const li = el("li");
-    li.append(el("span", null, k), document.createTextNode(v));
-    facts.append(li);
-  });
-  cardGo.href = a.page;
-  cardGo.setAttribute("aria-label", `Open the ${a.iata} guide`);
-  card.hidden = false;
-  stage.classList.add("has-card");
-  requestAnimationFrame(() => card.classList.add("is-open"));
-  if (globe) globe.setActive(a.id);
-  history.replaceState(null, "", "#" + a.id);
-}
-function closeCard() {
-  if (!selected) return;
-  selected = null;
-  card.classList.remove("is-open");
-  stage.classList.remove("has-card");
-  cardHideTimer = setTimeout(() => { card.hidden = true; }, 400);
-  if (globe) globe.setActive(null);
-  history.replaceState(null, "", location.pathname + location.search);
-}
-$("ap-card-close").addEventListener("click", closeCard);
+/* ---------------- One-click landing ----------------
+   Click an airport (pin, search result or deep link) and it all happens
+   in one go: the globe turns and descends toward the airport while a
+   mini plane flies in from the edge of the screen, banks along its
+   contrail, drops its shadow onto the runway and touches down on the
+   pin. Clouds close over the landing and the guide page parts them. */
+const flight = $("ap-flight");
+const trailCanvas = $("ap-flight-trail");
+const planeEl = $("ap-flight-plane");
+const shadowEl = $("ap-flight-shadow");
+const touchEl = $("ap-flight-touch");
+const strip = $("ap-strip");
+let leaving = false;
 
-/* Choosing an airport: fly there, then show its card.
-   Choosing the airport that's already selected opens its guide. */
-function choose(a, opts = {}) {
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+function showStrip(a) {
+  $("ap-strip-code").textContent = a.iata;
+  $("ap-strip-name").textContent = a.name;
+  $("ap-strip-city").textContent = `${a.city} · ${a.region}`;
+  strip.hidden = false;
+  requestAnimationFrame(() => strip.classList.add("is-on"));
+}
+
+function goTo(a) {
+  try { sessionStorage.setItem("fe-how", "clouds"); } catch (e) {}
+  location.href = a.page;
+}
+
+function land(a) {
+  if (leaving) return;
   closeList();
   input.blur();
-  if (globe && selected && selected.id === a.id && card.classList.contains("is-open")) {
-    openGuide();
+  if (!globe) { location.href = a.page; return; }
+  if (reduceMotion) {
+    // no flight: a calm fade straight to the guide
+    leaving = true;
+    showStrip(a);
+    document.documentElement.classList.add("is-cloud-leaving");
+    const t = $("page-transition");
+    if (t) t.classList.add("is-exiting");
+    setTimeout(() => goTo(a), 260);
     return;
   }
-  if (!globe) {
-    // No globe: go straight to the guide (fallback mode).
-    if (opts.fromSearch) location.href = a.page;
-    return;
-  }
-  setStatus(`Flying to ${a.iata}…`);
-  card.classList.remove("is-open");
-  globe.flyTo(a, { instant: opts.instant }).then((arrived) => {
-    if (!arrived) { setStatus(""); return; }
-    setStatus(`${a.city} · ${a.iata}`);
-    openCard(a);
+  leaving = true;
+  selected = a;
+  setStatus(`Flying to ${a.iata}, ${a.name}…`);
+  stage.classList.add("is-landing");
+  showStrip(a);
+  history.replaceState(null, "", "#" + a.id);
+
+  // canvas for the contrail, sharp on retina
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = stage.clientWidth, H = stage.clientHeight;
+  trailCanvas.width = Math.round(W * dpr);
+  trailCanvas.height = Math.round(H * dpr);
+  const ctx = trailCanvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // come in from the side away from the airport, along a high arc
+  const p0 = globe.project(a);
+  const fromRight = p0.x < W * 0.45;
+  const S = { x: fromRight ? W + 40 : -40, y: H * (W < 700 ? 0.7 : 0.78) };
+  const C = { x: fromRight ? W * 0.72 : W * 0.28, y: H * 0.08 };
+  const trail = [];
+  let heading = null;
+  let touched = false;
+  let clouded = false;
+  flight.hidden = false;
+  flight.classList.add("is-on");
+
+  globe.land(a, (k, pin) => {
+    // the plane lands at 86% of the move; the camera keeps settling after
+    const u = Math.min(1, k / 0.86);
+    // arrives already flying (no slow start off-screen), then a long, gentle final
+    const e = 1 - Math.pow(1 - u, 2.3);
+    const P = { x: pin.x, y: pin.y };
+    // quadratic bezier whose end point follows the airport as the globe turns
+    const x = (1 - e) * (1 - e) * S.x + 2 * (1 - e) * e * C.x + e * e * P.x;
+    const y = (1 - e) * (1 - e) * S.y + 2 * (1 - e) * e * C.y + e * e * P.y;
+    // tangent of the curve gives the heading; smoothed so it never twitches
+    const tx = 2 * (1 - e) * (C.x - S.x) + 2 * e * (P.x - C.x);
+    const ty = 2 * (1 - e) * (C.y - S.y) + 2 * e * (P.y - C.y);
+    const want = Math.atan2(ty, tx);
+    if (heading === null) heading = want;
+    let diff = want - heading;
+    while (diff > Math.PI) diff -= 2 * Math.PI;
+    while (diff < -Math.PI) diff += 2 * Math.PI;
+    heading += diff * 0.22;
+    // bank into the turn, level out on final
+    const bank = Math.max(-28, Math.min(28, diff * 160)) * (1 - u);
+    // altitude: big near the viewer, small on the runway
+    const alt = 1 - easeOut(u);
+    const scale = 0.42 + alt * 0.9;
+    const deg = heading * 180 / Math.PI + 45;   // the icon points up-right
+    planeEl.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%) rotate(${deg.toFixed(1)}deg) rotateY(${bank.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+    planeEl.style.opacity = u < 1 ? "1" : String(Math.max(0, 1 - (k - 0.86) / 0.06));
+    // the shadow sits "on the ground" below the plane and meets it at touchdown
+    const off = alt * 46;
+    shadowEl.style.transform = `translate3d(${(x + off * 0.5).toFixed(1)}px, ${(y + off).toFixed(1)}px, 0) translate(-50%, -50%) rotate(${deg.toFixed(1)}deg) scale(${(scale * 0.9).toFixed(3)})`;
+    shadowEl.style.opacity = String(0.15 + (1 - alt) * 0.35);
+
+    // contrail: the last stretch of the path, tapering and fading out
+    trail.push({ x, y });
+    if (trail.length > 46) trail.shift();
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 1; i < trail.length; i++) {
+      const f = i / trail.length;
+      ctx.strokeStyle = `rgba(255,255,255,${(f * 0.55 * (u < 1 ? 1 : 0.5)).toFixed(3)})`;
+      ctx.lineWidth = 0.6 + f * 3.2 * (0.4 + alt);
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
+      ctx.lineTo(trail[i].x, trail[i].y);
+      ctx.stroke();
+    }
+    if (u >= 1 && !touched) {
+      touched = true;
+      touchEl.style.transform = `translate3d(${P.x.toFixed(1)}px, ${P.y.toFixed(1)}px, 0)`;
+      touchEl.classList.add("is-on");
+      stage.classList.add("is-touched");
+      setStatus(`Landed at ${a.iata}`);
+    }
+    if (touched) touchEl.style.transform = `translate3d(${P.x.toFixed(1)}px, ${P.y.toFixed(1)}px, 0)`;
+    if (k >= 0.9 && !clouded) {
+      clouded = true;
+      // clouds close over the landing; the guide page parts them again
+      document.documentElement.classList.add("is-cloud-leaving");
+      const t = $("page-transition");
+      if (t) t.classList.add("is-exiting");
+    }
+  }).then(() => {
+    setTimeout(() => goTo(a), 120);
   });
 }
 
-/* "Open guide": a short dive toward the airport, then the site's
-   plane page-transition. Used by the card button, a click anywhere on
-   the card, and a second click on the selected pin. */
-let leaving = false;
-function openGuide() {
-  if (!selected || leaving) return;
-  const href = selected.page;
-  if (!globe || reduceMotion) { location.href = href; return; }
-  leaving = true;
-  const transition = $("page-transition");
-  stage.classList.add("is-diving");
-  globe.dive(selected);
-  setTimeout(() => transition && transition.classList.add("is-exiting"), 260);
-  setTimeout(() => { location.href = href; }, 660);
-}
-cardGo.addEventListener("click", (e) => {
-  // modified clicks (new tab etc.) keep normal link behaviour
-  if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-  e.preventDefault();
-  e.stopPropagation();
-  openGuide();
-});
-card.addEventListener("click", (e) => {
-  if (e.target.closest("#ap-card-close, #ap-card-go")) return;
-  openGuide();
-});
+function choose(a) { land(a); }
 
-// Coming back with the browser's Back button (bfcache): undo the dive.
+// Coming back with the browser's Back button (bfcache): undo the landing.
 window.addEventListener("pageshow", (e) => {
   if (!e.persisted) return;
-  stage.classList.remove("is-diving");
   leaving = false;
+  stage.classList.remove("is-landing", "is-touched");
+  document.documentElement.classList.remove("is-cloud-leaving");
   const t = $("page-transition");
   if (t) t.classList.remove("is-exiting");
-  if (globe && selected) globe.flyTo(selected, { instant: true });
+  flight.classList.remove("is-on");
+  flight.hidden = true;
+  touchEl.classList.remove("is-on");
+  strip.classList.remove("is-on");
+  strip.hidden = true;
+  setStatus("");
+  if (globe) globe.reset(selected);
+  selected = null;
 });
 
 /* ---------------- Search combobox ---------------- */
@@ -202,7 +260,7 @@ function renderList() {
     text.append(el("span", "ap-search__name", a.name), el("span", "ap-search__meta", `${a.city} · ${a.icao}`));
     li.append(el("span", "ap-search__code", a.iata), text);
     // mousedown (not click) so the input's blur doesn't close the list first
-    li.addEventListener("mousedown", (e) => { e.preventDefault(); choose(a, { fromSearch: true }); });
+    li.addEventListener("mousedown", (e) => { e.preventDefault(); choose(a); });
     li.addEventListener("mousemove", () => { if (activeIndex !== i) { activeIndex = i; syncActive(); } });
     listbox.append(li);
   });
@@ -245,21 +303,19 @@ input.addEventListener("keydown", (e) => {
   } else if (e.key === "Enter") {
     e.preventDefault();
     const a = results[activeIndex] || results[0];
-    if (a) choose(a, { fromSearch: true });
+    if (a) choose(a);
   } else if (e.key === "Escape") {
     if (input.value) { input.value = ""; openList(); }
     else { closeList(); input.blur(); }
   }
 });
 
-// "/" focuses search; Esc closes the card.
+// "/" focuses search; Esc goes back to space.
 document.addEventListener("keydown", (e) => {
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
   if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey) {
     e.preventDefault();
     input.focus();
-  } else if (e.key === "Escape" && !typing && selected) {
-    closeCard();
   } else if (e.key === "Escape" && !typing && globe && stage.classList.contains("is-zoomed")) {
     backToSpace();
   }
@@ -267,8 +323,7 @@ document.addEventListener("keydown", (e) => {
 
 /* ---------------- Back to space ---------------- */
 function backToSpace() {
-  if (!globe) return;
-  closeCard();
+  if (!globe || leaving) return;
   setStatus("");
   globe.home();
 }
@@ -365,8 +420,10 @@ if (riseFrom) history.replaceState(null, "", location.pathname);
 if (!hasWebGL() || new URLSearchParams(location.search).has("noglobe")) {
   fallback("no WebGL");
 } else {
-  import("./airports-globe.js?v=2")
-    .then((mod) => mod.createGlobe({
+  // download now, but build the 3D globe (shader compile, textures,
+  // first render) only once the page's arrival slide has finished
+  Promise.all([import("./airports-globe.js?v=3"), window.feArrival])
+    .then(([mod]) => mod.createGlobe({
       container: $("ap-canvas"),
       pinLayer: $("ap-pins"),
       airports: AIRPORTS,
@@ -374,7 +431,7 @@ if (!hasWebGL() || new URLSearchParams(location.search).has("noglobe")) {
       reduceMotion,
       onZoomChange: (zoomedIn) => stage.classList.toggle("is-zoomed", zoomedIn),
       onPick: (a) => choose(a),
-      onUserMove: () => { if (selected) closeCard(); setStatus(""); },
+      onUserMove: () => { if (!leaving) setStatus(""); },
     }))
     .then((g) => {
       globe = g;
@@ -384,14 +441,20 @@ if (!hasWebGL() || new URLSearchParams(location.search).has("noglobe")) {
         const b = e.target.closest("[data-zoom]");
         if (!b) return;
         const z = b.dataset.zoom;
-        if (z === "home") { closeCard(); setStatus(""); globe.home(); }
+        if (leaving) return;
+        if (z === "home") { setStatus(""); globe.home(); }
         else globe.zoomBy(z === "in" ? 0.6 : 1.6);
       });
       if (riseFrom) {
         setStatus(`Leaving ${riseFrom.iata}…`);
         globe.rise(riseFrom).then(() => setStatus(""));
       } else if (deepLink) {
-        setTimeout(() => choose(deepLink), reduceMotion ? 0 : 500);
+        // a shared link to one airport: glide over to it and wait for a tap
+        setTimeout(() => globe.flyTo(deepLink).then((ok) => {
+          if (!ok) return;
+          globe.setActive(deepLink.id);
+          setStatus(`${deepLink.iata} · ${deepLink.name}. Tap the pin to land.`);
+        }), reduceMotion ? 0 : 500);
       }
     })
     .catch((err) => fallback(err && err.message));

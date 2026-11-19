@@ -10,6 +10,103 @@ so a minor bump can still include larger changes as the site finds its shape.
 
 ### Changed
 
+- **Airports globe: one click flies you straight into a guide.** Clicking
+  an airport (a pin, a search result, or Enter in search) now plays one
+  continuous landing instead of zoom → card → click. A mini plane flies in
+  from the edge of the screen with a fading contrail, banks along its
+  path, drops its shadow onto the ground, and touches down on the pin
+  with a ripple while the globe turns and descends to the airport. A
+  "Now landing" boarding-pass strip names the airport, clouds close over
+  the touchdown and the guide page parts them. About 2.5 seconds; drawn
+  in lock-step with the globe's own frames.
+  - Merged pins (SFO · SJC at the full-globe view) now have one button
+    per airport, so every airport is a single click away. Tapping the dot
+    still zooms in to split them.
+  - The airport card and its "Open guide" step are gone. A shared link
+    (`airports.html#sfo`) glides to the airport and waits for a tap.
+  - Back from a guide restores the globe with everything reset.
+  - Reduced motion: no flight, a short fade straight to the guide.
+- **Facts re-checked (Nov 2026)** against official sources:
+  - SFO: Spirit Airlines removed (left SFO Oct 2025, shut down May 2026);
+    WestJet moved to Terminal 1 (since Mar 2025, per SFO's notice); the
+    closed "Women of Afrofuturism" exhibit replaced with an evergreen SFO
+    Museum tip.
+  - About: the favorite quote is now "Often credited to Henry Ford", with
+    a note that its real author is unknown (Quote Investigator traces it
+    to an older saying about kites). Intro now mentions SJC too.
+  - Delays: every US number re-matched to DOT's refund, tarmac and
+    dashboard pages; Canada amounts re-matched to the CTA; a note that
+    Canada's proposed 2026 changes aren't in force yet.
+  - Packer: power banks "Up to 100 Wh each (100–160 Wh needs airline OK)".
+  - Airports footer: NASA imagery credited by name with links (Blue
+    Marble Next Generation; Black Marble 2016, Suomi NPP VIIRS).
+  - Home-screen app shortcuts renamed to match the site (Timeblocker,
+    Packer).
+
+### Fixed
+
+- Timeblocker: on phones and tablets the remove button, time field and
+  duration sliders are now finger-sized (40px / 36px / 32px).
+- Airports: a merged pin's pulsing ring no longer swallows taps meant for
+  the first airport code.
+
+- **One motion system for the whole site** (`motion.css` + `motion.js`,
+  loaded on all 7 pages). Faster and consistent on phone, home-screen
+  app, tablet and laptop.
+  - Page changes no longer wait: the 0.4s pause before leaving and the
+    plane + parting clouds on every page are gone. Pages now slide the
+    way you tapped (right/left along the tab order, a push-in for an
+    airport guide, a pull-back to Airports) in about 0.3s, while the top
+    nav and the phone tab bar stay still. Uses cross-document view
+    transitions (iOS 18.2+, Chrome, Edge); other browsers get the same
+    directions as a short arrival of the page content.
+  - Phone tab bar: a small blue "runway light" glides to the tab you
+    tapped, the tapped tab lights up instantly and its icon settles with
+    a soft bounce.
+  - The plane, clouds and space effects are kept for the big moments
+    only: globe → airport guide (clouds close, then part) and
+    guide → globe (space opens, the globe climbs). Both are a little
+    shorter.
+  - Tab switches load instantly in the installed app: moving between
+    pages shows the saved copy at once and refreshes it behind the
+    scenes; opening or reloading the site still fetches the newest
+    version (and refreshes every other page's saved copy).
+    Links are also warmed the moment a finger lands on them.
+  - Card swaps (Global Tips phases, SFO Explorer / Airline Searcher,
+    SFO and SJC terminal cards) share one quick directional hand-off
+    (0.12s out, 0.34s in) that follows the direction of travel and never
+    queues when tapped quickly. Airline cards no longer re-ripple on
+    every keystroke of a search.
+  - Scroll arrivals share one feel; items that appear together stagger
+    as a group, and the arrival no longer slows down hover/press motion
+    on a card afterwards.
+  - Phones and tablets: cards drop their (barely visible) frosted-glass
+    blur so scrolling stays at full frame rate; buttons, chips and tabs
+    press with a quick spring.
+  - Reduced-motion setting: everything simply appears.
+  - Fixed: after a page change the page slid in a second time (it
+    landed, jumped sideways and slid back). The page's backup arrival
+    animation was switched back on the moment the slide finished; the
+    slide is now the page's only arrival.
+  - Fixed: a fast tap before a page had finished drawing could make
+    the next page slide in from the wrong side (the "came from" page is
+    now remembered when leaving, not on arrival).
+  - Leaving the About page now slides like every other page.
+  - The 3D globe is built only after the slide into Airports has
+    landed, so it no longer stutters the slide.
+  - Global Tips phase photos (and other photos in tabs not opened yet)
+    are downloaded in idle time, so the first tap on a phase no longer
+    slides in a card whose photo pops in late.
+  - "Back to globe": the night sky now grows as a scaled circle with
+    the stars fading in over it (graphics-chip only, no per-frame
+    redraw), and guide pages download the globe's files in the
+    background, so the globe is ready about 0.1s after its page opens,
+    even on a first visit.
+  - Tested frame by frame in Chrome at phone, tablet and laptop sizes
+    (every page change plus every card, tab, scroll and globe
+    animation), including browsers without page slides and Reduce
+    Motion.
+
 - **About page reorganized into Who · What · Why · How · Contact**
   (same order in the pinned bar and the nav's About ▾ menu):
   - Who: Kollen's intro plus a strip of five of his photos (replaces
@@ -38,6 +135,71 @@ so a minor bump can still include larger changes as the site finds its shape.
     even if animation frames are paused.
 
 ### Added
+
+- **Timeblocker: new day-and-time picker, activity picker and drag states.**
+  - Flight day and boarding time are one ticket-style button that opens a
+    single picker (month calendar, Today / Tomorrow, hour and minute grids,
+    AM / PM). It grows out of the button on a laptop and slides up as a
+    sheet on a phone. The two hidden inputs are still the source of truth,
+    so saving, share links, printing and the calendar file are unchanged.
+  - Activities are a tabbed picker (Getting there, Essentials, Errands,
+    Food, Relax) with large tiles. On phones and tablets it is a slide-up
+    sheet opened from an "Add activity" button. Seven suggestions added:
+    Airport shuttle, Return rental car, Buffer time, Recheck gate on
+    screens, Download shows & passes, Kids / family break, Snacks for the
+    flight.
+  - Dragging uses a warm amber "Drop here" line and "do both at the same
+    time" overlay instead of blue on blue; the dragged step turns grey and
+    dashed; a newly added step flashes green.
+  - Fixed: the drop target bounced back and forth between two steps. The
+    old slot was inserted into the list and pushed the steps down, which
+    moved the target under the cursor. The line now floats over the gap
+    and glides between gaps, so the steps never move during a drag. The
+    "same time" zone holds a little longer near its edges, and no line
+    shows where a drop would leave a step where it is.
+
+- **Global Tips: Booking, Departure, In-Flight and Arrival panels reworked**
+  with diagrams, photos and scroll-drawn animation (`bk-`, `dp-`, `fl-` and
+  `ar-` styles at the end of `styles.css`, a small block at the end of
+  `script.js`).
+  - Booking: the big layover chart became three compact pills under the
+    nonstop / connection diagram; the "seat over the wing" plane diagram
+    moved here from In-Flight; "Stay covered" is one joined card (airline
+    app + entry rules). The card-cover tip was removed.
+  - Departure: "Get there early" is one joined card (slim Timeblocker link,
+    the when-to-walk-in chart, then the photo and 2-hour budget). "Ask, and
+    be friendly" leads with friendly, then respectful, with example lines.
+    "Through the airport" is a four-stop stepper.
+  - In-Flight: four tips (hydrate, move hourly, watch the window, switch to
+    destination time).
+  - Arrival: four tips. A phone showing the eSIM and saved hotel address, a
+    swinging customs-wait gauge beside Kollen's sunset-approach photo, and
+    fanned banknotes for local cash.
+
+- **Delays page** (`delays.html`, `delays.css`, `delays.js`): a calm guide
+  to delayed and cancelled flights, titled "Delayed? Cancelled? Don't worry."
+  - Hero is Kollen's above-the-clouds wing photo. The title sits in the sky
+    and the biggest tip (be nice to flight attendants, pilots, gate agents,
+    desk, airport and phone staff) is written on the cloud tops, with a
+    breathing orb and rotating "say this instead" lines.
+  - Two mini pages, switched from a bar pinned under the nav: "What's
+    happening" and "What you're owed". Once the tip scrolls away, a small
+    "Be nice. It works." reminder joins the bar. Each mini page ends with a
+    photo card leading to the other.
+  - "What's happening": delayed, cancelled, missed connection and stuck on
+    the plane, each with a small diagram and short steps, plus a tick-off
+    "Make the wait easier" checklist (saved on the device).
+  - "What you're owed": US, EU, UK and Canada tabs. US rules as diagrams (the
+    refund choice, the 3-hour / 6-hour gauge, who caused it, what the nine
+    biggest airlines promise).
+  - A warning to always check your own airline's policy, repeated above the
+    sources. Every figure was checked against the official source in
+    November 2026 and links to it.
+  - Linked from the footer on every page, a card on the About page, a link
+    card in Global Tips (Booking), a link above the Global Tips phase card
+    (shown on every phase) and a link under the Time Blocker notice.
+    Not in the top nav or the phone tab bar. Added to `motion.js` page order
+    and the offline page list in `sw.js` (cache version `fly-easy-v4`).
 
 - **Home-screen web app + offline.** Fly Easy can be added to an iPhone or
   Android home screen (Safari: Share → Add to Home Screen) and opens full

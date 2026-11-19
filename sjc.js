@@ -383,8 +383,8 @@
       inEl.classList.add(headingEast ? "slide-in-e" : "slide-in-w", "is-arriving");
       cleanTimer = window.setTimeout(function () {
         ANIM.forEach(function (c) { inEl.classList.remove(c); });
-      }, 750);
-    }, 190);
+      }, 620);
+    }, 130);
   }
 
   chips.forEach(function (chip) {

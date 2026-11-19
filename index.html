@@ -16,7 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=105">
+<link rel="stylesheet" href="styles.css?v=115">
+<link rel="stylesheet" href="motion.css?v=2">
+<script src="motion.js?v=6"></script>
 </head>
 <body class="page-about">
 
@@ -66,7 +68,7 @@
 </header>
 
 <nav class="mobile-tabbar" aria-label="Primary">
-  <a class="mobile-tabbar__item" href="index.html" aria-current="page">
+  <a class="mobile-tabbar__item" href="index.html" aria-current="page"><span class="mobile-tabbar__mark" aria-hidden="true"></span>
     <span class="icon mobile-tabbar__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
     <span class="mobile-tabbar__label">About</span>
   </a>
@@ -96,7 +98,7 @@
     <div class="ab-hero__inner container">
       <p class="ab-kicker">About Fly Easy</p>
       <h1 class="ab-hero__title">A calmer way<br>to see the airport.</h1>
-      <p class="ab-hero__lede">Fly Easy is an independent guide to air travel. It gives you real, checked tips for any airport, a close look at SFO, and simple tools that take the stress out of flying.</p>
+      <p class="ab-hero__lede">Fly Easy is an independent guide to air travel. It gives you real, checked tips for any airport, close looks at SFO and SJC, and simple tools that take the stress out of flying.</p>
       <dl class="ab-manifest">
         <div><dt>Created by</dt><dd>Kollen</dd></div>
         <div><dt>School</dt><dd>Junipero Serra HS</dd></div>
@@ -174,7 +176,7 @@
     <figure class="container ab-statement__inner about-reveal">
       <p class="ab-kicker">Why · My favorite quote</p>
       <blockquote class="ab-quote">&ldquo;When everything seems to be going against you, remember that the airplane takes off against the wind, not with it.&rdquo;</blockquote>
-      <figcaption class="ab-quote__cite">Henry Ford</figcaption>
+      <figcaption class="ab-quote__cite">Often credited to Henry Ford<span class="ab-quote__note">Its real author is unknown; the line grew out of an older saying about kites.</span></figcaption>
       <p class="ab-statement__note">I'm building Fly Easy to show the beauty of aviation that most people rush right past. Air travel should be a relaxing start to your vacation, not the most stressful part of it.</p>
     </figure>
     <span class="photo-credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen · Hong Kong (HKG)</span>
@@ -184,7 +186,7 @@
   <section class="ab-how" id="how" aria-labelledby="ab-how-title">
     <div class="container ab-how__head about-reveal">
       <p class="ab-kicker">How · Tools &amp; tips</p>
-      <h2 class="ab-title" id="ab-how-title">Two guides and two tools that do the planning for you.</h2>
+      <h2 class="ab-title" id="ab-how-title">Three guides and two tools that do the planning for you.</h2>
     </div>
     <div class="ab-explore">
       <a class="ab-explore__panel" href="global.html" style="background-image: url('images/kollen/kollen-hkg-singapore-a350-sunset-window.jpg'); background-position: 70% center;">
@@ -208,6 +210,12 @@
         <span class="ab-explore__label">Tool</span>
         <strong>Packer</strong>
         <span class="ab-explore__desc">A packing list for every bag, with TSA rules built in.</span>
+      </a>
+      <a class="ab-explore__panel" href="delays.html" style="background-image: url('images/kollen/kollen-hkg-united-777-at-gate-1.jpg');">
+        <span class="ab-explore__label">Guide</span>
+        <strong>Delays</strong>
+        <span class="ab-explore__desc">Delayed or cancelled? Calm steps and what you're owed.</span>
+        <span class="photo-credit photo-credit--top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo by Kollen</span>
       </a>
     </div>
     <div class="ab-panel" style="background-image: url('images/kollen/kollen-sfo-hangar-united-737max.jpg');">
@@ -280,6 +288,7 @@
       <a href="airports.html">Airports</a>
       <a href="timeblocker.html">Timeblocker</a>
       <a href="packer.html">Packer</a>
+      <a href="delays.html">Delays</a>
       <a href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Suggest a tip</a>
     </nav>
     <p class="site-footer__note">An independent guide, not affiliated with any airport or airline. Details can change — always confirm specifics before you fly.</p>
@@ -296,6 +305,6 @@
   <a class="survey-toast__cta" id="surveyToastCta" href="https://forms.gle/eSWeZWQoHny6DYSU7" target="_blank" rel="noopener">Take the survey</a>
 </div>
 
-<script src="script.js?v=112"></script>
+<script src="script.js?v=120"></script>
 </body>
 </html>
